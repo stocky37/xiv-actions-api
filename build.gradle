@@ -16,6 +16,8 @@ dependencies {
     implementation 'io.quarkus:quarkus-rest-client'
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'io.quarkus:quarkus-arc'
+    implementation 'com.google.guava:guava'
+
     testImplementation 'io.quarkus:quarkus-junit5'
 }
 
@@ -23,8 +25,8 @@ group 'ffxiv.stocky37.dev'
 version '1.0.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 }
 
 compileJava {
