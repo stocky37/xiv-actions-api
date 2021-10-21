@@ -2,6 +2,7 @@ package dev.stocky37.ffxiv.actions.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.RateLimiter;
+import dev.stocky37.ffxiv.actions.data.Action;
 import dev.stocky37.ffxiv.actions.xivapi.XIVApi;
 import dev.stocky37.ffxiv.actions.xivapi.json.PaginatedResults;
 import dev.stocky37.ffxiv.actions.xivapi.json.XIVSearchBody;

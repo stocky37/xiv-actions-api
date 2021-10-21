@@ -1,7 +1,10 @@
 package dev.stocky37.ffxiv.actions.api;
 
-import dev.stocky37.ffxiv.actions.core.Job;
+import com.fasterxml.jackson.annotation.JsonView;
 import dev.stocky37.ffxiv.actions.core.JobService;
+import dev.stocky37.ffxiv.actions.data.Job;
+import dev.stocky37.ffxiv.actions.data.Views;
+import java.util.Collection;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,9 +18,16 @@ public class JobsApi {
 	@Inject JobService jobs;
 
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@JsonView(Views.ListView.class)
+	public Collection<Job> list() {
+		return jobs.getAll();
+	}
+
+	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Job getJob(@PathParam int id) {
+	public Job findById(@PathParam int id) {
 		return jobs.findById(id);
 	}
 

@@ -1,4 +1,4 @@
-package dev.stocky37.ffxiv.actions.core;
+package dev.stocky37.ffxiv.actions.data;
 
 import java.util.Optional;
 
@@ -10,7 +10,7 @@ public record Action(
 	String icon,
 	String iconHD,
 	Optional<Integer> comboFrom,
-	boolean isGDC,
+	boolean isGCD,
 	int cooldownGroup,
 	int recast,
 	int cast,

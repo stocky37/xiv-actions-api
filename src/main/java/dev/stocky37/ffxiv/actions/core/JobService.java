@@ -1,6 +1,7 @@
 package dev.stocky37.ffxiv.actions.core;
 
 import com.google.common.util.concurrent.RateLimiter;
+import dev.stocky37.ffxiv.actions.data.Job;
 import dev.stocky37.ffxiv.actions.xivapi.XIVApi;
 import dev.stocky37.ffxiv.actions.xivapi.json.ListItemResource;
 import dev.stocky37.ffxiv.actions.xivapi.json.XIVApiClassJob;
@@ -31,9 +32,11 @@ public class JobService {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;
 		this.actionsService = actionsService;
-		this.converter = cj -> new Job(cj.ID(),
+		this.converter = cj -> new Job(
+			cj.ID(),
 			cj.Name(),
 			cj.Abbreviation(),
+			cj.Icon(),
 			Collections.unmodifiableList(actionsService.findForJob(cj.Abbreviation()))
 		);
 	}
