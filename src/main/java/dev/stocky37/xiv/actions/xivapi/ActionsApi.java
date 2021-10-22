@@ -1,8 +1,8 @@
 package dev.stocky37.xiv.actions.xivapi;
 
-import dev.stocky37.xiv.actions.xivapi.json.ListItemResource;
-import dev.stocky37.xiv.actions.xivapi.json.PaginatedResults;
-import dev.stocky37.xiv.actions.xivapi.json.XIVApiAction;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiAction;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiListItem;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiPaginatedList;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -14,9 +14,9 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 public interface ActionsApi {
 
 	@GET
-	PaginatedResults<ListItemResource> getAll();
+	XivApiPaginatedList<XivApiListItem> getAll();
 
 	@GET
 	@Path("{id}")
-	XIVApiAction getById(@PathParam int id, @QueryParam("private_key") String apikey);
+	XivApiAction getById(@PathParam int id, @QueryParam("private_key") String apikey);
 }

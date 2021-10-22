@@ -3,9 +3,9 @@ package dev.stocky37.xiv.actions.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Action;
-import dev.stocky37.xiv.actions.xivapi.XIVApi;
-import dev.stocky37.xiv.actions.xivapi.json.PaginatedResults;
-import dev.stocky37.xiv.actions.xivapi.json.XIVSearchBody;
+import dev.stocky37.xiv.actions.xivapi.XivApi;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiPaginatedList;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiSearchBody;
 import io.quarkus.cache.CacheResult;
 import java.util.HashMap;
 import java.util.List;
@@ -36,13 +36,13 @@ public class ActionService {
 		"ClassJobLevel"
 	);
 	private static final List<String> INDEXES = List.of("action");
-	private final XIVApi xivapi;
+	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
 	private final Function<JsonNode, Action> converter;
 
 	@Inject
 	public ActionService(
-		@RestClient XIVApi xivapi,
+		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
 		@ConfigProperty(name = "gcd-cd-group") int gcdCdGroup
 	) {
@@ -88,11 +88,11 @@ public class ActionService {
 	@CacheResult(cacheName = "actions")
 	public List<Action> findForJob(String jobAbbreviation) {
 		final Map<String, Object> obj = createActionsQuery(jobAbbreviation);
-		final XIVSearchBody body =
-			new XIVSearchBody(String.join(",", INDEXES), String.join(",", SEARCH_COLUMNS), obj);
+		final XivApiSearchBody body =
+			new XivApiSearchBody(String.join(",", INDEXES), String.join(",", SEARCH_COLUMNS), obj);
 
 		rateLimiter.acquire();
-		final PaginatedResults<JsonNode> results = xivapi.search(body);
+		final XivApiPaginatedList<JsonNode> results = xivapi.search(body);
 		return results.Results().stream().map(converter).toList();
 	}
 

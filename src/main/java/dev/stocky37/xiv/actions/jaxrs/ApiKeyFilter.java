@@ -1,4 +1,4 @@
-package dev.stocky37.xiv.actions;
+package dev.stocky37.xiv.actions.jaxrs;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;

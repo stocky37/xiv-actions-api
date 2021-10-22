@@ -2,9 +2,9 @@ package dev.stocky37.xiv.actions.core;
 
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.xivapi.XIVApi;
-import dev.stocky37.xiv.actions.xivapi.json.ListItemResource;
-import dev.stocky37.xiv.actions.xivapi.json.XIVApiClassJob;
+import dev.stocky37.xiv.actions.xivapi.XivApi;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiClassJob;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiListItem;
 import io.quarkus.cache.CacheResult;
 import java.util.Collections;
 import java.util.List;
@@ -17,13 +17,13 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @SuppressWarnings("UnstableApiUsage")
 @ApplicationScoped
 public class JobService {
-	private final XIVApi xivapi;
+	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
-	private final Function<XIVApiClassJob, Job> converter;
+	private final Function<XivApiClassJob, Job> converter;
 
 	@Inject
 	public JobService(
-		@RestClient XIVApi xivapi,
+		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
 		ActionService actionsService
 	) {
@@ -44,7 +44,7 @@ public class JobService {
 		rateLimiter.acquire();
 		return xivapi.classjobs().getAll().Results().parallelStream()
 			.filter(x -> x.Name().length() > 0)
-			.map(ListItemResource::ID)
+			.map(XivApiListItem::ID)
 			.map(this::findById)
 			.collect(Collectors.toList());
 	}

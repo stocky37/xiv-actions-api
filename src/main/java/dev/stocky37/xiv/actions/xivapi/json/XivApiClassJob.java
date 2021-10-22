@@ -1,6 +1,6 @@
 package dev.stocky37.xiv.actions.xivapi.json;
 
-public record XIVApiClassJob(
+public record XivApiClassJob(
 	int ID,
 	String Name,
 	String Abbreviation,
