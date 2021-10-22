@@ -1,12 +1,12 @@
 package dev.stocky37.xiv.actions.config;
 
 import com.google.common.util.concurrent.RateLimiter;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @SuppressWarnings("UnstableApiUsage")
-@ApplicationScoped
+@Singleton
 public class RateLimiterConfig {
 	@Produces
 	public RateLimiter rateLimiter(
