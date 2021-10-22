@@ -1,10 +1,10 @@
-package dev.stocky37.ffxiv.actions.core;
+package dev.stocky37.xiv.actions.core;
 
 import com.google.common.util.concurrent.RateLimiter;
-import dev.stocky37.ffxiv.actions.data.Job;
-import dev.stocky37.ffxiv.actions.xivapi.XIVApi;
-import dev.stocky37.ffxiv.actions.xivapi.json.ListItemResource;
-import dev.stocky37.ffxiv.actions.xivapi.json.XIVApiClassJob;
+import dev.stocky37.xiv.actions.data.Job;
+import dev.stocky37.xiv.actions.xivapi.XIVApi;
+import dev.stocky37.xiv.actions.xivapi.json.ListItemResource;
+import dev.stocky37.xiv.actions.xivapi.json.XIVApiClassJob;
 import io.quarkus.cache.CacheResult;
 import java.util.Collections;
 import java.util.List;
@@ -19,9 +19,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class JobService {
 	private final XIVApi xivapi;
 	private final RateLimiter rateLimiter;
-	private final ActionService actionsService;
 	private final Function<XIVApiClassJob, Job> converter;
-
 
 	@Inject
 	public JobService(
@@ -31,7 +29,6 @@ public class JobService {
 	) {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;
-		this.actionsService = actionsService;
 		this.converter = cj -> new Job(
 			cj.ID(),
 			cj.Name(),

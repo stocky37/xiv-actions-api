@@ -1,4 +1,4 @@
-package dev.stocky37.ffxiv.actions.config;
+package dev.stocky37.xiv.actions.config;
 
 import com.google.common.util.concurrent.RateLimiter;
 import javax.enterprise.context.ApplicationScoped;

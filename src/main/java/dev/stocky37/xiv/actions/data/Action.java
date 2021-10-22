@@ -1,4 +1,4 @@
-package dev.stocky37.ffxiv.actions.data;
+package dev.stocky37.xiv.actions.data;
 
 import java.util.Optional;
 

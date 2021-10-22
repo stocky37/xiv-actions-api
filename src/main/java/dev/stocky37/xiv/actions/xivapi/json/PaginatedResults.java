@@ -1,4 +1,4 @@
-package dev.stocky37.ffxiv.actions.xivapi.json;
+package dev.stocky37.xiv.actions.xivapi.json;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
-package dev.stocky37.ffxiv.actions.xivapi;
+package dev.stocky37.xiv.actions.xivapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.stocky37.ffxiv.actions.xivapi.json.PaginatedResults;
-import dev.stocky37.ffxiv.actions.xivapi.json.XIVSearchBody;
+import dev.stocky37.xiv.actions.xivapi.json.PaginatedResults;
+import dev.stocky37.xiv.actions.xivapi.json.XIVSearchBody;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;

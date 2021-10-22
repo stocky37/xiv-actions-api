@@ -1,11 +1,11 @@
-package dev.stocky37.ffxiv.actions.core;
+package dev.stocky37.xiv.actions.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.RateLimiter;
-import dev.stocky37.ffxiv.actions.data.Action;
-import dev.stocky37.ffxiv.actions.xivapi.XIVApi;
-import dev.stocky37.ffxiv.actions.xivapi.json.PaginatedResults;
-import dev.stocky37.ffxiv.actions.xivapi.json.XIVSearchBody;
+import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.xivapi.XIVApi;
+import dev.stocky37.xiv.actions.xivapi.json.PaginatedResults;
+import dev.stocky37.xiv.actions.xivapi.json.XIVSearchBody;
 import io.quarkus.cache.CacheResult;
 import java.util.HashMap;
 import java.util.List;

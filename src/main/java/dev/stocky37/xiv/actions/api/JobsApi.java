@@ -1,9 +1,9 @@
-package dev.stocky37.ffxiv.actions.api;
+package dev.stocky37.xiv.actions.api;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import dev.stocky37.ffxiv.actions.core.JobService;
-import dev.stocky37.ffxiv.actions.data.Job;
-import dev.stocky37.ffxiv.actions.data.Views;
+import dev.stocky37.xiv.actions.core.JobService;
+import dev.stocky37.xiv.actions.data.Job;
+import dev.stocky37.xiv.actions.data.Views;
 import java.util.Collection;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -19,7 +19,7 @@ public class JobsApi {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(Views.ListView.class)
+	@JsonView(Views.List.class)
 	public Collection<Job> list() {
 		return jobs.getAll();
 	}

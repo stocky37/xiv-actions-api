@@ -1,39 +1,40 @@
 plugins {
-    id 'java'
-    id 'io.quarkus'
+	id 'java'
+	id 'io.quarkus'
 }
 
 repositories {
-    mavenCentral()
-    mavenLocal()
+	mavenCentral()
+	mavenLocal()
 }
 
 dependencies {
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
-    implementation 'io.quarkus:quarkus-cache'
-    implementation 'io.quarkus:quarkus-resteasy-jackson'
-    implementation 'io.quarkus:quarkus-rest-client-jackson'
-    implementation 'io.quarkus:quarkus-rest-client'
-    implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'io.quarkus:quarkus-arc'
-    implementation 'com.google.guava:guava'
+	implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+	implementation 'io.quarkus:quarkus-cache'
+	implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
+	implementation 'io.quarkus:quarkus-rest-client-jackson'
+	implementation 'io.quarkus:quarkus-rest-client'
+	implementation 'io.quarkus:quarkus-resteasy-reactive'
+	implementation 'io.quarkus:quarkus-arc'
+	implementation 'com.google.guava:guava'
 
-    testImplementation 'io.quarkus:quarkus-junit5'
+	testImplementation 'io.quarkus:quarkus-junit5'
+	testImplementation 'io.rest-assured:rest-assured'
 }
 
-group 'ffxiv.stocky37.dev'
+group 'xiv.stocky37.dev'
 version '1.0.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
+	sourceCompatibility = JavaVersion.VERSION_16
+	targetCompatibility = JavaVersion.VERSION_16
 }
 
 compileJava {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << '-parameters'
+	options.encoding = 'UTF-8'
+	options.compilerArgs << '-parameters'
 }
 
 compileTestJava {
-    options.encoding = 'UTF-8'
+	options.encoding = 'UTF-8'
 }
