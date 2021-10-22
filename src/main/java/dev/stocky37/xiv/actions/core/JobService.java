@@ -2,6 +2,8 @@ package dev.stocky37.xiv.actions.core;
 
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Job;
+import dev.stocky37.xiv.actions.data.XivApiActionConverter;
+import dev.stocky37.xiv.actions.data.XivApiJobConverter;
 import dev.stocky37.xiv.actions.xivapi.XivApi;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiClassJob;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiListItem;
@@ -25,19 +27,13 @@ public class JobService {
 	public JobService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
-		ActionService actionsService
+		ActionService actionsService,
+		XivApiJobConverter converter
 	) {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;
-		this.converter = cj -> new Job(
-			cj.ID(),
-			cj.Name(),
-			cj.Abbreviation(),
-			cj.Icon(),
-			Collections.unmodifiableList(actionsService.findForJob(cj.Abbreviation()))
-		);
+		this.converter = converter;
 	}
-
 
 	@CacheResult(cacheName = "jobs")
 	public List<Job> getAll() {

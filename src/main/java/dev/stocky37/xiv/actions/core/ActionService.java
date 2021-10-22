@@ -3,6 +3,7 @@ package dev.stocky37.xiv.actions.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.data.XivApiActionConverter;
 import dev.stocky37.xiv.actions.xivapi.XivApi;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiPaginatedList;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiSearchBody;
@@ -10,11 +11,9 @@ import io.quarkus.cache.CacheResult;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -44,28 +43,11 @@ public class ActionService {
 	public ActionService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
-		@ConfigProperty(name = "gcd-cd-group") int gcdCdGroup
+		XivApiActionConverter converter
 	) {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;
-		this.converter = a -> new Action(
-			a.get("ID").asInt(),
-			a.get("Name").asText(),
-			a.path("ActionCategory").path("Name").asText().toLowerCase(),
-			a.get("Description").asText(),
-			a.get("Icon").asText(),
-			a.get("IconHD").asText(),
-			a.get("ActionComboTargetID").asInt() == 0
-				? Optional.empty()
-				: Optional.of(a.get("ActionComboTargetID").asInt()),
-			a.get("CooldownGroup").asInt() == gcdCdGroup,
-			a.get("CooldownGroup").asInt(),
-			a.get("Recast100ms").asInt() * 100,
-			a.get("Cast100ms").asInt() * 100,
-			a.get("CastType").asInt(),
-			a.get("IsRoleAction").asInt() != 0,
-			a.get("ClassJobLevel").asInt()
-		);
+		this.converter = converter;
 	}
 
 	public static Map<String, Object> createActionsQuery(String jobAbbrev) {

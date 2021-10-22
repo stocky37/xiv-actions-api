@@ -17,5 +17,8 @@ public class JobsApiTest {
 			.statusCode(200);
 
 		response.body("[0].actions", Matchers.nullValue());
+		response.body("[0].actions", Matchers.nullValue());
+		response.body("[0].actions", Matchers.nullValue());
+		response.body("[0].actions", Matchers.nullValue());
 	}
 }

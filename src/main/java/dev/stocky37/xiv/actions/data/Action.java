@@ -3,7 +3,7 @@ package dev.stocky37.xiv.actions.data;
 import java.util.Optional;
 
 public record Action(
-	int id,
+	String id,
 	String name,
 	String category,
 	String description,
