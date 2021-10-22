@@ -30,5 +30,4 @@ public class JobsApi {
 	public Job findById(@PathParam int id) {
 		return jobs.findById(id);
 	}
-
 }

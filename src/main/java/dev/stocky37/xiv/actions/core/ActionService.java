@@ -86,8 +86,8 @@ public class ActionService {
 	}
 
 	@CacheResult(cacheName = "actions")
-	public List<Action> findForJob(String jobAbbrev) {
-		final Map<String, Object> obj = createActionsQuery(jobAbbrev);
+	public List<Action> findForJob(String jobAbbreviation) {
+		final Map<String, Object> obj = createActionsQuery(jobAbbreviation);
 		final XIVSearchBody body =
 			new XIVSearchBody(String.join(",", INDEXES), String.join(",", SEARCH_COLUMNS), obj);
 
