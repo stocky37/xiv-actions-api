@@ -1,6 +1,10 @@
 package dev.stocky37.xiv.actions.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Sets;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiAction;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.inject.Inject;
@@ -8,7 +12,7 @@ import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Singleton
-public class XivApiActionConverter implements Function<JsonNode, Action> {
+public class XivApiActionConverter implements Function<XivApiAction, Action> {
 
 	private final int gcdCdGroup;
 
@@ -18,24 +22,23 @@ public class XivApiActionConverter implements Function<JsonNode, Action> {
 	}
 
 	@Override
-	public Action apply(JsonNode action) {
+	public Action apply(XivApiAction action) {
 		return new Action(
-			action.get("ID").asText(),
-			action.get("Name").asText(),
-			action.path("ActionCategory").path("Name").asText().toLowerCase(),
-			action.get("Description").asText(),
-			action.get("Icon").asText(),
-			action.get("IconHD").asText(),
-			action.get("ActionComboTargetID").asInt() == 0
-				? Optional.empty()
-				: Optional.of(action.get("ActionComboTargetID").asInt()),
-			action.get("CooldownGroup").asInt() == gcdCdGroup,
-			action.get("CooldownGroup").asInt(),
-			action.get("Recast100ms").asInt() * 100,
-			action.get("Cast100ms").asInt() * 100,
-			action.get("CastType").asInt(),
-			action.get("IsRoleAction").asInt() != 0,
-			action.get("ClassJobLevel").asInt()
+			String.valueOf(action.ID()),
+			action.Name(),
+			action.ActionCategory().Name().toLowerCase(),
+			action.Description(),
+			action.Icon(),
+			action.IconHD(),
+			action.ActionComboTargetID() == 0
+				? Optional.<Integer>empty()
+				: Optional.of(action.ActionComboTargetID()),
+			Sets.newHashSet(action.CooldownGroup(), action.AdditionalCooldownGroup()),
+			action.Recast100ms() * 100,
+			action.Cast100ms() * 100,
+			action.IsRoleAction() != 0,
+			action.ClassJobLevel(),
+			gcdCdGroup
 		);
 	}
 }

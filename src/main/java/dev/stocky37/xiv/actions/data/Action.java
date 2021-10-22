@@ -1,6 +1,8 @@
 package dev.stocky37.xiv.actions.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Optional;
+import java.util.Set;
 
 public record Action(
 	String id,
@@ -10,12 +12,15 @@ public record Action(
 	String icon,
 	String iconHD,
 	Optional<Integer> comboFrom,
-	boolean isGCD,
-	int cooldownGroup,
+	Set<Integer> cooldownGroups,
 	int recast,
 	int cast,
-	int castType,
 	boolean isRoleAction,
-	int level
+	int level,
+	@JsonIgnore int gcdCooldownGroup
 ) {
+
+	public boolean isOnGCD() {
+		return cooldownGroups.contains(gcdCooldownGroup);
+	}
 }

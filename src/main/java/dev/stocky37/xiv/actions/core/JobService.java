@@ -27,7 +27,6 @@ public class JobService {
 	public JobService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
-		ActionService actionsService,
 		XivApiJobConverter converter
 	) {
 		this.xivapi = xivapi;

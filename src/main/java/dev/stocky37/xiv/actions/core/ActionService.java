@@ -1,10 +1,13 @@
 package dev.stocky37.xiv.actions.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Action;
 import dev.stocky37.xiv.actions.data.XivApiActionConverter;
 import dev.stocky37.xiv.actions.xivapi.XivApi;
+import dev.stocky37.xiv.actions.xivapi.json.XivApiAction;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiPaginatedList;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiSearchBody;
 import io.quarkus.cache.CacheResult;
@@ -37,17 +40,20 @@ public class ActionService {
 	private static final List<String> INDEXES = List.of("action");
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
-	private final Function<JsonNode, Action> converter;
+	private final Function<XivApiAction, Action> converter;
+	private final ObjectMapper json;
 
 	@Inject
 	public ActionService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
-		XivApiActionConverter converter
+		XivApiActionConverter converter,
+		ObjectMapper objectMapper
 	) {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;
 		this.converter = converter;
+		this.json = objectMapper;
 	}
 
 	public static Map<String, Object> createActionsQuery(String jobAbbrev) {
@@ -75,7 +81,13 @@ public class ActionService {
 
 		rateLimiter.acquire();
 		final XivApiPaginatedList<JsonNode> results = xivapi.search(body);
-		return results.Results().stream().map(converter).toList();
+		return results.Results().stream().map(node -> {
+			try {
+				return json.treeToValue(node, XivApiAction.class);
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+		}).map(converter).toList();
 	}
 
 }

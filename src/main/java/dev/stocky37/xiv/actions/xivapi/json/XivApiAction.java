@@ -13,10 +13,10 @@ public record XivApiAction(
 	String IconHD,
 	int ActionComboTargetID,
 	int CooldownGroup,
+	int AdditionalCooldownGroup,
 	int IsRoleAction,
 	int Recast100ms,
 	int Cast100ms,
-	int CastType,
 	int ClassJobLevel
 ) {
 
