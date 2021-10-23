@@ -12,6 +12,7 @@ public record Job(
 	@JsonView(Views.List.class) Type type,
 	@JsonView(Views.List.class) Role role,
 	@JsonView(Views.List.class) int index,
+	@JsonView(Views.List.class) boolean isLimited,
 	List<Action> actions
 ) {
 

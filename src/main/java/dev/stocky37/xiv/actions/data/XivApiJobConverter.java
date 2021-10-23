@@ -30,6 +30,7 @@ public class XivApiJobConverter implements Function<XivApiClassJob, Job> {
 			type(classJob),
 			role(classJob),
 			classJob.JobIndex(),
+			classJob.IsLimitedJob() != 0,
 			actions(classJob)
 		);
 	}
