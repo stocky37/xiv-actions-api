@@ -31,6 +31,7 @@ public class ActionService {
 		"IconHD",
 		"ActionComboTargetID",
 		"CooldownGroup",
+		"AdditionalCooldownGroup",
 		"IsRoleAction",
 		"Recast100ms",
 		"Cast100ms",

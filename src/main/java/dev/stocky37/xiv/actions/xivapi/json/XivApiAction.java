@@ -19,9 +19,6 @@ public record XivApiAction(
 	int Cast100ms,
 	int ClassJobLevel
 ) {
-
-	public static record ActionCategory(String Name) {
-
-	}
+	public static record ActionCategory(String Name) {}
 }
 

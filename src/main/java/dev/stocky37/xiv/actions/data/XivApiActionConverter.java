@@ -1,10 +1,7 @@
 package dev.stocky37.xiv.actions.data;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiAction;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.inject.Inject;
@@ -23,6 +20,11 @@ public class XivApiActionConverter implements Function<XivApiAction, Action> {
 
 	@Override
 	public Action apply(XivApiAction action) {
+		if(action.ID() == 16486) {
+			System.out.println(action.Name());
+			System.out.println(action.CooldownGroup());
+			System.out.println(action.AdditionalCooldownGroup());
+		}
 		return new Action(
 			String.valueOf(action.ID()),
 			action.Name(),
@@ -31,7 +33,7 @@ public class XivApiActionConverter implements Function<XivApiAction, Action> {
 			action.Icon(),
 			action.IconHD(),
 			action.ActionComboTargetID() == 0
-				? Optional.<Integer>empty()
+				? Optional.empty()
 				: Optional.of(action.ActionComboTargetID()),
 			Sets.newHashSet(action.CooldownGroup(), action.AdditionalCooldownGroup()),
 			action.Recast100ms() * 100,
