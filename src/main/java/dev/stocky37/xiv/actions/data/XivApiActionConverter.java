@@ -20,11 +20,6 @@ public class XivApiActionConverter implements Function<XivApiAction, Action> {
 
 	@Override
 	public Action apply(XivApiAction action) {
-		if(action.ID() == 16486) {
-			System.out.println(action.Name());
-			System.out.println(action.CooldownGroup());
-			System.out.println(action.AdditionalCooldownGroup());
-		}
 		return new Action(
 			String.valueOf(action.ID()),
 			action.Name(),

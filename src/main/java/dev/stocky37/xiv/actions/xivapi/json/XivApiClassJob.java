@@ -5,8 +5,8 @@ public record XivApiClassJob(
 	String Name,
 	String Abbreviation,
 	String Icon,
+	int ClassJobCategoryTargetID,
 	int Role,
-	int PrimaryStat,
-	int ClassJobParentTargetID
+	int JobIndex
 ) {
 }
