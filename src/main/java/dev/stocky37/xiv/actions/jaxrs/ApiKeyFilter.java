@@ -1,5 +1,6 @@
 package dev.stocky37.xiv.actions.jaxrs;
 
+import java.util.Optional;
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestContext;
@@ -12,12 +13,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ConstrainedTo(RuntimeType.CLIENT)
 public class ApiKeyFilter implements ClientRequestFilter {
 
-	@ConfigProperty(name = "xivapi.api-key") String apiKey;
+	@ConfigProperty(name = "xivapi.api-key") Optional<String> apiKey;
 
 	@Override
 	public void filter(ClientRequestContext requestContext) {
-		requestContext.setUri(UriBuilder.fromUri(requestContext.getUri())
-			.queryParam("private_key", apiKey)
-			.build());
+		apiKey.ifPresent(s -> requestContext.setUri(UriBuilder.fromUri(requestContext.getUri())
+			.queryParam("private_key", s)
+			.build()));
 	}
 }

@@ -16,6 +16,7 @@ dependencies {
 	implementation 'io.quarkus:quarkus-rest-client-jackson'
 	implementation 'io.quarkus:quarkus-arc'
 	implementation 'io.quarkus:quarkus-cache'
+	implementation 'io.quarkus:quarkus-smallrye-health'
 	implementation 'com.google.guava:guava'
 
 	testImplementation 'io.quarkus:quarkus-junit5'
@@ -26,8 +27,8 @@ group 'xiv.stocky37.dev'
 version '1.0.0-SNAPSHOT'
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_16
-	targetCompatibility = JavaVersion.VERSION_16
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 compileJava {
@@ -37,4 +38,5 @@ compileJava {
 
 compileTestJava {
 	options.encoding = 'UTF-8'
+	options.compilerArgs << '-parameters'
 }

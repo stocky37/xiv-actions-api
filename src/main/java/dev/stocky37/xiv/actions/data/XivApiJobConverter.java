@@ -20,7 +20,6 @@ public class XivApiJobConverter implements Function<XivApiClassJob, Job> {
 
 	@Override
 	public Job apply(XivApiClassJob classJob) {
-		System.out.println(Job.Category.DOM.toString());
 		return new Job(
 			String.valueOf(classJob.ID()),
 			classJob.Name(),

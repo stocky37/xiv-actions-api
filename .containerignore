@@ -1,0 +1,7 @@
+*
+!gradle/
+!src/
+!build.gradle
+!settings.gradle
+!gradlew
+!gradle.properties

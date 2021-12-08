@@ -4,21 +4,15 @@ import static io.restassured.RestAssured.given;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ValidatableResponse;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 public class JobsApiTest {
 	@Test
-	public void testHelloEndpoint() {
+	public void testJobEndpoint() {
 		ValidatableResponse response = given()
-			.when().get("/jobs")
+			.when().get("/jobs/21")
 			.then()
 			.statusCode(200);
-
-		response.body("[0].actions", Matchers.nullValue());
-		response.body("[0].actions", Matchers.nullValue());
-		response.body("[0].actions", Matchers.nullValue());
-		response.body("[0].actions", Matchers.nullValue());
 	}
 }
