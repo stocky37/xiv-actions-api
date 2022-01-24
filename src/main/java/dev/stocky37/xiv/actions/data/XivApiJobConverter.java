@@ -1,21 +1,20 @@
 package dev.stocky37.xiv.actions.data;
 
+import com.google.common.collect.Lists;
 import dev.stocky37.xiv.actions.core.ActionService;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiClassJob;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
-@Singleton
 public class XivApiJobConverter implements Function<XivApiClassJob, Job> {
 
 	private final ActionService actionService;
+	private final boolean enrichActions;
 
-	@Inject
-	public XivApiJobConverter(ActionService actionService) {
+	public XivApiJobConverter(ActionService actionService, boolean enrichActions) {
 		this.actionService = actionService;
+		this.enrichActions = enrichActions;
 	}
 
 	@Override
@@ -30,7 +29,7 @@ public class XivApiJobConverter implements Function<XivApiClassJob, Job> {
 			role(classJob),
 			classJob.JobIndex(),
 			classJob.IsLimitedJob() != 0,
-			actions(classJob)
+			enrichActions ? actions(classJob) : Lists.newArrayList()
 		);
 	}
 
@@ -62,5 +61,12 @@ public class XivApiJobConverter implements Function<XivApiClassJob, Job> {
 			case 4 -> Job.Role.HEALER;
 			default -> throw new RuntimeException("Unknown role: " + classJob.Role());
 		};
+	}
+
+	@Override
+	public String toString() {
+		return "XivApiJobConverter{" +
+			"enrichActions=" + enrichActions +
+			'}';
 	}
 }
