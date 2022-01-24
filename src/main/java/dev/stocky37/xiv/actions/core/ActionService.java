@@ -1,5 +1,9 @@
 package dev.stocky37.xiv.actions.core;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,13 +15,14 @@ import dev.stocky37.xiv.actions.xivapi.json.XivApiAction;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiPaginatedList;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiSearchBody;
 import io.quarkus.cache.CacheResult;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 
 @SuppressWarnings("UnstableApiUsage")
 @ApplicationScoped
@@ -57,38 +62,48 @@ public class ActionService {
 		this.json = objectMapper;
 	}
 
-	public static Map<String, Object> createActionsQuery(String jobAbbrev) {
-		final Map<String, Object> query = new HashMap<>();
-		final Map<String, Object> mustNot = Map.of("term", Map.of("ClassJobLevel", 0));
-		final List<Map<String, Object>> filters = List.of(
-			Map.of("term", Map.of("IsPvP", 0)),
-			Map.of("term", Map.of(String.format("ClassJobCategory.%s", jobAbbrev.toUpperCase()), 1))
-		);
-		query.put("query", Map.of("bool", Map.of("must_not", mustNot, "filter", filters)));
-		query.put("from", 0);
-		query.put("size", 100);
-		query.put("sort", List.of(
-			Map.of("IsRoleAction", "asc"),
-			Map.of("ClassJobLevel", "asc")
-		));
-		return query;
+	public SearchSourceBuilder createActionsQuery(String jobAbbrev) {
+		final var queryBody = new SearchSourceBuilder().size(100)
+			.sort("IsRoleAction", SortOrder.ASC)
+			.sort("ClassJobLevel", SortOrder.ASC);
+
+		final var job = termQuery(String.format("ClassJobCategory.%s", jobAbbrev.toUpperCase()),
+			1);
+		final var notPvp = termQuery("IsPvP", 0);
+		final var hasContentLinks = existsQuery("GameContentLinks");
+		final var playerAction = termQuery("IsPlayerAction", 1);
+		final var jobLevel = termQuery("ClassJobLevel", 0);
+
+		queryBody.query(boolQuery().filter(job)
+			.filter(notPvp)
+			.filter(boolQuery().should(hasContentLinks).should(playerAction)).mustNot(jobLevel));
+
+		return queryBody;
 	}
 
 	@CacheResult(cacheName = "actions")
 	public List<Action> findForJob(String jobAbbreviation) {
-		final Map<String, Object> obj = createActionsQuery(jobAbbreviation);
-		final XivApiSearchBody body =
-			new XivApiSearchBody(String.join(",", INDEXES), String.join(",", SEARCH_COLUMNS), obj);
+		try {
+			final JsonNode query = json.readTree(createActionsQuery(jobAbbreviation).toString());
+			final XivApiSearchBody body =
+				new XivApiSearchBody(String.join(",", INDEXES), String.join(",", SEARCH_COLUMNS), query);
+			rateLimiter.acquire();
+			final XivApiPaginatedList<JsonNode> results = xivapi.search(body);
+			return results.Results().stream().map(node -> {
+				try {
+					return json.treeToValue(node, XivApiAction.class);
+				} catch (JsonProcessingException e) {
+					throw new RuntimeException(e);
+				}
+			}).map(converter).toList();
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 
-		rateLimiter.acquire();
-		final XivApiPaginatedList<JsonNode> results = xivapi.search(body);
-		return results.Results().stream().map(node -> {
-			try {
-				return json.treeToValue(node, XivApiAction.class);
-			} catch (JsonProcessingException e) {
-				throw new RuntimeException(e);
-			}
-		}).map(converter).toList();
+
+
+
+
 	}
 
 }

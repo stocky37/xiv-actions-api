@@ -1,10 +1,10 @@
 package dev.stocky37.xiv.actions.xivapi.json;
 
-import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public record XivApiSearchBody(
 	String indexes,
 	String columns,
-	Map<String, Object> body
+	JsonNode body
 ) {
 }
