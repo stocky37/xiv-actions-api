@@ -4,12 +4,11 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Action;
 import dev.stocky37.xiv.actions.data.XivApiActionConverter;
+import dev.stocky37.xiv.actions.util.JsonUtil;
 import dev.stocky37.xiv.actions.xivapi.XivApi;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiAction;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiPaginatedList;
@@ -20,14 +19,13 @@ import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
 @SuppressWarnings("UnstableApiUsage")
 @ApplicationScoped
 public class ActionService {
-	private static final List<String> SEARCH_COLUMNS = List.of(
+	private static final List<String> COLUMNS = List.of(
 		"ID",
 		"Name",
 		"ActionCategory.Name",
@@ -47,62 +45,60 @@ public class ActionService {
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
 	private final Function<XivApiAction, Action> converter;
-	private final ObjectMapper json;
+	private final JsonUtil json;
 
 	@Inject
 	public ActionService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
 		XivApiActionConverter converter,
-		ObjectMapper objectMapper
+		JsonUtil json
 	) {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;
 		this.converter = converter;
-		this.json = objectMapper;
+		this.json = json;
 	}
 
-	public SearchSourceBuilder createActionsQuery(String jobAbbrev) {
-		final var queryBody = new SearchSourceBuilder().size(100)
-			.sort("IsRoleAction", SortOrder.ASC)
-			.sort("ClassJobLevel", SortOrder.ASC);
+	@CacheResult(cacheName = "actions")
+	public List<Action> findForJob(String jobAbbreviation) {
+		final JsonNode query = json.toJsonNode(createActionsQuery(jobAbbreviation));
+		final XivApiSearchBody body = new XivApiSearchBody(
+			String.join(",", INDEXES),
+			String.join(",", COLUMNS),
+			query
+		);
+		rateLimiter.acquire();
+		final XivApiPaginatedList<JsonNode> results = xivapi.search(body);
+		return results.Results()
+			.stream()
+			.map(node -> json.fromJsonNode(node, XivApiAction.class))
+			.map(converter)
+			.toList();
+	}
 
-		final var job = termQuery(String.format("ClassJobCategory.%s", jobAbbrev.toUpperCase()),
-			1);
+	private SearchSourceBuilder createActionsQuery(String jobAbbrev) {
+		final var job = termQuery(
+			String.format("ClassJobCategory.%s", jobAbbrev.toUpperCase()),
+			1
+		);
 		final var notPvp = termQuery("IsPvP", 0);
 		final var hasContentLinks = existsQuery("GameContentLinks");
 		final var playerAction = termQuery("IsPlayerAction", 1);
 		final var jobLevel = termQuery("ClassJobLevel", 0);
 
-		queryBody.query(boolQuery().filter(job)
-			.filter(notPvp)
-			.filter(boolQuery().should(hasContentLinks).should(playerAction)).mustNot(jobLevel));
-
-		return queryBody;
-	}
-
-	@CacheResult(cacheName = "actions")
-	public List<Action> findForJob(String jobAbbreviation) {
-		try {
-			final JsonNode query = json.readTree(createActionsQuery(jobAbbreviation).toString());
-			final XivApiSearchBody body =
-				new XivApiSearchBody(String.join(",", INDEXES), String.join(",", SEARCH_COLUMNS), query);
-			rateLimiter.acquire();
-			final XivApiPaginatedList<JsonNode> results = xivapi.search(body);
-			return results.Results().stream().map(node -> {
-				try {
-					return json.treeToValue(node, XivApiAction.class);
-				} catch (JsonProcessingException e) {
-					throw new RuntimeException(e);
-				}
-			}).map(converter).toList();
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
-
-
-
-
+		return new SearchSourceBuilder().size(100)
+			.sort("IsRoleAction", SortOrder.ASC)
+			.sort("ClassJobLevel", SortOrder.ASC)
+			.query(boolQuery()
+				.filter(job)
+				.filter(notPvp)
+				.filter(boolQuery()
+					.should(hasContentLinks)
+					.should(playerAction)
+				)
+				.mustNot(jobLevel)
+			);
 
 	}
 
