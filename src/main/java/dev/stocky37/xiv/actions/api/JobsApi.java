@@ -5,6 +5,7 @@ import dev.stocky37.xiv.actions.core.JobService;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Views;
 import java.util.Collection;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -27,7 +28,7 @@ public class JobsApi {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Job findById(@PathParam int id) {
-		return jobs.findById(id);
+	public Optional<Job> get(@PathParam String id) {
+		return jobs.findByIdentifier(id);
 	}
 }
