@@ -1,5 +1,7 @@
 package dev.stocky37.xiv.actions.core;
 
+import static java.lang.Integer.parseInt;
+
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.XivApiJobConverter;
@@ -8,6 +10,7 @@ import dev.stocky37.xiv.actions.xivapi.XivApi;
 import dev.stocky37.xiv.actions.xivapi.json.XivApiClassJob;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
@@ -18,7 +21,8 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @SuppressWarnings("UnstableApiUsage")
 @ApplicationScoped
 public class JobService {
-	private static final List<String> COLUMNS = List.of("ID",
+	private static final List<String> COLUMNS = List.of(
+		"ID",
 		"Name",
 		"Abbreviation",
 		"Icon",
@@ -60,8 +64,41 @@ public class JobService {
 	}
 
 	@CacheResult(cacheName = "jobs")
-	public Job findById(int id) {
+	public Optional<Job> findByIdentifier(String identifier) {
+		return findById(identifier)
+			.or(() -> findByName(identifier))
+			.or(() -> findByAbbreviation(identifier));
+	}
+
+	@CacheResult(cacheName = "jobsById")
+	public Optional<Job> findById(String id) {
 		rateLimiter.acquire();
-		return enrichedConverter.apply(xivapi.classjobs().getById(id));
+		try {
+			return Optional.ofNullable(xivapi.classjobs().getById(parseInt(id))).map(enrichedConverter);
+		} catch (NumberFormatException nfe) {
+			System.err.println("return empty");
+			return Optional.empty();
+		}
+	}
+
+
+	// can ignore because if the job exists, the id will exist
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
+	public Optional<Job> findByName(String name) {
+		System.err.println("name: " + name);
+		return getAll().stream()
+			.filter(j -> j.name().equalsIgnoreCase(name))
+			.findFirst()
+			.map(job -> findById(job.id()).get());
+	}
+
+	// can ignore because if the job exists, the id will exist
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
+	public Optional<Job> findByAbbreviation(String abbreviation) {
+		System.err.println("findByName");
+		return getAll().stream()
+			.filter(j -> j.abbreviation().equalsIgnoreCase(abbreviation))
+			.findFirst()
+			.map(job -> findById(job.id()).get());
 	}
 }
