@@ -1,0 +1,5 @@
+_extends: .github
+repository:
+  name: xiv-tools-api
+  description: API endpoints for xiv-tools-ui - wraps xivapi.
+  topics: quarkus, ffxiv, xivapi
