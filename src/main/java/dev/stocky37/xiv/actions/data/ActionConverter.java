@@ -3,6 +3,7 @@ package dev.stocky37.xiv.actions.data;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
+import dev.stocky37.xiv.actions.util.Util;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -48,10 +49,15 @@ public class ActionConverter implements Function<JsonNode, Action> {
 	);
 
 	private final int gcdCdGroup;
+	private final Util util;
 
 	@Inject
-	public ActionConverter(@ConfigProperty(name = "gcd-cd-group") int gcdCdGroup) {
+	public ActionConverter(
+		@ConfigProperty(name = "gcd-cd-group") int gcdCdGroup,
+		Util util
+	) {
 		this.gcdCdGroup = gcdCdGroup;
+		this.util = util;
 	}
 
 	@Override
@@ -64,8 +70,8 @@ public class ActionConverter implements Function<JsonNode, Action> {
 			json.get(NAME).asText(),
 			json.at(CATEGORY).asText().toLowerCase(),
 			json.get(DESCRIPTION).asText(),
-			json.get(ICON).asText(),
-			json.get(ICON_HD).asText(),
+			util.prefixUri(json.get(ICON).asText()),
+			util.prefixUri(json.get(ICON_HD).asText()),
 			json.get(COMBO_ACTION).asInt() == 0
 				? Optional.empty()
 				: Optional.of(json.get(COMBO_ACTION).asInt()),

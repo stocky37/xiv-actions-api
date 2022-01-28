@@ -1,8 +1,10 @@
 package dev.stocky37.xiv.actions.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.stocky37.xiv.actions.util.Util;
 import java.util.List;
 import java.util.function.Function;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
@@ -22,13 +24,18 @@ public class JobConverter implements Function<JsonNode, Job> {
 		ID, NAME, ABBREV, ICON, CATEGORY, ROLE, JOB_INDEX, IS_LIMITED, PRIMARY_STAT
 	);
 
+	private final Util util;
+
+	@Inject
+	public JobConverter(Util util) {this.util = util;}
+
 	@Override
 	public Job apply(JsonNode json) {
 		return new Job(
 			json.get(ID).asText(),
 			json.get(NAME).asText(),
 			json.get(ABBREV).asText(),
-			json.get(ICON).asText(),
+			util.prefixUri(json.get(ICON).asText()),
 			category(json.get(CATEGORY).asInt()),
 			type(json.get(JOB_INDEX).asInt()),
 			role(json.get(ROLE).asInt()),

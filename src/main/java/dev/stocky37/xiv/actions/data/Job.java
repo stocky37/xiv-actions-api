@@ -1,6 +1,7 @@
 package dev.stocky37.xiv.actions.data;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +10,7 @@ public record Job(
 	String id,
 	String name,
 	String abbreviation,
-	String icon,
+	URI icon,
 	Category category,
 	Type type,
 	Role role,
@@ -41,7 +42,7 @@ public record Job(
 		String id,
 		String name,
 		String abbreviation,
-		String icon,
+		URI icon,
 		Category category,
 		Type type,
 		Role role,
