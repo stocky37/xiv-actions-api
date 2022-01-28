@@ -25,20 +25,10 @@ public class ItemConverter implements Function<JsonNode, Item> {
 	public static final String BONUS_MAX = "MaxHQ";
 	public static final String BONUS_VALUE = "ValueHQ";
 	public static final String COOLDOWN = "CooldownS";
-	public static final String ITEM_ACTION = "ItemAction";
-	public static final String BONUS_DURATION = "DataHQ2";
+	public static final String BONUS_DURATION = "ItemAction.DataHQ2";
 
-	public static final List<String> ALL_FIELDS = List.of(
-		ID,
-		NAME,
-		ABBREV,
-		ICON,
-		ICON_HD,
-		DESCRIPTION,
-		BONUSES,
-		COOLDOWN,
-		ITEM_ACTION
-	);
+	public static final List<String> ALL_FIELDS =
+		List.of(ID, NAME, ABBREV, ICON, ICON_HD, DESCRIPTION, BONUSES, COOLDOWN, BONUS_DURATION);
 
 	private final Util util;
 
@@ -47,16 +37,17 @@ public class ItemConverter implements Function<JsonNode, Item> {
 
 
 	@Override
-	public Item apply(JsonNode json) {
+	public Item apply(JsonNode node) {
+		final var json = util.wrapNode(node);
 		return new Item(
-			json.get(ID).asText(),
-			json.get(NAME).asText(),
-			util.prefixUri(json.get(ICON).asText()),
-			util.prefixUri(json.get(ICON_HD).asText()),
-			json.get(DESCRIPTION).asText(),
-			Duration.ofSeconds(json.get(COOLDOWN).asInt() - HQ_CD_REDUCTION),
-			Duration.ofSeconds(json.path(ITEM_ACTION).get(BONUS_DURATION).asInt()),
-			bonuses(json.path(BONUSES))
+			json.getText(ID),
+			json.getText(NAME),
+			json.getUri(ICON),
+			json.getUri(ICON_HD),
+			json.getText(DESCRIPTION),
+			Duration.ofSeconds(json.getInt(COOLDOWN) - HQ_CD_REDUCTION),
+			Duration.ofSeconds(json.getInt(BONUS_DURATION)),
+			bonuses(node.path(BONUSES))
 		);
 	}
 

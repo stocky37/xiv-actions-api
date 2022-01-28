@@ -1,7 +1,6 @@
 package dev.stocky37.xiv.actions.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import dev.stocky37.xiv.actions.util.Util;
 import java.time.Duration;
@@ -19,7 +18,7 @@ public class ActionConverter implements Function<JsonNode, Action> {
 
 	public static final String ID = "ID";
 	public static final String NAME = "Name";
-	public static final String CATEGORY = "/ActionCategory/Name";
+	public static final String CATEGORY = "ActionCategory.Name";
 	public static final String DESCRIPTION = "Description";
 	public static final String ICON = "Icon";
 	public static final String ICON_HD = "IconHD";
@@ -35,7 +34,7 @@ public class ActionConverter implements Function<JsonNode, Action> {
 		ID,
 		NAME,
 		ICON,
-		Joiner.on('.').join(CATEGORY.split("/")),
+		CATEGORY,
 		DESCRIPTION,
 		ICON,
 		ICON_HD,
@@ -61,26 +60,30 @@ public class ActionConverter implements Function<JsonNode, Action> {
 	}
 
 	@Override
-	public Action apply(JsonNode json) {
-		final Set<Integer> cooldownGroups =
-			Sets.newHashSet(json.get(COOLDOWN_GROUP).asInt(), json.get(COOLDOWN_GROUP_ALT).asInt());
+	public Action apply(JsonNode node) {
+		final var json = util.wrapNode(node);
+		final Set<Integer> cooldownGroups = Sets.newHashSet(
+			json.getInt(COOLDOWN_GROUP),
+			json.getInt(COOLDOWN_GROUP_ALT)
+		);
 
 		return new Action(
-			json.get(ID).asText(),
-			json.get(NAME).asText(),
-			json.at(CATEGORY).asText().toLowerCase(),
-			json.get(DESCRIPTION).asText(),
-			util.prefixUri(json.get(ICON).asText()),
-			util.prefixUri(json.get(ICON_HD).asText()),
-			json.get(COMBO_ACTION).asInt() == 0
+			json.getText(ID),
+			json.getText(NAME),
+			json.getText(CATEGORY).toLowerCase(),
+			json.getText(DESCRIPTION),
+			json.getUri(ICON),
+			json.getUri(ICON_HD),
+			json.getInt(COMBO_ACTION) == 0
 				? Optional.empty()
-				: Optional.of(json.get(COMBO_ACTION).asInt()),
+				: Optional.of(json.getInt(COMBO_ACTION)),
 			Collections.unmodifiableSet(cooldownGroups),
-			Duration.ofMillis(json.get(RECAST).asLong() * 100),
-			Duration.ofMillis(json.get(CAST).asLong() * 100),
-			json.get(ROLE_ACTION).asBoolean(),
-			json.get(LEVEL).asInt(),
+			Duration.ofMillis(json.getLong(RECAST) * 100),
+			Duration.ofMillis(json.getLong(CAST) * 100),
+			json.getBool(ROLE_ACTION),
+			json.getInt(LEVEL),
 			cooldownGroups.contains(gcdCdGroup)
 		);
 	}
+
 }
