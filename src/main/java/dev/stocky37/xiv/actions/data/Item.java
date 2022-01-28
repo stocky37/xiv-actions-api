@@ -10,7 +10,7 @@ public record Item(
 	String icon,
 	String iconHD,
 	String description,
-	Duration cooldown,
+	Duration recast,
 	Duration bonusDuration,
 	List<Bonus> bonuses
 ) {
