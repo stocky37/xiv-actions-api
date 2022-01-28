@@ -23,12 +23,4 @@ public class JsonUtil {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public <T> T fromJsonNode(JsonNode node, Class<T> valueType) {
-		try {
-			return mapper.treeToValue(node, valueType);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
-	}
 }

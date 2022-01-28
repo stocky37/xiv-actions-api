@@ -20,7 +20,7 @@ public class JobsApi {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(Views.List.class)
+	@JsonView(Views.Limited.class)
 	public Collection<Job> list() {
 		return jobs.getAll();
 	}
@@ -28,6 +28,7 @@ public class JobsApi {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
+	@JsonView(Views.Full.class)
 	public Optional<Job> get(@PathParam String id) {
 		return jobs.findByIdentifier(id);
 	}
