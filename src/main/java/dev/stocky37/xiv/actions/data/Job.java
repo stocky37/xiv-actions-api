@@ -3,6 +3,7 @@ package dev.stocky37.xiv.actions.data;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public record Job(
 	String id,
@@ -14,6 +15,7 @@ public record Job(
 	Role role,
 	int index,
 	boolean isLimited,
+	Optional<Attribute> primaryStat,
 	@JsonView(Views.Full.class) List<Action> actions
 ) {
 
@@ -28,6 +30,7 @@ public record Job(
 			job.role,
 			job.index,
 			job.isLimited,
+			job.primaryStat,
 			actions
 		);
 	}
@@ -41,7 +44,8 @@ public record Job(
 		Type type,
 		Role role,
 		int index,
-		boolean isLimited
+		boolean isLimited,
+		Attribute primaryStat
 	) {
 		this(
 			id,
@@ -53,6 +57,7 @@ public record Job(
 			role,
 			index,
 			isLimited,
+			Optional.ofNullable(primaryStat),
 			Collections.emptyList()
 		);
 	}
