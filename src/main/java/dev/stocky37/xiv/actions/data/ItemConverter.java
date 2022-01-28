@@ -3,11 +3,13 @@ package dev.stocky37.xiv.actions.data;
 import static dev.stocky37.xiv.actions.data.JobConverter.ABBREV;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.stocky37.xiv.actions.util.Util;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
@@ -38,14 +40,19 @@ public class ItemConverter implements Function<JsonNode, Item> {
 		ITEM_ACTION
 	);
 
+	private final Util util;
+
+	@Inject
+	public ItemConverter(Util util) {this.util = util;}
+
 
 	@Override
 	public Item apply(JsonNode json) {
 		return new Item(
 			json.get(ID).asText(),
 			json.get(NAME).asText(),
-			json.get(ICON).asText(),
-			json.get(ICON_HD).asText(),
+			util.prefixUri(json.get(ICON).asText()),
+			util.prefixUri(json.get(ICON_HD).asText()),
 			json.get(DESCRIPTION).asText(),
 			Duration.ofSeconds(json.get(COOLDOWN).asInt() - HQ_CD_REDUCTION),
 			Duration.ofSeconds(json.path(ITEM_ACTION).get(BONUS_DURATION).asInt()),

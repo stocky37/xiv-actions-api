@@ -2,14 +2,15 @@ package dev.stocky37.xiv.actions.data;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 
 public record Item(
 	String id,
 	String name,
-	String icon,
-	String iconHD,
+	URI icon,
+	URI iconHD,
 	String description,
 	Duration recast,
 	Duration bonusDuration,

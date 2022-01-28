@@ -3,17 +3,25 @@ package dev.stocky37.xiv.actions.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.UriBuilder;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Singleton
-public class JsonUtil {
+public class Util {
 
 	private final ObjectMapper mapper;
+	private final String xivapiUri;
 
 	@Inject
-	public JsonUtil(@SuppressWarnings("CdiInjectionPointsInspection") ObjectMapper mapper) {
+	public Util(
+		@SuppressWarnings("CdiInjectionPointsInspection") ObjectMapper mapper,
+		@ConfigProperty(name = "xivapi/mp-rest/uri") String xivapiUri
+	) {
 		this.mapper = mapper;
+		this.xivapiUri = xivapiUri;
 	}
 
 	public JsonNode toJsonNode(Object obj) {
@@ -22,5 +30,9 @@ public class JsonUtil {
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public URI prefixUri(String relativePath) {
+		return UriBuilder.fromUri(xivapiUri).path(relativePath).build();
 	}
 }

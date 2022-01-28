@@ -1,5 +1,6 @@
 package dev.stocky37.xiv.actions.data;
 
+import java.net.URI;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
@@ -9,8 +10,8 @@ public record Action(
 	String name,
 	String category,
 	String description,
-	String icon,
-	String iconHD,
+	URI icon,
+	URI iconHD,
 	Optional<Integer> comboFrom,
 	Set<Integer> cooldownGroups,
 	Duration recast,

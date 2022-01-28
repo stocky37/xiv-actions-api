@@ -9,7 +9,7 @@ import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Action;
 import dev.stocky37.xiv.actions.data.ActionConverter;
 import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.util.JsonUtil;
+import dev.stocky37.xiv.actions.util.Util;
 import dev.stocky37.xiv.actions.xivapi.XivApi;
 import dev.stocky37.xiv.actions.xivapi.json.PaginatedList;
 import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
@@ -30,14 +30,14 @@ public class ActionService {
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
 	private final Function<JsonNode, Action> converter;
-	private final JsonUtil json;
+	private final Util json;
 
 	@Inject
 	public ActionService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
 		ActionConverter converter,
-		JsonUtil json
+		Util json
 	) {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;

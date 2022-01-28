@@ -15,7 +15,7 @@ import dev.stocky37.xiv.actions.data.Attribute;
 import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.ItemConverter;
 import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.util.JsonUtil;
+import dev.stocky37.xiv.actions.util.Util;
 import dev.stocky37.xiv.actions.xivapi.XivApi;
 import dev.stocky37.xiv.actions.xivapi.json.PaginatedList;
 import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
@@ -35,14 +35,14 @@ public class ItemService {
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
 	private final ItemConverter converter;
-	private final JsonUtil json;
+	private final Util json;
 
 	@Inject
 	public ItemService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
 		ItemConverter converter,
-		JsonUtil json
+		Util json
 	) {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;
