@@ -39,7 +39,7 @@ public class JobService {
 	@CacheResult(cacheName = "jobs")
 	public List<Job> getAll() {
 		rateLimiter.acquire();
-		return xivapi.getClassJobs(JobConverter.ALL_FIELDS).Results().parallelStream()
+		return xivapi.getClassJobs(JobConverter.ALL_FIELDS).Results().stream()
 			.filter(x -> x.get(JobConverter.NAME).asText().length() > 0)
 			.map(converter)
 			.collect(Collectors.toList());

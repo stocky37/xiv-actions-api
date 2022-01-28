@@ -16,9 +16,10 @@ public class JobConverter implements Function<JsonNode, Job> {
 	public static final String ROLE = "Role";
 	public static final String JOB_INDEX = "JobIndex";
 	public static final String IS_LIMITED = "IsLimitedJob";
+	public static final String PRIMARY_STAT = "PrimaryStat";
 
 	public static final List<String> ALL_FIELDS = List.of(
-		ID, NAME, ABBREV, ICON, CATEGORY, ROLE, JOB_INDEX, IS_LIMITED
+		ID, NAME, ABBREV, ICON, CATEGORY, ROLE, JOB_INDEX, IS_LIMITED, PRIMARY_STAT
 	);
 
 	@Override
@@ -32,7 +33,8 @@ public class JobConverter implements Function<JsonNode, Job> {
 			type(json.get(JOB_INDEX).asInt()),
 			role(json.get(ROLE).asInt()),
 			json.get(JOB_INDEX).asInt(),
-			json.get(IS_LIMITED).asBoolean()
+			json.get(IS_LIMITED).asBoolean(),
+			primaryStat(json.get(PRIMARY_STAT).asInt())
 		);
 	}
 
@@ -58,6 +60,17 @@ public class JobConverter implements Function<JsonNode, Job> {
 			case 3 -> Job.Role.RANGED_DPS;
 			case 4 -> Job.Role.HEALER;
 			default -> throw new RuntimeException("Unknown role: " + role);
+		};
+	}
+
+	private Attribute primaryStat(int primaryStat) {
+		return switch(primaryStat) {
+			case 0 -> null;
+			case 1 -> Attribute.STRENGTH;
+			case 2 -> Attribute.DEXTERITY;
+			case 4 -> Attribute.INTELLIGENCE;
+			case 5 -> Attribute.MIND;
+			default -> throw new RuntimeException("Unknown attribute: " + primaryStat);
 		};
 	}
 }
