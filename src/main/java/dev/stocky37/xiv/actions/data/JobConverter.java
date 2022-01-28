@@ -30,18 +30,19 @@ public class JobConverter implements Function<JsonNode, Job> {
 	public JobConverter(Util util) {this.util = util;}
 
 	@Override
-	public Job apply(JsonNode json) {
+	public Job apply(JsonNode node) {
+		final var json = util.wrapNode(node);
 		return new Job(
-			json.get(ID).asText(),
-			json.get(NAME).asText(),
-			json.get(ABBREV).asText(),
-			util.prefixUri(json.get(ICON).asText()),
-			category(json.get(CATEGORY).asInt()),
-			type(json.get(JOB_INDEX).asInt()),
-			role(json.get(ROLE).asInt()),
-			json.get(JOB_INDEX).asInt(),
-			json.get(IS_LIMITED).asBoolean(),
-			primaryStat(json.get(PRIMARY_STAT).asInt())
+			json.getText(ID),
+			json.getText(NAME),
+			json.getText(ABBREV),
+			json.getUri(ICON),
+			category(json.getInt(CATEGORY)),
+			type(json.getInt(JOB_INDEX)),
+			role(json.getInt(ROLE)),
+			json.getInt(JOB_INDEX),
+			json.getBool(IS_LIMITED),
+			primaryStat(json.getInt(PRIMARY_STAT))
 		);
 	}
 
