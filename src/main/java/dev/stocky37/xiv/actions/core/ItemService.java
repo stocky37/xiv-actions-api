@@ -1,42 +1,47 @@
 package dev.stocky37.xiv.actions.core;
 
+import static dev.stocky37.xiv.actions.data.ItemConverter.BONUSES;
+import static dev.stocky37.xiv.actions.data.ItemConverter.BONUS_MAX;
+import static org.elasticsearch.common.Strings.capitalize;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.RateLimiter;
-import dev.stocky37.xiv.actions.data.Action;
-import dev.stocky37.xiv.actions.data.ActionConverter;
+import dev.stocky37.xiv.actions.data.Attribute;
+import dev.stocky37.xiv.actions.data.Item;
+import dev.stocky37.xiv.actions.data.ItemConverter;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.util.JsonUtil;
 import dev.stocky37.xiv.actions.xivapi.XivApi;
 import dev.stocky37.xiv.actions.xivapi.json.PaginatedList;
 import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
-import io.quarkus.cache.CacheResult;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 
-@SuppressWarnings("UnstableApiUsage")
 @ApplicationScoped
-public class ActionService {
-	private static final List<String> INDEXES = List.of("action");
+@SuppressWarnings("UnstableApiUsage")
+public class ItemService {
+	private static final List<String> INDEXES = List.of("item");
+	private static final Joiner joiner = Joiner.on('.');
 
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
-	private final Function<JsonNode, Action> converter;
+	private final ItemConverter converter;
 	private final JsonUtil json;
 
 	@Inject
-	public ActionService(
+	public ItemService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
-		ActionConverter converter,
+		ItemConverter converter,
 		JsonUtil json
 	) {
 		this.xivapi = xivapi;
@@ -45,12 +50,15 @@ public class ActionService {
 		this.json = json;
 	}
 
-	@CacheResult(cacheName = "actions")
-	public List<Action> findForJob(Job job) {
-		final JsonNode query = json.toJsonNode(createActionsQuery(job.abbreviation()));
+	public List<Item> findPotionsForJob(Job job) {
+		if(job.primaryStat().isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final JsonNode query = json.toJsonNode(createPotionsQuery(job.primaryStat().get()));
 		final SearchBody body = new SearchBody(
 			String.join(",", INDEXES),
-			String.join(",", ActionConverter.ALL_FIELDS),
+			String.join(",", ItemConverter.ALL_FIELDS),
 			query
 		);
 		rateLimiter.acquire();
@@ -58,28 +66,18 @@ public class ActionService {
 		return results.Results().parallelStream().map(converter).toList();
 	}
 
-	private SearchSourceBuilder createActionsQuery(String jobAbbrev) {
-		final var job = termQuery(
-			String.format("ClassJobCategory.%s", jobAbbrev.toUpperCase()),
-			1
-		);
-		final var notPvp = termQuery("IsPvP", 0);
-		final var hasContentLinks = existsQuery("GameContentLinks");
-		final var playerAction = termQuery("IsPlayerAction", 1);
-		final var jobLevel = termQuery("ClassJobLevel", 0);
+	private SearchSourceBuilder createPotionsQuery(Attribute attribute) {
+		final var isPotion = termQuery("ItemSortCategory.ID", 6);
+		final var hasStat = existsQuery(joiner.join(BONUSES, capitalize(attribute.toString())));
 
 		return new SearchSourceBuilder().size(100)
-			.sort("IsRoleAction", SortOrder.ASC)
-			.sort("ClassJobLevel", SortOrder.ASC)
+			.sort(
+				Joiner.on('.').join(BONUSES, capitalize(attribute.toString()), BONUS_MAX),
+				DESC
+			)
 			.query(boolQuery()
-				.filter(job)
-				.filter(notPvp)
-				.filter(boolQuery()
-					.should(hasContentLinks)
-					.should(playerAction)
-				)
-				.mustNot(jobLevel)
+				.filter(isPotion)
+				.filter(hasStat)
 			);
 	}
-
 }
