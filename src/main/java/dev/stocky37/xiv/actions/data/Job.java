@@ -15,11 +15,12 @@ public record Job(
 	Role role,
 	int index,
 	boolean isLimited,
-	Optional<Attribute> primaryStat,
-	@JsonView(Views.Full.class) List<Action> actions
+	@JsonView(Views.Full.class) Optional<Attribute> primaryStat,
+	@JsonView(Views.Full.class) List<Action> actions,
+	@JsonView(Views.Full.class) List<Item> potions
 ) {
 
-	public Job(Job job, List<Action> actions) {
+	public Job(Job job, List<Action> actions, List<Item> potions) {
 		this(
 			job.id,
 			job.name,
@@ -31,7 +32,8 @@ public record Job(
 			job.index,
 			job.isLimited,
 			job.primaryStat,
-			actions
+			actions,
+			potions
 		);
 	}
 
@@ -58,6 +60,7 @@ public record Job(
 			index,
 			isLimited,
 			Optional.ofNullable(primaryStat),
+			Collections.emptyList(),
 			Collections.emptyList()
 		);
 	}

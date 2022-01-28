@@ -1,6 +1,7 @@
 package dev.stocky37.xiv.actions.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import java.time.Duration;
 import java.util.Collections;
@@ -33,7 +34,7 @@ public class ActionConverter implements Function<JsonNode, Action> {
 		ID,
 		NAME,
 		ICON,
-		CATEGORY,
+		Joiner.on('.').join(CATEGORY.split("/")),
 		DESCRIPTION,
 		ICON,
 		ICON_HD,

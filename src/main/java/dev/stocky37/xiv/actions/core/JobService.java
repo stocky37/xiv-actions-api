@@ -15,8 +15,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-@SuppressWarnings("UnstableApiUsage")
 @ApplicationScoped
+@SuppressWarnings("UnstableApiUsage")
 public class JobService {
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
@@ -27,7 +27,7 @@ public class JobService {
 	public JobService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
-		Function<JsonNode, Job> converter,
+		JobConverter converter,
 		UnaryOperator<Job> enricher
 	) {
 		this.xivapi = xivapi;
@@ -39,7 +39,7 @@ public class JobService {
 	@CacheResult(cacheName = "jobs")
 	public List<Job> getAll() {
 		rateLimiter.acquire();
-		return xivapi.getClassJobs(JobConverter.ALL_FIELDS).Results().stream()
+		return xivapi.getClassJobs(JobConverter.ALL_FIELDS).Results().parallelStream()
 			.filter(x -> x.get(JobConverter.NAME).asText().length() > 0)
 			.map(converter)
 			.collect(Collectors.toList());
