@@ -17,6 +17,6 @@ public record Action(
 	Duration cast,
 	boolean isRoleAction,
 	int level,
-	boolean isGcd
+	boolean onGCD
 ) {
 }
