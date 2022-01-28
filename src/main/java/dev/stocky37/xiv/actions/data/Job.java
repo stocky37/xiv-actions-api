@@ -1,20 +1,61 @@
 package dev.stocky37.xiv.actions.data;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import java.util.Collections;
 import java.util.List;
 
 public record Job(
-	@JsonView(Views.List.class) String id,
-	@JsonView(Views.List.class) String name,
-	@JsonView(Views.List.class) String abbreviation,
-	@JsonView(Views.List.class) String icon,
-	@JsonView(Views.List.class) Category category,
-	@JsonView(Views.List.class) Type type,
-	@JsonView(Views.List.class) Role role,
-	@JsonView(Views.List.class) int index,
-	@JsonView(Views.List.class) boolean isLimited,
-	List<Action> actions
+	String id,
+	String name,
+	String abbreviation,
+	String icon,
+	Category category,
+	Type type,
+	Role role,
+	int index,
+	boolean isLimited,
+	@JsonView(Views.Full.class) List<Action> actions
 ) {
+
+	public Job(Job job, List<Action> actions) {
+		this(
+			job.id,
+			job.name,
+			job.abbreviation,
+			job.icon,
+			job.category,
+			job.type,
+			job.role,
+			job.index,
+			job.isLimited,
+			actions
+		);
+	}
+
+	public Job(
+		String id,
+		String name,
+		String abbreviation,
+		String icon,
+		Category category,
+		Type type,
+		Role role,
+		int index,
+		boolean isLimited
+	) {
+		this(
+			id,
+			name,
+			abbreviation,
+			icon,
+			category,
+			type,
+			role,
+			index,
+			isLimited,
+			Collections.emptyList()
+		);
+	}
 
 	public enum Category {
 		DOW,

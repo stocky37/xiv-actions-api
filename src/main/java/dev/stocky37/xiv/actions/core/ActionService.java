@@ -7,12 +7,11 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Action;
-import dev.stocky37.xiv.actions.data.XivApiActionConverter;
+import dev.stocky37.xiv.actions.data.ActionConverter;
 import dev.stocky37.xiv.actions.util.JsonUtil;
 import dev.stocky37.xiv.actions.xivapi.XivApi;
-import dev.stocky37.xiv.actions.xivapi.json.XivApiAction;
-import dev.stocky37.xiv.actions.xivapi.json.XivApiPaginatedList;
-import dev.stocky37.xiv.actions.xivapi.json.XivApiSearchBody;
+import dev.stocky37.xiv.actions.xivapi.json.PaginatedList;
+import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
 import java.util.function.Function;
@@ -44,14 +43,14 @@ public class ActionService {
 	private static final List<String> INDEXES = List.of("action");
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
-	private final Function<XivApiAction, Action> converter;
+	private final Function<JsonNode, Action> converter;
 	private final JsonUtil json;
 
 	@Inject
 	public ActionService(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
-		XivApiActionConverter converter,
+		ActionConverter converter,
 		JsonUtil json
 	) {
 		this.xivapi = xivapi;
@@ -63,18 +62,14 @@ public class ActionService {
 	@CacheResult(cacheName = "actions")
 	public List<Action> findForJob(String jobAbbreviation) {
 		final JsonNode query = json.toJsonNode(createActionsQuery(jobAbbreviation));
-		final XivApiSearchBody body = new XivApiSearchBody(
+		final SearchBody body = new SearchBody(
 			String.join(",", INDEXES),
 			String.join(",", COLUMNS),
 			query
 		);
 		rateLimiter.acquire();
-		final XivApiPaginatedList<JsonNode> results = xivapi.search(body);
-		return results.Results()
-			.stream()
-			.map(node -> json.fromJsonNode(node, XivApiAction.class))
-			.map(converter)
-			.toList();
+		final PaginatedList<JsonNode> results = xivapi.search(body);
+		return results.Results().parallelStream().map(converter).toList();
 	}
 
 	private SearchSourceBuilder createActionsQuery(String jobAbbrev) {
