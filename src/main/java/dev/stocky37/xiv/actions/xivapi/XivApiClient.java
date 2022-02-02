@@ -1,13 +1,17 @@
 package dev.stocky37.xiv.actions.xivapi;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.RateLimiter;
+import dev.stocky37.xiv.actions.data.Action;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Query;
+import dev.stocky37.xiv.actions.json.ActionDeserializer;
 import dev.stocky37.xiv.actions.json.JobDeserializer;
-import dev.stocky37.xiv.actions.util.Util;
 import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.enterprise.context.ApplicationScoped;
@@ -23,31 +27,43 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class XivApiClient {
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
-	private final Util util;
+	private final ObjectMapper mapper;
 
 	@Inject
 	public XivApiClient(
 		@RestClient XivApi xivapi,
 		RateLimiter rateLimiter,
-		Util util
+		ObjectMapper mapper
 	) {
 		this.xivapi = xivapi;
 		this.rateLimiter = rateLimiter;
-		this.util = util;
+		this.mapper = mapper;
 	}
 
 	public <T> List<T> search(Query query, Function<JsonNode, T> deserializer) {
 		final SearchBody body = new SearchBody(
 			String.join(",", query.indexes()),
 			String.join(",", query.columns()),
-			util.toJsonNode(query.query())
+			toJsonNode(query.query())
 		);
 
-		return wrapApi(() -> xivapi.search(body).Results().parallelStream().map(deserializer).toList());
+		return wrapApi(() -> xivapi.search(body))
+			.Results()
+			.parallelStream()
+			.map(deserializer)
+			.toList();
 	}
 
 	public List<Job> getJobs() {
-		return wrapApi(() -> xivapi.getClassJobs(JobDeserializer.ALL_FIELDS).Results());
+		return wrapApi(() -> xivapi.getClassJobs(JobDeserializer.ALL_FIELDS)).Results();
+	}
+
+	public Optional<Action> getAction(String id) {
+		try {
+			return Optional.of(wrapApi(() -> xivapi.getAction(id, ActionDeserializer.ALL_FIELDS)));
+		} catch (NotFoundException e) {
+			return Optional.empty();
+		}
 	}
 
 	private <T> T wrapApi(Supplier<T> supplier) {
@@ -60,6 +76,14 @@ public class XivApiClient {
 			} else {
 				throw new InternalServerErrorException(e);
 			}
+		}
+	}
+
+	private JsonNode toJsonNode(Object obj) {
+		try {
+			return mapper.readTree(obj.toString());
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
