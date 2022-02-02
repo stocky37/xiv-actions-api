@@ -12,6 +12,7 @@ import dev.stocky37.xiv.actions.json.ActionDeserializer;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -39,6 +40,11 @@ public class ActionService {
 		);
 
 		return xivapi.search(query, converter);
+	}
+
+	@CacheResult(cacheName = "actions")
+	public Optional<Action> findById(String id) {
+		return xivapi.getAction(id);
 	}
 
 	private SearchSourceBuilder buildJobActionsQuery(String jobAbbrev) {
