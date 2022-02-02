@@ -1,20 +1,22 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.json;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Sets;
-import dev.stocky37.xiv.actions.util.Util;
+import dev.stocky37.xiv.actions.data.Action;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Singleton
-public class ActionConverter implements Function<JsonNode, Action> {
+public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 
 	public static final String ID = "ID";
 	public static final String NAME = "Name";
@@ -48,42 +50,44 @@ public class ActionConverter implements Function<JsonNode, Action> {
 	);
 
 	private final int gcdCdGroup;
-	private final Util util;
 
 	@Inject
-	public ActionConverter(
+	public ActionDeserializer(
 		@ConfigProperty(name = "gcd-cd-group") int gcdCdGroup,
-		Util util
+		@ConfigProperty(name = "xivapi/mp-rest/uri") String baseUri
 	) {
+		super(Action.class, baseUri);
 		this.gcdCdGroup = gcdCdGroup;
-		this.util = util;
 	}
 
 	@Override
 	public Action apply(JsonNode node) {
-		final var json = util.wrapNode(node);
 		final Set<Integer> cooldownGroups = Sets.newHashSet(
-			json.getInt(COOLDOWN_GROUP),
-			json.getInt(COOLDOWN_GROUP_ALT)
+			get(node, COOLDOWN_GROUP).asInt(),
+			get(node, COOLDOWN_GROUP_ALT).asInt()
 		);
 
 		return new Action(
-			json.getText(ID),
-			json.getText(NAME),
-			json.getText(CATEGORY).toLowerCase(),
-			json.getText(DESCRIPTION),
-			json.getUri(ICON),
-			json.getUri(ICON_HD),
-			json.getInt(COMBO_ACTION) == 0
+			get(node, ID).asText(),
+			get(node, NAME).asText(),
+			get(node, CATEGORY).asText(),
+			get(node, DESCRIPTION).asText(),
+			getUri(node, ICON),
+			getUri(node, ICON_HD),
+			get(node, COMBO_ACTION).asInt() == 0
 				? Optional.empty()
-				: Optional.of(json.getInt(COMBO_ACTION)),
+				: Optional.of(get(node, COMBO_ACTION).asInt()),
 			Collections.unmodifiableSet(cooldownGroups),
-			Duration.ofMillis(json.getLong(RECAST) * 100),
-			Duration.ofMillis(json.getLong(CAST) * 100),
-			json.getBool(ROLE_ACTION),
-			json.getInt(LEVEL),
+			Duration.ofMillis(get(node, RECAST).asLong() * 100),
+			Duration.ofMillis(get(node, CAST).asLong() * 100),
+			get(node, ROLE_ACTION).asBoolean(),
+			get(node, LEVEL).asInt(),
 			cooldownGroups.contains(gcdCdGroup)
 		);
 	}
 
+	@Override
+	public Action deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+		return apply(p.getCodec().readTree(p));
+	}
 }

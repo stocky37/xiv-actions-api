@@ -21,3 +21,4 @@ public record Action(
 	boolean onGCD
 ) {
 }
+
