@@ -1,14 +1,15 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.stocky37.xiv.actions.util.Util;
+import dev.stocky37.xiv.actions.data.Attribute;
+import dev.stocky37.xiv.actions.data.Job;
 import java.util.List;
-import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Singleton
-public class JobConverter implements Function<JsonNode, Job> {
+public class JobDeserializer extends JsonNodeDeserializer<Job> {
 
 	public static final String ID = "ID";
 	public static final String NAME = "Name";
@@ -24,25 +25,24 @@ public class JobConverter implements Function<JsonNode, Job> {
 		ID, NAME, ABBREV, ICON, CATEGORY, ROLE, JOB_INDEX, IS_LIMITED, PRIMARY_STAT
 	);
 
-	private final Util util;
-
 	@Inject
-	public JobConverter(Util util) {this.util = util;}
+	public JobDeserializer(@ConfigProperty(name = "xivapi/mp-rest/uri") String baseUri) {
+		super(Job.class, baseUri);
+	}
 
 	@Override
 	public Job apply(JsonNode node) {
-		final var json = util.wrapNode(node);
 		return new Job(
-			json.getText(ID),
-			json.getText(NAME),
-			json.getText(ABBREV),
-			json.getUri(ICON),
-			category(json.getInt(CATEGORY)),
-			type(json.getInt(JOB_INDEX)),
-			role(json.getInt(ROLE)),
-			json.getInt(JOB_INDEX),
-			json.getBool(IS_LIMITED),
-			primaryStat(json.getInt(PRIMARY_STAT))
+			get(node, ID).asText(),
+			get(node, NAME).asText(),
+			get(node, ABBREV).asText(),
+			getUri(node, ICON),
+			category(get(node, CATEGORY).asInt()),
+			type(get(node, JOB_INDEX).asInt()),
+			role(get(node, ROLE).asInt()),
+			get(node, JOB_INDEX).asInt(),
+			get(node, IS_LIMITED).asBoolean(),
+			primaryStat(get(node, PRIMARY_STAT).asInt())
 		);
 	}
 

@@ -6,9 +6,9 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.stocky37.xiv.actions.data.Action;
-import dev.stocky37.xiv.actions.data.ActionConverter;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Query;
+import dev.stocky37.xiv.actions.json.ActionDeserializer;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ActionService {
 	private final XivApiClient xivapi;
 	private final Function<JsonNode, Action> converter;
 
-	public ActionService(XivApiClient xivapi, ActionConverter converter) {
+	public ActionService(XivApiClient xivapi, ActionDeserializer converter) {
 		this.xivapi = xivapi;
 		this.converter = converter;
 	}
@@ -34,7 +34,7 @@ public class ActionService {
 	public List<Action> findForJob(Job job) {
 		final Query query = new Query(
 			INDEXES,
-			ActionConverter.ALL_FIELDS,
+			ActionDeserializer.ALL_FIELDS,
 			buildJobActionsQuery(job.abbreviation())
 		);
 
@@ -64,5 +64,4 @@ public class ActionService {
 				.mustNot(jobLevel)
 			);
 	}
-
 }

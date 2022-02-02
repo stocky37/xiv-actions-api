@@ -1,19 +1,18 @@
-package dev.stocky37.xiv.actions.data;
-
-import static dev.stocky37.xiv.actions.data.JobConverter.ABBREV;
+package dev.stocky37.xiv.actions.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.stocky37.xiv.actions.util.Util;
+import dev.stocky37.xiv.actions.data.Attribute;
+import dev.stocky37.xiv.actions.data.Item;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Singleton
-public class ItemConverter implements Function<JsonNode, Item> {
+public class ItemDeserializer extends JsonNodeDeserializer<Item> {
 	private static final int HQ_CD_REDUCTION = 30;
 
 	public static final String ID = "ID";
@@ -28,25 +27,23 @@ public class ItemConverter implements Function<JsonNode, Item> {
 	public static final String BONUS_DURATION = "ItemAction.DataHQ2";
 
 	public static final List<String> ALL_FIELDS =
-		List.of(ID, NAME, ABBREV, ICON, ICON_HD, DESCRIPTION, BONUSES, COOLDOWN, BONUS_DURATION);
-
-	private final Util util;
+		List.of(ID, NAME, ICON, ICON_HD, DESCRIPTION, BONUSES, COOLDOWN, BONUS_DURATION);
 
 	@Inject
-	public ItemConverter(Util util) {this.util = util;}
-
+	public ItemDeserializer(@ConfigProperty(name = "xivapi/mp-rest/uri") String baseUri) {
+		super(Item.class, baseUri);
+	}
 
 	@Override
 	public Item apply(JsonNode node) {
-		final var json = util.wrapNode(node);
 		return new Item(
-			json.getText(ID),
-			json.getText(NAME),
-			json.getUri(ICON),
-			json.getUri(ICON_HD),
-			json.getText(DESCRIPTION),
-			Duration.ofSeconds(json.getInt(COOLDOWN) - HQ_CD_REDUCTION),
-			Duration.ofSeconds(json.getInt(BONUS_DURATION)),
+			get(node, ID).asText(),
+			get(node, NAME).asText(),
+			getUri(node, ICON),
+			getUri(node, ICON_HD),
+			get(node, DESCRIPTION).asText(),
+			Duration.ofSeconds(get(node, COOLDOWN).asInt() - HQ_CD_REDUCTION),
+			Duration.ofSeconds(get(node, BONUS_DURATION).asInt()),
 			bonuses(node.path(BONUSES))
 		);
 	}

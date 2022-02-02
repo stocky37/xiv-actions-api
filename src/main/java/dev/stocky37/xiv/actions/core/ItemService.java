@@ -1,7 +1,7 @@
 package dev.stocky37.xiv.actions.core;
 
-import static dev.stocky37.xiv.actions.data.ItemConverter.BONUSES;
-import static dev.stocky37.xiv.actions.data.ItemConverter.BONUS_MAX;
+import static dev.stocky37.xiv.actions.json.ItemDeserializer.BONUSES;
+import static dev.stocky37.xiv.actions.json.ItemDeserializer.BONUS_MAX;
 import static org.elasticsearch.common.Strings.capitalize;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
@@ -11,9 +11,9 @@ import static org.elasticsearch.search.sort.SortOrder.DESC;
 import com.google.common.base.Joiner;
 import dev.stocky37.xiv.actions.data.Attribute;
 import dev.stocky37.xiv.actions.data.Item;
-import dev.stocky37.xiv.actions.data.ItemConverter;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Query;
+import dev.stocky37.xiv.actions.json.ItemDeserializer;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import java.util.Collections;
 import java.util.List;
@@ -27,11 +27,11 @@ public class ItemService {
 	private static final Joiner joiner = Joiner.on('.');
 
 	private final XivApiClient xivapi;
-	private final ItemConverter converter;
+	private final ItemDeserializer deserializer;
 
-	public ItemService(XivApiClient xivapi, ItemConverter converter) {
+	public ItemService(XivApiClient xivapi, ItemDeserializer deserializer) {
 		this.xivapi = xivapi;
-		this.converter = converter;
+		this.deserializer = deserializer;
 	}
 
 	public List<Item> findPotionsForJob(Job job) {
@@ -42,11 +42,11 @@ public class ItemService {
 
 		final Query query = new Query(
 			INDEXES,
-			ItemConverter.ALL_FIELDS,
+			ItemDeserializer.ALL_FIELDS,
 			buildJobPotionsQuery(job.primaryStat().get())
 		);
 
-		return xivapi.search(query, converter);
+		return xivapi.search(query, deserializer);
 	}
 
 	private SearchSourceBuilder buildJobPotionsQuery(Attribute attribute) {

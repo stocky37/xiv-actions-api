@@ -1,6 +1,7 @@
 package dev.stocky37.xiv.actions.xivapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.xivapi.json.PaginatedList;
 import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
 import java.util.List;
@@ -24,5 +25,5 @@ public interface XivApi {
 
 	@GET
 	@Path("classjob")
-	PaginatedList<JsonNode> getClassJobs(@QueryParam("columns") List<String> columns);
+	PaginatedList<Job> getClassJobs(@QueryParam("columns") List<String> columns);
 }
