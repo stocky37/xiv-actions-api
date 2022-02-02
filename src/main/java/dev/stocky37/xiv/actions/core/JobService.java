@@ -1,48 +1,27 @@
 package dev.stocky37.xiv.actions.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.data.JobConverter;
-import dev.stocky37.xiv.actions.xivapi.XivApi;
+import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 @SuppressWarnings("UnstableApiUsage")
 public class JobService {
-	private final XivApi xivapi;
-	private final RateLimiter rateLimiter;
-	private final Function<JsonNode, Job> converter;
+	private final XivApiClient xivapi;
 	private final UnaryOperator<Job> enricher;
 
-	@Inject
-	public JobService(
-		@RestClient XivApi xivapi,
-		RateLimiter rateLimiter,
-		JobConverter converter,
-		UnaryOperator<Job> enricher
-	) {
+	public JobService(XivApiClient xivapi, UnaryOperator<Job> enricher) {
 		this.xivapi = xivapi;
-		this.rateLimiter = rateLimiter;
-		this.converter = converter;
 		this.enricher = enricher;
 	}
 
 	@CacheResult(cacheName = "jobs")
 	public List<Job> getAll() {
-		rateLimiter.acquire();
-		return xivapi.getClassJobs(JobConverter.ALL_FIELDS).Results().parallelStream()
-			.filter(x -> x.get(JobConverter.NAME).asText().length() > 0)
-			.map(converter)
-			.collect(Collectors.toList());
+		return xivapi.getJobs();
 	}
 
 	@CacheResult(cacheName = "jobs")

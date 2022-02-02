@@ -5,20 +5,15 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Action;
 import dev.stocky37.xiv.actions.data.ActionConverter;
 import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.util.Util;
-import dev.stocky37.xiv.actions.xivapi.XivApi;
-import dev.stocky37.xiv.actions.xivapi.json.PaginatedList;
-import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
+import dev.stocky37.xiv.actions.data.Query;
+import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
@@ -27,38 +22,26 @@ import org.elasticsearch.search.sort.SortOrder;
 public class ActionService {
 	private static final List<String> INDEXES = List.of("action");
 
-	private final XivApi xivapi;
-	private final RateLimiter rateLimiter;
+	private final XivApiClient xivapi;
 	private final Function<JsonNode, Action> converter;
-	private final Util json;
 
-	@Inject
-	public ActionService(
-		@RestClient XivApi xivapi,
-		RateLimiter rateLimiter,
-		ActionConverter converter,
-		Util json
-	) {
+	public ActionService(XivApiClient xivapi, ActionConverter converter) {
 		this.xivapi = xivapi;
-		this.rateLimiter = rateLimiter;
 		this.converter = converter;
-		this.json = json;
 	}
 
 	@CacheResult(cacheName = "actions")
 	public List<Action> findForJob(Job job) {
-		final JsonNode query = json.toJsonNode(createActionsQuery(job.abbreviation()));
-		final SearchBody body = new SearchBody(
-			String.join(",", INDEXES),
-			String.join(",", ActionConverter.ALL_FIELDS),
-			query
+		final Query query = new Query(
+			INDEXES,
+			ActionConverter.ALL_FIELDS,
+			buildJobActionsQuery(job.abbreviation())
 		);
-		rateLimiter.acquire();
-		final PaginatedList<JsonNode> results = xivapi.search(body);
-		return results.Results().parallelStream().map(converter).toList();
+
+		return xivapi.search(query, converter);
 	}
 
-	private SearchSourceBuilder createActionsQuery(String jobAbbrev) {
+	private SearchSourceBuilder buildJobActionsQuery(String jobAbbrev) {
 		final var job = termQuery(
 			String.format("ClassJobCategory.%s", jobAbbrev.toUpperCase()),
 			1
