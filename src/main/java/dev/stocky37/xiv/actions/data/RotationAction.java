@@ -4,9 +4,10 @@ import java.time.Duration;
 import java.util.Optional;
 
 public record RotationAction(
-	Action action,
+	Optional<Action> action,
+	Optional<Item> item,
 	Duration timestamp,
 	Optional<Integer> gcdNumber
 ) {
-
+	
 }

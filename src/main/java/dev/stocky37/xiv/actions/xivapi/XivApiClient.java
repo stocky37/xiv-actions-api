@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.RateLimiter;
 import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Query;
 import dev.stocky37.xiv.actions.json.ActionDeserializer;
+import dev.stocky37.xiv.actions.json.ItemDeserializer;
 import dev.stocky37.xiv.actions.json.JobDeserializer;
 import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
 import java.util.List;
@@ -61,6 +63,14 @@ public class XivApiClient {
 	public Optional<Action> getAction(String id) {
 		try {
 			return Optional.of(wrapApi(() -> xivapi.getAction(id, ActionDeserializer.ALL_FIELDS)));
+		} catch (NotFoundException e) {
+			return Optional.empty();
+		}
+	}
+
+	public Optional<Item> getItem(String id) {
+		try {
+			return Optional.of(wrapApi(() -> xivapi.getItem(id, ItemDeserializer.ALL_FIELDS)));
 		} catch (NotFoundException e) {
 			return Optional.empty();
 		}
