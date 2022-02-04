@@ -35,16 +35,16 @@ public class ItemDeserializer extends JsonNodeDeserializer<Item> {
 	}
 
 	@Override
-	public Item apply(JsonNode node) {
+	public Item apply(JsonNodeWrapper node) {
 		return new Item(
-			get(node, ID).asText(),
-			get(node, NAME).asText(),
+			node.get(ID).asText(),
+			node.get(NAME).asText(),
 			getUri(node, ICON),
 			getUri(node, ICON_HD),
-			get(node, DESCRIPTION).asText(),
-			Duration.ofSeconds(get(node, COOLDOWN).asInt() - HQ_CD_REDUCTION),
-			Duration.ofSeconds(get(node, BONUS_DURATION).asInt()),
-			bonuses(node.path(BONUSES))
+			node.get(DESCRIPTION).asText(),
+			Duration.ofSeconds(node.get(COOLDOWN).asInt() - HQ_CD_REDUCTION),
+			Duration.ofSeconds(node.get(BONUS_DURATION).asInt()),
+			bonuses(node.get(BONUSES))
 		);
 	}
 

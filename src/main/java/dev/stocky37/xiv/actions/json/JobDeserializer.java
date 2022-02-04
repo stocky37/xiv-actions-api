@@ -1,9 +1,9 @@
 package dev.stocky37.xiv.actions.json;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import dev.stocky37.xiv.actions.data.Attribute;
 import dev.stocky37.xiv.actions.data.Job;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -31,19 +31,19 @@ public class JobDeserializer extends JsonNodeDeserializer<Job> {
 	}
 
 	@Override
-	public Job apply(JsonNode node) {
-		return new Job(
-			get(node, ID).asText(),
-			get(node, NAME).asText(),
-			get(node, ABBREV).asText(),
-			getUri(node, ICON),
-			category(get(node, CATEGORY).asInt()),
-			type(get(node, JOB_INDEX).asInt()),
-			role(get(node, ROLE).asInt()),
-			get(node, JOB_INDEX).asInt(),
-			get(node, IS_LIMITED).asBoolean(),
-			primaryStat(get(node, PRIMARY_STAT).asInt())
-		);
+	public Job apply(JsonNodeWrapper json) {
+		return Job.builder()
+			.withId(json.get(ID).asText())
+			.withName(json.get(NAME).asText())
+			.withAbbreviation(json.get(ABBREV).asText())
+			.withIcon(getUri(json, ICON))
+			.withCategory(category(json.get(CATEGORY).asInt()))
+			.withType(type(json.get(JOB_INDEX).asInt()))
+			.withRole(role(json.get(ROLE).asInt()))
+			.withIndex(json.get(JOB_INDEX).asInt())
+			.withLimited(json.get(IS_LIMITED).asBoolean())
+			.withPrimaryStat(Optional.ofNullable(primaryStat(json.get(PRIMARY_STAT).asInt())))
+			.build();
 	}
 
 	private Job.Category category(int categoryId) {
