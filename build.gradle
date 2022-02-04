@@ -22,6 +22,7 @@ dependencies {
 
 	testImplementation 'io.quarkus:quarkus-junit5'
 	testImplementation 'io.rest-assured:rest-assured'
+	testImplementation 'org.assertj:assertj-core'
 }
 
 group 'xiv.stocky37.dev'

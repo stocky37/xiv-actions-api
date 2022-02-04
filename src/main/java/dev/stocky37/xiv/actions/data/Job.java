@@ -2,7 +2,7 @@ package dev.stocky37.xiv.actions.data;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import java.net.URI;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,49 +21,12 @@ public record Job(
 	@JsonView(Views.Full.class) List<Item> potions
 ) {
 
-	public Job(Job job, List<Action> actions, List<Item> potions) {
-		this(
-			job.id,
-			job.name,
-			job.abbreviation,
-			job.icon,
-			job.category,
-			job.type,
-			job.role,
-			job.index,
-			job.isLimited,
-			job.primaryStat,
-			actions,
-			potions
-		);
+	public static Builder builder() {
+		return new Builder();
 	}
 
-	public Job(
-		String id,
-		String name,
-		String abbreviation,
-		URI icon,
-		Category category,
-		Type type,
-		Role role,
-		int index,
-		boolean isLimited,
-		Attribute primaryStat
-	) {
-		this(
-			id,
-			name,
-			abbreviation,
-			icon,
-			category,
-			type,
-			role,
-			index,
-			isLimited,
-			Optional.ofNullable(primaryStat),
-			Collections.emptyList(),
-			Collections.emptyList()
-		);
+	public static Builder builder(Job action) {
+		return new Builder(action);
 	}
 
 	public enum Category {
@@ -98,6 +61,116 @@ public record Job(
 		@Override
 		public String toString() {
 			return this.name().toLowerCase().replace("_", "-");
+		}
+	}
+
+	public static class Builder {
+		private String id;
+		private String name;
+		private String abbreviation;
+		private URI icon;
+		private Category category;
+		private Type type;
+		private Role role;
+		private int index;
+		private boolean isLimited;
+		private Optional<Attribute> primaryStat = Optional.empty();
+		private List<Action> actions = new ArrayList<>();
+		private List<Item> potions = new ArrayList<>();
+		
+
+		private Builder() {}
+
+		public Builder(Job job) {
+			this.id = job.id;
+			this.name = job.name;
+			this.abbreviation = job.abbreviation;
+			this.icon = job.icon;
+			this.category = job.category;
+			this.type = job.type;
+			this.role = job.role;
+			this.index = job.index;
+			this.isLimited = job.isLimited;
+			this.primaryStat = job.primaryStat;
+			this.actions = job.actions;
+			this.potions = job.potions;
+		}
+
+		public Job build() {
+			return new Job(
+				id,
+				name,
+				abbreviation,
+				icon,
+				category,
+				type,
+				role,
+				index,
+				isLimited,
+				primaryStat,
+				actions,
+				potions
+			);
+		}
+
+		public Builder withId(String id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder withName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public Builder withAbbreviation(String abbreviation) {
+			this.abbreviation = abbreviation;
+			return this;
+		}
+
+		public Builder withIcon(URI icon) {
+			this.icon = icon;
+			return this;
+		}
+
+		public Builder withCategory(Category category) {
+			this.category = category;
+			return this;
+		}
+
+		public Builder withType(Type type) {
+			this.type = type;
+			return this;
+		}
+
+		public Builder withRole(Role role) {
+			this.role = role;
+			return this;
+		}
+
+		public Builder withIndex(int index) {
+			this.index = index;
+			return this;
+		}
+
+		public Builder withLimited(boolean limited) {
+			isLimited = limited;
+			return this;
+		}
+
+		public Builder withPrimaryStat(Optional<Attribute> primaryStat) {
+			this.primaryStat = primaryStat;
+			return this;
+		}
+
+		public Builder withActions(List<Action> actions) {
+			this.actions = actions;
+			return this;
+		}
+
+		public Builder withPotions(List<Item> potions) {
+			this.potions = potions;
+			return this;
 		}
 	}
 }

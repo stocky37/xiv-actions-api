@@ -23,7 +23,10 @@ public class JobEnricher implements UnaryOperator<Job> {
 
 	@Override
 	public Job apply(Job job) {
-		return new Job(job, actions(job), potions(job));
+		return Job.builder(job)
+			.withActions(actions(job))
+			.withPotions(potions(job))
+			.build();
 	}
 
 	private List<Action> actions(Job job) {

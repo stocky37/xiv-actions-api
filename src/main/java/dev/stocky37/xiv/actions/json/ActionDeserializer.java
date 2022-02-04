@@ -1,11 +1,7 @@
 package dev.stocky37.xiv.actions.json;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Sets;
 import dev.stocky37.xiv.actions.data.Action;
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -61,33 +57,28 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 	}
 
 	@Override
-	public Action apply(JsonNode node) {
+	public Action apply(JsonNodeWrapper json) {
 		final Set<Integer> cooldownGroups = Sets.newHashSet(
-			get(node, COOLDOWN_GROUP).asInt(),
-			get(node, COOLDOWN_GROUP_ALT).asInt()
+			json.get(COOLDOWN_GROUP).asInt(),
+			json.get(COOLDOWN_GROUP_ALT).asInt()
 		);
 
 		return new Action(
-			get(node, ID).asText(),
-			get(node, NAME).asText(),
-			get(node, CATEGORY).asText(),
-			get(node, DESCRIPTION).asText(),
-			getUri(node, ICON),
-			getUri(node, ICON_HD),
-			get(node, COMBO_ACTION).asInt() == 0
+			json.get(ID).asText(),
+			json.get(NAME).asText(),
+			json.get(CATEGORY).asText(),
+			json.get(DESCRIPTION).asText(),
+			getUri(json, ICON),
+			getUri(json, ICON_HD),
+			json.get(COMBO_ACTION).asInt() == 0
 				? Optional.empty()
-				: Optional.of(get(node, COMBO_ACTION).asInt()),
+				: Optional.of(json.get(COMBO_ACTION).asInt()),
 			Collections.unmodifiableSet(cooldownGroups),
-			Duration.ofMillis(get(node, RECAST).asLong() * 100),
-			Duration.ofMillis(get(node, CAST).asLong() * 100),
-			get(node, ROLE_ACTION).asBoolean(),
-			get(node, LEVEL).asInt(),
+			Duration.ofMillis(json.get(RECAST).asLong() * 100),
+			Duration.ofMillis(json.get(CAST).asLong() * 100),
+			json.get(ROLE_ACTION).asBoolean(),
+			json.get(LEVEL).asInt(),
 			cooldownGroups.contains(gcdCdGroup)
 		);
-	}
-
-	@Override
-	public Action deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-		return apply(p.getCodec().readTree(p));
 	}
 }

@@ -14,6 +14,7 @@ import io.quarkus.cache.CacheResult;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import javax.enterprise.context.ApplicationScoped;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -25,10 +26,15 @@ public class ActionService {
 
 	private final XivApiClient xivapi;
 	private final Function<JsonNode, Action> converter;
+	private final UnaryOperator<Action> enricher;
 
-	public ActionService(XivApiClient xivapi, ActionDeserializer converter) {
+	public ActionService(
+		XivApiClient xivapi, ActionDeserializer converter,
+		ActionEnricher enricher
+	) {
 		this.xivapi = xivapi;
 		this.converter = converter;
+		this.enricher = enricher;
 	}
 
 	@CacheResult(cacheName = "actions")
@@ -39,12 +45,12 @@ public class ActionService {
 			buildJobActionsQuery(job.abbreviation())
 		);
 
-		return xivapi.search(query, converter);
+		return xivapi.search(query, converter).stream().map(enricher).toList();
 	}
 
 	@CacheResult(cacheName = "actions")
 	public Optional<Action> findById(String id) {
-		return xivapi.getAction(id);
+		return xivapi.getAction(id).map(enricher);
 	}
 
 	private SearchSourceBuilder buildJobActionsQuery(String jobAbbrev) {
