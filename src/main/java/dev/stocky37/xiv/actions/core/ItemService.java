@@ -15,8 +15,10 @@ import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Query;
 import dev.stocky37.xiv.actions.json.ItemDeserializer;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
+import io.quarkus.cache.CacheResult;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -34,6 +36,7 @@ public class ItemService {
 		this.deserializer = deserializer;
 	}
 
+	@CacheResult(cacheName = "items")
 	public List<Item> findPotionsForJob(Job job) {
 		// skip for jobs without a primary state (dohl etc.)
 		if(job.primaryStat().isEmpty()) {
@@ -47,6 +50,11 @@ public class ItemService {
 		);
 
 		return xivapi.search(query, deserializer);
+	}
+
+	@CacheResult(cacheName = "items")
+	public Optional<Item> findById(String id) {
+		return xivapi.getItem(id);
 	}
 
 	private SearchSourceBuilder buildJobPotionsQuery(Attribute attribute) {

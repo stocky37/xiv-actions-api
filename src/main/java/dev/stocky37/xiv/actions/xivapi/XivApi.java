@@ -2,6 +2,7 @@ package dev.stocky37.xiv.actions.xivapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.xivapi.json.PaginatedList;
 import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
@@ -32,4 +33,8 @@ public interface XivApi {
 	@GET
 	@Path("action/{id}")
 	Action getAction(@PathParam("id") String id, @QueryParam("columns") List<String> columns);
+
+	@GET
+	@Path("item/{id}")
+	Item getItem(@PathParam("id") String id, @QueryParam("columns") List<String> columns);
 }
