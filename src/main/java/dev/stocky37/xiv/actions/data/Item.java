@@ -1,6 +1,6 @@
 package dev.stocky37.xiv.actions.data;
 
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URI;
 import java.time.Duration;
@@ -12,8 +12,8 @@ public record Item(
 	URI icon,
 	URI iconHD,
 	String description,
-	Duration recast,
-	Duration bonusDuration,
+	@JsonFormat(pattern = "MILLIS") Duration recast,
+	@JsonFormat(pattern = "MILLIS") Duration bonusDuration,
 	List<Bonus> bonuses
 ) {
 	public record Bonus(Attribute attribute, int value, int max) {

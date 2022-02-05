@@ -23,6 +23,7 @@ public final class JsonConfiguration implements ObjectMapperCustomizer {
 
 	public void customize(ObjectMapper mapper) {
 		mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+		mapper.disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
 		mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_ABSENT);
 		mapper.registerModule(
 			new SimpleModule("deserializers")
