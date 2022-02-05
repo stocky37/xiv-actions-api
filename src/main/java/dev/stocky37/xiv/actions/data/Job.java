@@ -1,5 +1,7 @@
 package dev.stocky37.xiv.actions.data;
 
+import static dev.stocky37.xiv.actions.util.Util.slugify;
+
 import com.fasterxml.jackson.annotation.JsonView;
 import java.net.URI;
 import java.util.ArrayList;
@@ -37,7 +39,7 @@ public record Job(
 
 		@Override
 		public String toString() {
-			return this.name().toLowerCase().replace("_", "-");
+			return slugify(this.name());
 		}
 	}
 
@@ -47,7 +49,7 @@ public record Job(
 
 		@Override
 		public String toString() {
-			return this.name().toLowerCase().replace("_", "-");
+			return slugify(this.name());
 		}
 	}
 
@@ -60,7 +62,7 @@ public record Job(
 
 		@Override
 		public String toString() {
-			return this.name().toLowerCase().replace("_", "-");
+			return slugify(this.name());
 		}
 	}
 
