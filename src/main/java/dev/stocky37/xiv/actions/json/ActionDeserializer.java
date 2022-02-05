@@ -45,11 +45,11 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 		DAMAGE_TYPE
 	);
 
-	private final int gcdCdGroup;
+	private final String gcdCdGroup;
 
 	@Inject
 	public ActionDeserializer(
-		@ConfigProperty(name = "gcd-cd-group") int gcdCdGroup,
+		@ConfigProperty(name = "gcd-cd-group") String gcdCdGroup,
 		@ConfigProperty(name = "xivapi/mp-rest/uri") String baseUri
 	) {
 		super(Action.class, baseUri);
@@ -58,7 +58,7 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 
 	@Override
 	public Action apply(JsonNodeWrapper json) {
-		final Set<Integer> cooldownGroups = cooldownGroups(json);
+		final Set<String> cooldownGroups = cooldownGroups(json);
 		return Action.builder()
 			.withId(json.get(ID).asText())
 			.withName(json.get(NAME).asText())
@@ -82,17 +82,17 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 	}
 
 
-	public Integer comboAction(JsonNodeWrapper json) {
-		return json.get(COMBO_ACTION).asInt() == 0 ? null : json.get(COMBO_ACTION).asInt();
+	public String comboAction(JsonNodeWrapper json) {
+		return json.get(COMBO_ACTION).asInt() == 0 ? null : json.get(COMBO_ACTION).asText();
 	}
 
-	public Set<Integer> cooldownGroups(JsonNodeWrapper json) {
-		final Set<Integer> cooldownGroups = new HashSet<>();
+	public Set<String> cooldownGroups(JsonNodeWrapper json) {
+		final Set<String> cooldownGroups = new HashSet<>();
 		if(json.get(COOLDOWN_GROUP).asInt() != 0) {
-			cooldownGroups.add(json.get(COOLDOWN_GROUP).asInt());
+			cooldownGroups.add(json.get(COOLDOWN_GROUP).asText());
 		}
 		if(json.get(COOLDOWN_GROUP_ALT).asInt() != 0) {
-			cooldownGroups.add(json.get(COOLDOWN_GROUP_ALT).asInt());
+			cooldownGroups.add(json.get(COOLDOWN_GROUP_ALT).asText());
 		}
 		return cooldownGroups;
 	}
