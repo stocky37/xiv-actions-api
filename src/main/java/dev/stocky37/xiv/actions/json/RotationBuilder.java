@@ -30,14 +30,13 @@ public class RotationBuilder {
 	}
 
 	private RotationAction buildAction(Either<Action, Item> actionOrItem) {
-		if(onGCD(actionOrItem)) {
-			return handleGcd(actionOrItem);
-		} else {
-			return handleOGcd(actionOrItem);
-		}
+		return onGCD(actionOrItem) ? handleGcd(actionOrItem) : handleOGcd(actionOrItem);
 	}
 
 	private RotationAction handleGcd(Either<Action, Item> actionOrItem) {
+		removeEffects(nextGcd);
+		addEffects(actionOrItem, nextGcd);
+
 		final var action = new RotationAction(
 			actionOrItem.left(),
 			actionOrItem.right(),
@@ -53,14 +52,8 @@ public class RotationBuilder {
 	}
 
 	private RotationAction handleOGcd(Either<Action, Item> actionOrItem) {
-//		if(actionOrItem.isRight()) {
-//			//noinspection OptionalGetWithoutIsPresent
-//			effects.add(new Effect(
-//				actionOrItem.right().get().id(),
-//				nextOGcd,
-//				actionOrItem.right().get().bonusDuration()
-//			));
-//		}
+		removeEffects(nextOGcd);
+		addEffects(actionOrItem, nextOGcd);
 
 		final var action = new RotationAction(
 			actionOrItem.left(),
@@ -85,8 +78,23 @@ public class RotationBuilder {
 		return actionOrItem.fold(Action::recast, Item::recast);
 	}
 
-//	private void checkEffects(Duration nextAction) {
-//		final List<Effect> removedEffects = effects.stream().filter(effect -> effect.started().plus
-//		(effect.))
-//	}
+	private void addEffects(Either<Action, Item> actionOrItem, Duration start) {
+		// if we have a potion, add an effect
+		if(actionOrItem.isRight()) {
+			//noinspection OptionalGetWithoutIsPresent
+			effects.add(new Effect(
+				actionOrItem.right().get().id(),
+				start,
+				start.plus(actionOrItem.right().get().bonusDuration())
+			));
+		}
+	}
+
+	private void removeEffects(Duration start) {
+		final List<Effect> finishedEffects = new ArrayList<>();
+		effects.stream()
+			.filter(item -> item.end().compareTo(start) < 0)
+			.forEach(finishedEffects::add);
+		effects.removeAll(finishedEffects);
+	}
 }

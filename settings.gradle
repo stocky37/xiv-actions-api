@@ -8,4 +8,4 @@ pluginManagement {
         id "${quarkusPluginId}" version "${quarkusPluginVersion}"
     }
 }
-rootProject.name='actions-api'
+rootProject.name='xiv-tools-api'
