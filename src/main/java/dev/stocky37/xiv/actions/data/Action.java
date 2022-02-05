@@ -14,8 +14,8 @@ public record Action(
 	String description,
 	URI icon,
 	URI iconHD,
-	Optional<Integer> comboFrom,
-	Set<Integer> cooldownGroups,
+	Optional<String> comboFrom,
+	Set<String> cooldownGroups,
 	@JsonFormat(pattern = "MILLIS") Duration recast,
 	@JsonFormat(pattern = "MILLIS") Duration cast,
 	boolean isRoleAction,
@@ -49,8 +49,8 @@ public record Action(
 		private String description;
 		private URI icon;
 		private URI iconHD;
-		private Optional<Integer> comboFrom = Optional.empty();
-		private Set<Integer> cooldownGroups = new HashSet<>();
+		private Optional<String> comboFrom = Optional.empty();
+		private Set<String> cooldownGroups = new HashSet<>();
 		private Duration recast;
 		private Duration cast;
 		private boolean isRoleAction;
@@ -126,12 +126,12 @@ public record Action(
 			return this;
 		}
 
-		public Builder withComboFrom(Integer comboFrom) {
+		public Builder withComboFrom(String comboFrom) {
 			this.comboFrom = Optional.ofNullable(comboFrom);
 			return this;
 		}
 
-		public Builder withCooldownGroups(Set<Integer> cooldownGroups) {
+		public Builder withCooldownGroups(Set<String> cooldownGroups) {
 			this.cooldownGroups = cooldownGroups;
 			return this;
 		}
