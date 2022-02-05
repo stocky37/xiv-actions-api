@@ -1,5 +1,6 @@
 package dev.stocky37.xiv.actions.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashSet;
@@ -15,8 +16,8 @@ public record Action(
 	URI iconHD,
 	Optional<Integer> comboFrom,
 	Set<Integer> cooldownGroups,
-	Duration recast,
-	Duration cast,
+	@JsonFormat(pattern = "MILLIS") Duration recast,
+	@JsonFormat(pattern = "MILLIS") Duration cast,
 	boolean isRoleAction,
 	int level,
 	boolean onGCD,
