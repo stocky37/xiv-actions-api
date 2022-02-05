@@ -37,8 +37,4 @@ public interface XivApi {
 	@GET
 	@Path("item/{id}")
 	Item getItem(@PathParam("id") String id, @QueryParam("columns") List<String> columns);
-
-//	@GET
-//	@Path("status/{id}")
-//	Item getItem(@PathParam("id") String id, @QueryParam("columns") List<String> columns);
 }
