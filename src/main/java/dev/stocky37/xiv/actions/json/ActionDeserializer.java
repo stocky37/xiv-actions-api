@@ -1,11 +1,9 @@
 package dev.stocky37.xiv.actions.json;
 
-import com.google.common.collect.Sets;
 import dev.stocky37.xiv.actions.data.Action;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,6 +25,7 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 	public static final String RECAST = "Recast100ms";
 	public static final String ROLE_ACTION = "IsRoleAction";
 	public static final String LEVEL = "ClassJobLevel";
+	public static final String DAMAGE_TYPE = "AttackTypeTargetID";
 
 	public static final List<String> ALL_FIELDS = List.of(
 		ID,
@@ -42,7 +41,8 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 		CAST,
 		RECAST,
 		ROLE_ACTION,
-		LEVEL
+		LEVEL,
+		DAMAGE_TYPE
 	);
 
 	private final int gcdCdGroup;
@@ -58,27 +58,51 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 
 	@Override
 	public Action apply(JsonNodeWrapper json) {
-		final Set<Integer> cooldownGroups = Sets.newHashSet(
-			json.get(COOLDOWN_GROUP).asInt(),
-			json.get(COOLDOWN_GROUP_ALT).asInt()
-		);
+		final Set<Integer> cooldownGroups = cooldownGroups(json);
+		return Action.builder()
+			.withId(json.get(ID).asText())
+			.withName(json.get(NAME).asText())
+			.withCategory(json.get(CATEGORY).asText())
+			.withDescription(json.get(DESCRIPTION).asText())
+			.withIcon(getUri(json, ICON))
+			.withIconHD(getUri(json, ICON_HD))
+			.withComboFrom(comboAction(json))
+			.withCooldownGroups(cooldownGroups)
+			.withRecast(get100ms(json, RECAST))
+			.withCast(get100ms(json, CAST))
+			.withRoleAction(json.get(ROLE_ACTION).asBoolean())
+			.withLevel(json.get(LEVEL).asInt())
+			.withOnGCD(cooldownGroups.contains(gcdCdGroup))
+			.withDamageType(damageType(json.get(DAMAGE_TYPE).asInt()))
+			.build();
+	}
 
-		return new Action(
-			json.get(ID).asText(),
-			json.get(NAME).asText(),
-			json.get(CATEGORY).asText(),
-			json.get(DESCRIPTION).asText(),
-			getUri(json, ICON),
-			getUri(json, ICON_HD),
-			json.get(COMBO_ACTION).asInt() == 0
-				? Optional.empty()
-				: Optional.of(json.get(COMBO_ACTION).asInt()),
-			Collections.unmodifiableSet(cooldownGroups),
-			Duration.ofMillis(json.get(RECAST).asLong() * 100),
-			Duration.ofMillis(json.get(CAST).asLong() * 100),
-			json.get(ROLE_ACTION).asBoolean(),
-			json.get(LEVEL).asInt(),
-			cooldownGroups.contains(gcdCdGroup)
-		);
+	public Duration get100ms(JsonNodeWrapper json, String key) {
+		return Duration.ofMillis(json.get(key).asLong() * 100);
+	}
+
+
+	public Integer comboAction(JsonNodeWrapper json) {
+		return json.get(COMBO_ACTION).asInt() == 0 ? null : json.get(COMBO_ACTION).asInt();
+	}
+
+	public Set<Integer> cooldownGroups(JsonNodeWrapper json) {
+		final Set<Integer> cooldownGroups = new HashSet<>();
+		if(json.get(COOLDOWN_GROUP).asInt() != 0) {
+			cooldownGroups.add(json.get(COOLDOWN_GROUP).asInt());
+		}
+		if(json.get(COOLDOWN_GROUP_ALT).asInt() != 0) {
+			cooldownGroups.add(json.get(COOLDOWN_GROUP_ALT).asInt());
+		}
+		return cooldownGroups;
+	}
+
+	public Action.DamageType damageType(int damageType) {
+		return switch(damageType) {
+			case -1, 1 -> Action.DamageType.PHYSICAL;
+			case 0 -> null;
+			case 5 -> Action.DamageType.MAGICAL;
+			default -> throw new RuntimeException("Unkown damage type: " + damageType);
+		};
 	}
 }
