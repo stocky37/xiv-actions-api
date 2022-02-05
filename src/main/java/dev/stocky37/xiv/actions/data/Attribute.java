@@ -1,5 +1,7 @@
 package dev.stocky37.xiv.actions.data;
 
+import static dev.stocky37.xiv.actions.util.Util.slugify;
+
 public enum Attribute {
 	STRENGTH, DEXTERITY, VITALITY, INTELLIGENCE, MIND;
 
@@ -14,6 +16,6 @@ public enum Attribute {
 
 	@Override
 	public String toString() {
-		return this.name().toLowerCase();
+		return slugify(name());
 	}
 }

@@ -1,5 +1,7 @@
 package dev.stocky37.xiv.actions.data;
 
+import static dev.stocky37.xiv.actions.util.Util.slugify;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.net.URI;
 import java.time.Duration;
@@ -29,7 +31,7 @@ public record Action(
 
 		@Override
 		public String toString() {
-			return this.name().toLowerCase();
+			return slugify(name());
 		}
 	}
 
