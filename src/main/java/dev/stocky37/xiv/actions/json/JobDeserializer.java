@@ -3,7 +3,6 @@ package dev.stocky37.xiv.actions.json;
 import dev.stocky37.xiv.actions.data.Attribute;
 import dev.stocky37.xiv.actions.data.Job;
 import java.util.List;
-import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -42,7 +41,7 @@ public class JobDeserializer extends JsonNodeDeserializer<Job> {
 			.withRole(role(json.get(ROLE).asInt()))
 			.withIndex(json.get(JOB_INDEX).asInt())
 			.withLimited(json.get(IS_LIMITED).asBoolean())
-			.withPrimaryStat(Optional.ofNullable(primaryStat(json.get(PRIMARY_STAT).asInt())))
+			.withPrimaryStat(primaryStat(json.get(PRIMARY_STAT).asInt()))
 			.build();
 	}
 

@@ -64,6 +64,7 @@ public record Job(
 		}
 	}
 
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	public static class Builder {
 		private String id;
 		private String name;
@@ -77,7 +78,6 @@ public record Job(
 		private Optional<Attribute> primaryStat = Optional.empty();
 		private List<Action> actions = new ArrayList<>();
 		private List<Item> potions = new ArrayList<>();
-		
 
 		private Builder() {}
 
@@ -158,8 +158,8 @@ public record Job(
 			return this;
 		}
 
-		public Builder withPrimaryStat(Optional<Attribute> primaryStat) {
-			this.primaryStat = primaryStat;
+		public Builder withPrimaryStat(Attribute primaryStat) {
+			this.primaryStat = Optional.ofNullable(primaryStat);
 			return this;
 		}
 
