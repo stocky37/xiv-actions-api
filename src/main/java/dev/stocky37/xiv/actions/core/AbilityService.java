@@ -5,10 +5,10 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.data.Ability;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Query;
-import dev.stocky37.xiv.actions.json.ActionDeserializer;
+import dev.stocky37.xiv.actions.json.AbilityDeserializer;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
@@ -21,16 +21,16 @@ import org.elasticsearch.search.sort.SortOrder;
 
 @SuppressWarnings("UnstableApiUsage")
 @ApplicationScoped
-public class ActionService {
+public class AbilityService {
 	private static final List<String> INDEXES = List.of("action");
 
 	private final XivApiClient xivapi;
-	private final Function<JsonNode, Action> converter;
-	private final UnaryOperator<Action> enricher;
+	private final Function<JsonNode, Ability> converter;
+	private final UnaryOperator<Ability> enricher;
 
-	public ActionService(
-		XivApiClient xivapi, ActionDeserializer converter,
-		ActionEnricher enricher
+	public AbilityService(
+		XivApiClient xivapi, AbilityDeserializer converter,
+		AbilityEnricher enricher
 	) {
 		this.xivapi = xivapi;
 		this.converter = converter;
@@ -38,10 +38,10 @@ public class ActionService {
 	}
 
 	@CacheResult(cacheName = "actions")
-	public List<Action> findForJob(Job job) {
+	public List<Ability> findForJob(Job job) {
 		final Query query = new Query(
 			INDEXES,
-			ActionDeserializer.ALL_FIELDS,
+			AbilityDeserializer.ALL_FIELDS,
 			buildJobActionsQuery(job.abbreviation())
 		);
 
@@ -49,7 +49,7 @@ public class ActionService {
 	}
 
 	@CacheResult(cacheName = "actions")
-	public Optional<Action> findById(String id) {
+	public Optional<Ability> findById(String id) {
 		return xivapi.getAction(id).map(enricher);
 	}
 

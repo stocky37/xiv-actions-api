@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.data.Ability;
 import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.json.ActionDeserializer;
+import dev.stocky37.xiv.actions.json.AbilityDeserializer;
 import dev.stocky37.xiv.actions.json.ItemDeserializer;
 import dev.stocky37.xiv.actions.json.JobDeserializer;
 import io.quarkus.jackson.ObjectMapperCustomizer;
@@ -17,7 +17,7 @@ import javax.inject.Singleton;
 @Singleton
 public final class JsonConfiguration implements ObjectMapperCustomizer {
 
-	@Inject ActionDeserializer actionDeserializer;
+	@Inject AbilityDeserializer abilityDeserializer;
 	@Inject ItemDeserializer itemDeserializer;
 	@Inject JobDeserializer jobDeserializer;
 
@@ -27,7 +27,7 @@ public final class JsonConfiguration implements ObjectMapperCustomizer {
 		mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_ABSENT);
 		mapper.registerModule(
 			new SimpleModule("deserializers")
-				.addDeserializer(Action.class, actionDeserializer)
+				.addDeserializer(Ability.class, abilityDeserializer)
 				.addDeserializer(Item.class, itemDeserializer)
 				.addDeserializer(Job.class, jobDeserializer)
 		);

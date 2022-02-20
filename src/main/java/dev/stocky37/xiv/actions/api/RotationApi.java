@@ -24,7 +24,7 @@ public class RotationApi {
 
 	@POST
 	@Consumes(APPLICATION_JSON)
-	public Rotation test(RotationInput input) {
+	public Rotation buildRotation(RotationInput input) {
 		return rotations.buildRotation(input);
 	}
 

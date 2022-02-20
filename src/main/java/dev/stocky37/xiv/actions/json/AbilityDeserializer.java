@@ -1,6 +1,6 @@
 package dev.stocky37.xiv.actions.json;
 
-import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.data.Ability;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Singleton
-public class ActionDeserializer extends JsonNodeDeserializer<Action> {
+public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 
 	public static final String ID = "ID";
 	public static final String NAME = "Name";
@@ -48,18 +48,18 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 	private final String gcdCdGroup;
 
 	@Inject
-	public ActionDeserializer(
+	public AbilityDeserializer(
 		@ConfigProperty(name = "gcd-cd-group") String gcdCdGroup,
 		@ConfigProperty(name = "xivapi/mp-rest/uri") String baseUri
 	) {
-		super(Action.class, baseUri);
+		super(Ability.class, baseUri);
 		this.gcdCdGroup = gcdCdGroup;
 	}
 
 	@Override
-	public Action apply(JsonNodeWrapper json) {
+	public Ability apply(JsonNodeWrapper json) {
 		final Set<String> cooldownGroups = cooldownGroups(json);
-		return Action.builder()
+		return Ability.builder()
 			.withId(json.get(ID).asText())
 			.withName(json.get(NAME).asText())
 			.withCategory(json.get(CATEGORY).asText())
@@ -97,11 +97,11 @@ public class ActionDeserializer extends JsonNodeDeserializer<Action> {
 		return cooldownGroups;
 	}
 
-	public Action.DamageType damageType(int damageType) {
+	public Ability.DamageType damageType(int damageType) {
 		return switch(damageType) {
-			case -1, 1 -> Action.DamageType.PHYSICAL;
+			case -1, 1 -> Ability.DamageType.PHYSICAL;
 			case 0 -> null;
-			case 5 -> Action.DamageType.MAGICAL;
+			case 5 -> Ability.DamageType.MAGICAL;
 			default -> throw new RuntimeException("Unkown damage type: " + damageType);
 		};
 	}

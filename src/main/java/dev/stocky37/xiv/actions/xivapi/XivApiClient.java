@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.RateLimiter;
-import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.data.Ability;
 import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Query;
-import dev.stocky37.xiv.actions.json.ActionDeserializer;
+import dev.stocky37.xiv.actions.json.AbilityDeserializer;
 import dev.stocky37.xiv.actions.json.ItemDeserializer;
 import dev.stocky37.xiv.actions.json.JobDeserializer;
 import dev.stocky37.xiv.actions.xivapi.json.SearchBody;
@@ -60,9 +60,9 @@ public class XivApiClient {
 		return wrapApi(() -> xivapi.getClassJobs(JobDeserializer.ALL_FIELDS)).Results();
 	}
 
-	public Optional<Action> getAction(String id) {
+	public Optional<Ability> getAction(String id) {
 		try {
-			return Optional.of(wrapApi(() -> xivapi.getAction(id, ActionDeserializer.ALL_FIELDS)));
+			return Optional.of(wrapApi(() -> xivapi.getAction(id, AbilityDeserializer.ALL_FIELDS)));
 		} catch (NotFoundException e) {
 			return Optional.empty();
 		}

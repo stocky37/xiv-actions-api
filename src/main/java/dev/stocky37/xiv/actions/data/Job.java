@@ -19,7 +19,7 @@ public record Job(
 	int index,
 	boolean isLimited,
 	@JsonView(Views.Full.class) Optional<Attribute> primaryStat,
-	@JsonView(Views.Full.class) List<Action> actions,
+	@JsonView(Views.Full.class) List<Ability> abilities,
 	@JsonView(Views.Full.class) List<Item> potions
 ) {
 
@@ -78,7 +78,7 @@ public record Job(
 		private int index;
 		private boolean isLimited;
 		private Optional<Attribute> primaryStat = Optional.empty();
-		private List<Action> actions = new ArrayList<>();
+		private List<Ability> abilities = new ArrayList<>();
 		private List<Item> potions = new ArrayList<>();
 
 		private Builder() {}
@@ -94,7 +94,7 @@ public record Job(
 			this.index = job.index;
 			this.isLimited = job.isLimited;
 			this.primaryStat = job.primaryStat;
-			this.actions = job.actions;
+			this.abilities = job.abilities;
 			this.potions = job.potions;
 		}
 
@@ -110,7 +110,7 @@ public record Job(
 				index,
 				isLimited,
 				primaryStat,
-				actions,
+				abilities,
 				potions
 			);
 		}
@@ -165,8 +165,8 @@ public record Job(
 			return this;
 		}
 
-		public Builder withActions(List<Action> actions) {
-			this.actions = actions;
+		public Builder withActions(List<Ability> abilities) {
+			this.abilities = abilities;
 			return this;
 		}
 

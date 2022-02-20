@@ -3,171 +3,30 @@ package dev.stocky37.xiv.actions.data;
 import static dev.stocky37.xiv.actions.util.Util.slugify;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.net.URI;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.List;
 
-public record Action(
-	String id,
-	String name,
-	String category,
-	String description,
-	URI icon,
-	URI iconHD,
-	Optional<String> comboFrom,
-	Set<String> cooldownGroups,
-	@JsonFormat(pattern = "MILLIS") Duration recast,
-	@JsonFormat(pattern = "MILLIS") Duration cast,
-	boolean isRoleAction,
-	int level,
-	boolean onGCD,
-	Optional<DamageType> damageType
-) {
+public interface Action extends ApiObject {
 
-	public enum DamageType {
-		PHYSICAL, MAGICAL;
+	boolean onGCD();
 
+	@JsonFormat(pattern = "MILLIS")
+	Duration cast();
+
+	@JsonFormat(pattern = "MILLIS")
+	Duration recast();
+
+	List<StatusEffect> effects();
+
+	@JsonProperty
+	Type actionType();
+
+	enum Type {
+		ABILITY, ITEM;
 		@Override
 		public String toString() {
 			return slugify(name());
 		}
 	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	public static Builder builder(Action action) {
-		return new Builder(action);
-	}
-
-	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	public static class Builder {
-		private String id;
-		private String name;
-		private String category;
-		private String description;
-		private URI icon;
-		private URI iconHD;
-		private Optional<String> comboFrom = Optional.empty();
-		private Set<String> cooldownGroups = new HashSet<>();
-		private Duration recast;
-		private Duration cast;
-		private boolean isRoleAction;
-		private int level;
-		private boolean onGCD;
-		private Optional<DamageType> damageType = Optional.empty();
-
-		private Builder() {}
-
-		public Builder(Action action) {
-			this.id = action.id;
-			this.name = action.name;
-			this.category = action.category;
-			this.description = action.description;
-			this.icon = action.icon;
-			this.iconHD = action.iconHD;
-			this.comboFrom = action.comboFrom;
-			this.cooldownGroups = action.cooldownGroups;
-			this.recast = action.recast;
-			this.cast = action.cast;
-			this.isRoleAction = action.isRoleAction;
-			this.level = action.level;
-			this.onGCD = action.onGCD;
-			this.damageType = action.damageType;
-		}
-
-		public Action build() {
-			return new Action(
-				id,
-				name,
-				category,
-				description,
-				icon,
-				iconHD,
-				comboFrom,
-				cooldownGroups,
-				recast,
-				cast,
-				isRoleAction,
-				level,
-				onGCD,
-				damageType
-			);
-		}
-
-		public Builder withId(String id) {
-			this.id = id;
-			return this;
-		}
-
-		public Builder withName(String name) {
-			this.name = name;
-			return this;
-		}
-
-		public Builder withCategory(String category) {
-			this.category = category;
-			return this;
-		}
-
-		public Builder withDescription(String description) {
-			this.description = description;
-			return this;
-		}
-
-		public Builder withIcon(URI icon) {
-			this.icon = icon;
-			return this;
-		}
-
-		public Builder withIconHD(URI iconHD) {
-			this.iconHD = iconHD;
-			return this;
-		}
-
-		public Builder withComboFrom(String comboFrom) {
-			this.comboFrom = Optional.ofNullable(comboFrom);
-			return this;
-		}
-
-		public Builder withCooldownGroups(Set<String> cooldownGroups) {
-			this.cooldownGroups = cooldownGroups;
-			return this;
-		}
-
-		public Builder withRecast(Duration recast) {
-			this.recast = recast;
-			return this;
-		}
-
-		public Builder withCast(Duration cast) {
-			this.cast = cast;
-			return this;
-		}
-
-		public Builder withRoleAction(boolean roleAction) {
-			isRoleAction = roleAction;
-			return this;
-		}
-
-		public Builder withLevel(int level) {
-			this.level = level;
-			return this;
-		}
-
-		public Builder withOnGCD(boolean onGCD) {
-			this.onGCD = onGCD;
-			return this;
-		}
-
-		public Builder withDamageType(DamageType damageType) {
-			this.damageType = Optional.ofNullable(damageType);
-			return this;
-		}
-	}
-
 }
-
