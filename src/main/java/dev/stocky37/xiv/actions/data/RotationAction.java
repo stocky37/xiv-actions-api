@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public record RotationAction(
-	Optional<Action> action,
-	Optional<Item> item,
+	Action action,
 	@JsonFormat(pattern = "MILLIS") Duration timestamp,
 	Optional<Integer> gcdNumber,
-	List<Effect> effects
+	List<RotationEffect> effects
 ) {
-
 }

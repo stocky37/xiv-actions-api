@@ -1,6 +1,6 @@
 package dev.stocky37.xiv.actions.core;
 
-import dev.stocky37.xiv.actions.data.Action;
+import dev.stocky37.xiv.actions.data.Ability;
 import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.Job;
 import java.util.Collections;
@@ -12,12 +12,12 @@ import javax.inject.Singleton;
 @Singleton
 public class JobEnricher implements UnaryOperator<Job> {
 
-	private final ActionService actions;
+	private final AbilityService abilities;
 	private final ItemService items;
 
 	@Inject
-	public JobEnricher(ActionService actions, ItemService items) {
-		this.actions = actions;
+	public JobEnricher(AbilityService abilities, ItemService items) {
+		this.abilities = abilities;
 		this.items = items;
 	}
 
@@ -29,8 +29,8 @@ public class JobEnricher implements UnaryOperator<Job> {
 			.build();
 	}
 
-	private List<Action> actions(Job job) {
-		return Collections.unmodifiableList(actions.findForJob(job));
+	private List<Ability> actions(Job job) {
+		return Collections.unmodifiableList(abilities.findForJob(job));
 	}
 
 	private List<Item> potions(Job job) {
