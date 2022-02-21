@@ -20,7 +20,7 @@ public record Job(
 	boolean isLimited,
 	@JsonView(Views.Full.class) Optional<Attribute> primaryStat,
 	@JsonView(Views.Full.class) List<Ability> abilities,
-	@JsonView(Views.Full.class) List<Item> potions
+	@JsonView(Views.Full.class) List<Consumable> potions
 ) {
 
 	public static Builder builder() {
@@ -79,7 +79,7 @@ public record Job(
 		private boolean isLimited;
 		private Optional<Attribute> primaryStat = Optional.empty();
 		private List<Ability> abilities = new ArrayList<>();
-		private List<Item> potions = new ArrayList<>();
+		private List<Consumable> potions = new ArrayList<>();
 
 		private Builder() {}
 
@@ -170,7 +170,7 @@ public record Job(
 			return this;
 		}
 
-		public Builder withPotions(List<Item> potions) {
+		public Builder withPotions(List<Consumable> potions) {
 			this.potions = potions;
 			return this;
 		}

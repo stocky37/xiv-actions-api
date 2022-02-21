@@ -1,7 +1,7 @@
 package dev.stocky37.xiv.actions.core;
 
 import dev.stocky37.xiv.actions.data.Ability;
-import dev.stocky37.xiv.actions.data.Item;
+import dev.stocky37.xiv.actions.data.Consumable;
 import dev.stocky37.xiv.actions.data.Job;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +33,7 @@ public class JobEnricher implements UnaryOperator<Job> {
 		return Collections.unmodifiableList(abilities.findForJob(job));
 	}
 
-	private List<Item> potions(Job job) {
+	private List<Consumable> potions(Job job) {
 		return Collections.unmodifiableList(items.findPotionsForJob(job));
 	}
 }
