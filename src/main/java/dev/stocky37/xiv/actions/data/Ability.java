@@ -2,6 +2,7 @@ package dev.stocky37.xiv.actions.data;
 
 import static dev.stocky37.xiv.actions.util.Util.slugify;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -11,20 +12,25 @@ import java.util.Optional;
 import java.util.Set;
 
 public record Ability(
+	// ApiObject
 	String id,
 	String name,
 	URI icon,
 	URI hdIcon,
 	String description,
+
+	// Action
 	boolean onGCD,
 	Duration cast,
 	Duration recast,
-	int level,
-	String category,
-	boolean isRoleAction,
-	Optional<DamageType> damageType,
-	Optional<String> comboFrom,
-	Set<String> cooldownGroups
+
+	// Ability
+	@JsonView(Views.Standard.class) int level,
+	@JsonView(Views.Standard.class) String category,
+	@JsonView(Views.Standard.class) boolean isRoleAction,
+	@JsonView(Views.Standard.class) Optional<DamageType> damageType,
+	@JsonView(Views.Standard.class) Optional<String> comboFrom,
+	@JsonView(Views.Standard.class) Set<String> cooldownGroups
 ) implements Action {
 
 	public enum DamageType {

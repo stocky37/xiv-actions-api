@@ -20,7 +20,7 @@ public class JobsApi {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(Views.Limited.class)
+	@JsonView(Views.Standard.class)
 	public Collection<Job> list() {
 		return jobs.getAll();
 	}
