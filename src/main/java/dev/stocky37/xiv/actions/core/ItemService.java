@@ -10,6 +10,7 @@ import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 import com.google.common.base.Joiner;
 import dev.stocky37.xiv.actions.data.Attribute;
+import dev.stocky37.xiv.actions.data.Consumable;
 import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Query;
@@ -37,7 +38,7 @@ public class ItemService {
 	}
 
 	@CacheResult(cacheName = "items")
-	public List<Item> findPotionsForJob(Job job) {
+	public List<Consumable> findPotionsForJob(Job job) {
 		// skip for jobs without a primary state (dohl etc.)
 		if(job.primaryStat().isEmpty()) {
 			return Collections.emptyList();
@@ -49,11 +50,11 @@ public class ItemService {
 			buildJobPotionsQuery(job.primaryStat().get())
 		);
 
-		return xivapi.search(query, deserializer);
+		return xivapi.search(query, (json) -> (Consumable) deserializer.apply(json));
 	}
 
 	@CacheResult(cacheName = "items")
-	public Optional<Item> findById(String id) {
+	public Optional<? extends Item> findById(String id) {
 		return xivapi.getItem(id);
 	}
 

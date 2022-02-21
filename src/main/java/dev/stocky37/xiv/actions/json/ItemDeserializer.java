@@ -2,6 +2,7 @@ package dev.stocky37.xiv.actions.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.stocky37.xiv.actions.data.Attribute;
+import dev.stocky37.xiv.actions.data.Consumable;
 import dev.stocky37.xiv.actions.data.Item;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -25,34 +26,43 @@ public class ItemDeserializer extends JsonNodeDeserializer<Item> {
 	public static final String BONUS_VALUE = "ValueHQ";
 	public static final String COOLDOWN = "CooldownS";
 	public static final String BONUS_DURATION = "ItemAction.DataHQ2";
+	public static final String KIND = "ItemKind.ID";
 
 	public static final List<String> ALL_FIELDS =
-		List.of(ID, NAME, ICON, ICON_HD, DESCRIPTION, BONUSES, COOLDOWN, BONUS_DURATION);
+		List.of(ID, NAME, ICON, ICON_HD, DESCRIPTION, BONUSES, COOLDOWN, BONUS_DURATION, KIND);
 
 	@Inject
 	public ItemDeserializer(@ConfigProperty(name = "xivapi/mp-rest/uri") String baseUri) {
-		super(Item.class, baseUri);
+		super(Consumable.class, baseUri);
 	}
 
 	@Override
-	public Item apply(JsonNodeWrapper node) {
-		return new Item(
-			node.get(ID).asText(),
-			node.get(NAME).asText(),
-			getUri(node, ICON),
-			getUri(node, ICON_HD),
-			node.get(DESCRIPTION).asText(),
-			Duration.ofSeconds(node.get(COOLDOWN).asInt() - HQ_CD_REDUCTION),
-			Duration.ofSeconds(node.get(BONUS_DURATION).asInt()),
-			bonuses(node.get(BONUSES))
+	public Item apply(JsonNodeWrapper json) {
+		return switch(json.get(KIND).asInt()) {
+			case 5 -> deserializeConsumable(json);
+			case 1, 2, 3, 4, 6, 7 -> throw new RuntimeException("Unsupported item kind");
+			default -> throw new RuntimeException("Unknown item kind");
+		};
+	}
+
+	private Consumable deserializeConsumable(JsonNodeWrapper json) {
+		return new Consumable(
+			json.get(ID).asText(),
+			json.get(NAME).asText(),
+			getUri(json, ICON),
+			getUri(json, ICON_HD),
+			json.get(DESCRIPTION).asText(),
+			Duration.ofSeconds(json.get(COOLDOWN).asInt() - HQ_CD_REDUCTION),
+			Duration.ofSeconds(json.get(BONUS_DURATION).asInt()),
+			bonuses(json.get(BONUSES))
 		);
 	}
 
-	private List<Item.Bonus> bonuses(JsonNode json) {
-		final var bonuses = new ArrayList<Item.Bonus>();
+	private List<Consumable.Bonus> bonuses(JsonNode json) {
+		final var bonuses = new ArrayList<Consumable.Bonus>();
 		for(final var it = json.fields(); it.hasNext(); ) {
 			final Map.Entry<String, JsonNode> entry = it.next();
-			bonuses.add(new Item.Bonus(
+			bonuses.add(new Consumable.Bonus(
 				Attribute.fromString(entry.getKey()),
 				entry.getValue().get(BONUS_VALUE).asInt(),
 				entry.getValue().get(BONUS_MAX).asInt()
