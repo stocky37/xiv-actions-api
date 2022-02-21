@@ -4,6 +4,15 @@ public class Views {
 	public static class Limited {
 	}
 
-	public static class Full {
+	public static class Standard extends Limited {
+
+	}
+
+	public static class Full extends Standard {
+
+	}
+
+	public static class Rotation extends Limited {
+
 	}
 }
