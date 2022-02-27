@@ -1,4 +1,4 @@
-package dev.stocky37.xiv.actions.json;
+package dev.stocky37.xiv.actions.core;
 
 import com.google.common.collect.Lists;
 import dev.stocky37.xiv.actions.config.XivConfig;
@@ -12,11 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class RotationBuilder {
+	private final static Duration BASE_GCD = Duration.ofMillis(2500);
 	private final XivConfig config;
 	private final List<Action> actions = new ArrayList<>();
 	private final List<RotationEffect> rotationEffects = new ArrayList<>();
 	private Duration nextGcd = Duration.ZERO;
 	private Duration nextOGcd = Duration.ZERO;
+	private Duration gcd = BASE_GCD;
 	private int gcdCount = 0;
 
 	public RotationBuilder(XivConfig config) {
@@ -25,6 +27,11 @@ public class RotationBuilder {
 
 	public RotationBuilder append(Action action) {
 		this.actions.add(action);
+		return this;
+	}
+
+	public RotationBuilder withGcd(Duration gcd) {
+		this.gcd = gcd;
 		return this;
 	}
 
@@ -54,9 +61,16 @@ public class RotationBuilder {
 		);
 
 		nextOGcd = nextGcd.plus(animationLock(action));
-		nextGcd = nextGcd.plus(action.recast());
+		nextGcd = nextGcd.plus(calcGcdCooldown(action));
 
 		return rotationAction;
+	}
+
+	private Duration calcGcdCooldown(Action action) {
+		// assuming only 2500 gcd skills are affected by skill/spell speed
+		// there may be a better way of checking, but this appears to work for now
+		return action.recast().equals(BASE_GCD) ? gcd : action.recast();
+
 	}
 
 	private RotationAction handleOGcd(Action action) {
