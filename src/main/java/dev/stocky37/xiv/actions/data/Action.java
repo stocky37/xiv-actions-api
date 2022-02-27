@@ -4,34 +4,48 @@ import static dev.stocky37.xiv.actions.util.Util.slugify;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-public interface Action extends ApiObject {
+public interface Action {
+	@JsonProperty
+	@JsonView(Views.Rotation.class)
+	Type actionType();
 
 	@JsonView(Views.Standard.class)
 	boolean onGCD();
 
 	@JsonFormat(pattern = "MILLIS")
 	@JsonView(Views.Standard.class)
-	Duration cast();
+	default Duration cast() {
+		return Duration.ZERO;
+	}
 
 	@JsonFormat(pattern = "MILLIS")
 	@JsonView(Views.Standard.class)
-	Duration recast();
+	default Duration recast() {
+		return Duration.ZERO;
+	}
 
 	@JsonIgnore
 	@JsonView(Views.Standard.class)
-	List<StatusEffect> effects();
+	default List<StatusEffect> effects() {
+		return Collections.emptyList();
+	}
 
 	@JsonProperty
 	@JsonView(Views.Rotation.class)
-	Type actionType();
+	default Optional<Duration> animationLock() {
+		return Optional.empty();
+	}
 
 	enum Type {
-		ABILITY, ITEM;
+		ABILITY, ITEM, DELAY;
 
 		@Override
 		public String toString() {

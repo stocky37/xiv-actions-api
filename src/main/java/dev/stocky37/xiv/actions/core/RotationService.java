@@ -1,5 +1,6 @@
 package dev.stocky37.xiv.actions.core;
 
+import dev.stocky37.xiv.actions.config.XivConfig;
 import dev.stocky37.xiv.actions.data.Action;
 import dev.stocky37.xiv.actions.data.Consumable;
 import dev.stocky37.xiv.actions.data.Item;
@@ -15,18 +16,21 @@ import javax.ws.rs.BadRequestException;
 public class RotationService {
 	private final AbilityService actionService;
 	private final ItemService itemService;
+	private final XivConfig config;
 
 	@Inject
 	public RotationService(
 		AbilityService abilityService,
-		ItemService itemService
+		ItemService itemService,
+		XivConfig config
 	) {
 		this.actionService = abilityService;
 		this.itemService = itemService;
+		this.config = config;
 	}
 
 	public Rotation buildRotation(RotationInput input) {
-		final List<? extends Action> actions = input.actions().stream()
+		final List<Action> actions = input.actions().stream()
 			.map(id -> {
 				if(!id.startsWith("i")) {
 					return actionService.findById(id).orElseThrow();
@@ -35,11 +39,11 @@ public class RotationService {
 				if(item.kind() != Item.Kind.CONSUMABLE) {
 					throw new BadRequestException("Unsupported item kind: " + item.kind().toString());
 				}
-				return (Consumable)item;
+				return (Action)item;
 			})
 			.toList();
 
-		return new RotationBuilder(actions).build();
+		return new RotationBuilder(config).withActions(actions).build();
 	}
 }
 

@@ -31,7 +31,7 @@ public record Ability(
 	@JsonView(Views.Standard.class) Optional<DamageType> damageType,
 	@JsonView(Views.Standard.class) Optional<String> comboFrom,
 	@JsonView(Views.Standard.class) Set<String> cooldownGroups
-) implements Action {
+) implements Action, ApiObject {
 
 	public enum DamageType {
 		PHYSICAL, MAGICAL;

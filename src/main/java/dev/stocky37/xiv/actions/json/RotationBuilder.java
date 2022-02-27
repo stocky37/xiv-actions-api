@@ -1,6 +1,7 @@
 package dev.stocky37.xiv.actions.json;
 
 import com.google.common.collect.Lists;
+import dev.stocky37.xiv.actions.config.XivConfig;
 import dev.stocky37.xiv.actions.data.Action;
 import dev.stocky37.xiv.actions.data.RotationEffect;
 import dev.stocky37.xiv.actions.data.Rotation;
@@ -11,15 +12,25 @@ import java.util.List;
 import java.util.Optional;
 
 public class RotationBuilder {
-	private final List<? extends Action> actions;
+	private final XivConfig config;
+	private final List<Action> actions = new ArrayList<>();
 	private final List<RotationEffect> rotationEffects = new ArrayList<>();
 	private Duration nextGcd = Duration.ZERO;
 	private Duration nextOGcd = Duration.ZERO;
 	private int gcdCount = 0;
-	public static final Duration OGCD_DELAY = Duration.ofMillis(700);
 
-	public RotationBuilder(List<? extends Action> actions) {
-		this.actions = actions;
+	public RotationBuilder(XivConfig config) {
+		this.config = config;
+	}
+
+	public RotationBuilder append(Action action) {
+		this.actions.add(action);
+		return this;
+	}
+
+	public RotationBuilder withActions(List<Action> actions) {
+		this.actions.addAll(actions);
+		return this;
 	}
 
 	public Rotation build() {
@@ -38,11 +49,11 @@ public class RotationBuilder {
 		final var rotationAction = new RotationAction(
 			action,
 			nextGcd,
-			Optional.of(gcdCount++),
+			Optional.of(++gcdCount),
 			Lists.newArrayList(rotationEffects)
 		);
 
-		nextOGcd = nextGcd.plus(OGCD_DELAY);
+		nextOGcd = nextGcd.plus(animationLock(action));
 		nextGcd = nextGcd.plus(action.recast());
 
 		return rotationAction;
@@ -59,11 +70,15 @@ public class RotationBuilder {
 			Lists.newArrayList(rotationEffects)
 		);
 
-		nextOGcd = nextOGcd.plus(OGCD_DELAY);
+		nextOGcd = nextOGcd.plus(animationLock(action));
 		if(nextOGcd.compareTo(nextGcd) > 0) {
 			nextGcd = nextOGcd;
 		}
 		return rotationAction;
+	}
+
+	private Duration animationLock(Action action) {
+		return action.animationLock().orElse(config.animationLock()).plus(config.ping());
 	}
 
 	private void addEffects(Action action, Duration start) {
