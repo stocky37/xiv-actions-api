@@ -8,5 +8,5 @@ public interface XivConfig {
 	Duration ping();
 	Duration animationLock();
 	Duration baseGcd();
-	int gcdGroup();
+	String gcdGroup();
 }
