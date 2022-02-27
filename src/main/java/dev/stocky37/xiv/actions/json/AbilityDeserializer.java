@@ -45,15 +45,15 @@ public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 		DAMAGE_TYPE
 	);
 
-	private final String gcdCdGroup;
+	private final String gcdGroup;
 
 	@Inject
 	public AbilityDeserializer(
-		@ConfigProperty(name = "gcd-cd-group") String gcdCdGroup,
+		@ConfigProperty(name = "xiv.gcd-group") String gcdGroup,
 		@ConfigProperty(name = "xivapi/mp-rest/uri") String baseUri
 	) {
 		super(Ability.class, baseUri);
-		this.gcdCdGroup = gcdCdGroup;
+		this.gcdGroup = gcdGroup;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 			.withCast(get100ms(json, CAST))
 			.withRoleAction(json.get(ROLE_ACTION).asBoolean())
 			.withLevel(json.get(LEVEL).asInt())
-			.withOnGCD(cooldownGroups.contains(gcdCdGroup))
+			.withOnGCD(cooldownGroups.contains(gcdGroup))
 			.withDamageType(damageType(json.get(DAMAGE_TYPE).asInt()))
 			.build();
 	}
