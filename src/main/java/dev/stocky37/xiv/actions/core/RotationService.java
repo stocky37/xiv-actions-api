@@ -6,7 +6,6 @@ import dev.stocky37.xiv.actions.data.Delay;
 import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.Rotation;
 import dev.stocky37.xiv.actions.data.RotationInput;
-import dev.stocky37.xiv.actions.json.RotationBuilder;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;

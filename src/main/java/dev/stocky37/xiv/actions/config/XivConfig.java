@@ -7,6 +7,5 @@ import java.time.Duration;
 public interface XivConfig {
 	Duration ping();
 	Duration animationLock();
-	Duration baseGcd();
 	String gcdGroup();
 }
