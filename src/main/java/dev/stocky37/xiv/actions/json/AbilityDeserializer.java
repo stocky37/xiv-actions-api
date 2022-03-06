@@ -14,7 +14,7 @@ public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 
 	public static final String ID = "ID";
 	public static final String NAME = "Name";
-	public static final String CATEGORY = "ActionCategory.Name";
+	public static final String CATEGORY = "ActionCategory.ID";
 	public static final String DESCRIPTION = "Description";
 	public static final String ICON = "Icon";
 	public static final String ICON_HD = "IconHD";
@@ -62,7 +62,7 @@ public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 		return Ability.builder()
 			.withId(json.get(ID).asText())
 			.withName(json.get(NAME).asText())
-			.withCategory(json.get(CATEGORY).asText())
+			.withAbilityType(abilityType(json.get(CATEGORY).asInt()))
 			.withDescription(json.get(DESCRIPTION).asText())
 			.withIcon(getUri(json, ICON))
 			.withIconHD(getUri(json, ICON_HD))
@@ -102,7 +102,16 @@ public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 			case -1, 1 -> Ability.DamageType.PHYSICAL;
 			case 0 -> null;
 			case 5 -> Ability.DamageType.MAGICAL;
-			default -> throw new RuntimeException("Unkown damage type: " + damageType);
+			default -> throw new RuntimeException("Unknown damage type: " + damageType);
+		};
+	}
+
+	public Ability.AbilityType abilityType(int category) {
+		return switch(category) {
+			case 2 -> Ability.AbilityType.SPELL;
+			case 3 -> Ability.AbilityType.WEAPONSKILL;
+			case 4 -> Ability.AbilityType.ABILITY;
+			default -> throw new RuntimeException("Unknown ability type: " + category);
 		};
 	}
 }
