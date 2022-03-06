@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -59,6 +60,7 @@ public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 	@Override
 	public Ability apply(JsonNodeWrapper json) {
 		final Set<String> cooldownGroups = cooldownGroups(json);
+		final boolean onGcd = cooldownGroups.remove(gcdGroup);
 		return Ability.builder()
 			.withId(json.get(ID).asText())
 			.withName(json.get(NAME).asText())
@@ -72,7 +74,7 @@ public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 			.withCast(get100ms(json, CAST))
 			.withRoleAction(json.get(ROLE_ACTION).asBoolean())
 			.withLevel(json.get(LEVEL).asInt())
-			.withOnGCD(cooldownGroups.contains(gcdGroup))
+			.withOnGCD(onGcd)
 			.withDamageType(damageType(json.get(DAMAGE_TYPE).asInt()))
 			.build();
 	}
