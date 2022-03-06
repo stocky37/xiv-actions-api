@@ -26,7 +26,7 @@ public record Ability(
 
 	// Ability
 	@JsonView(Views.Standard.class) int level,
-	@JsonView(Views.Standard.class) String category,
+	@JsonView(Views.Standard.class) AbilityType abilityType,
 	@JsonView(Views.Standard.class) boolean isRoleAction,
 	@JsonView(Views.Standard.class) Optional<DamageType> damageType,
 	@JsonView(Views.Standard.class) Optional<String> comboFrom,
@@ -35,6 +35,15 @@ public record Ability(
 
 	public enum DamageType {
 		PHYSICAL, MAGICAL;
+
+		@Override
+		public String toString() {
+			return slugify(name());
+		}
+	}
+
+	public enum AbilityType {
+		SPELL, ABILITY, WEAPONSKILL;
 
 		@Override
 		public String toString() {
@@ -71,7 +80,7 @@ public record Ability(
 		private Duration cast;
 		private Duration recast;
 		private int level;
-		private String category;
+		private AbilityType abilityType;
 		private boolean isRoleAction;
 		private Optional<DamageType> damageType = Optional.empty();
 		private Optional<String> comboFrom = Optional.empty();
@@ -89,7 +98,7 @@ public record Ability(
 			this.cast = action.cast;
 			this.recast = action.recast;
 			this.level = action.level;
-			this.category = action.category;
+			this.abilityType = action.abilityType;
 			this.isRoleAction = action.isRoleAction;
 			this.damageType = action.damageType;
 			this.comboFrom = action.comboFrom;
@@ -107,7 +116,7 @@ public record Ability(
 				cast,
 				recast,
 				level,
-				category,
+				abilityType,
 				isRoleAction,
 				damageType,
 				comboFrom,
@@ -125,8 +134,8 @@ public record Ability(
 			return this;
 		}
 
-		public Builder withCategory(String category) {
-			this.category = category;
+		public Builder withAbilityType(AbilityType abilityType) {
+			this.abilityType = abilityType;
 			return this;
 		}
 
