@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface Action {
 	@JsonProperty
-	@JsonView(Views.Rotation.class)
+	@JsonView(Views.Standard.class)
 	Type actionType();
 
 	@JsonView(Views.Standard.class)

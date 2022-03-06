@@ -28,7 +28,7 @@ public class JobsApi {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(Views.Full.class)
+	@JsonView(Views.Detailed.class)
 	public Optional<Job> get(@PathParam String id) {
 		return jobs.findByIdentifier(id);
 	}

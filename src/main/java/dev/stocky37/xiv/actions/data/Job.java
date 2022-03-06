@@ -18,9 +18,9 @@ public record Job(
 	Role role,
 	int index,
 	boolean isLimited,
-	@JsonView(Views.Full.class) Optional<Attribute> primaryStat,
-	@JsonView(Views.Full.class) List<Ability> abilities,
-	@JsonView(Views.Full.class) List<Consumable> potions
+	@JsonView(Views.Detailed.class) Optional<Attribute> primaryStat,
+	@JsonView(Views.Detailed.class) List<Ability> abilities,
+	@JsonView(Views.Detailed.class) List<Consumable> potions
 ) {
 
 	public static Builder builder() {

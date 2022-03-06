@@ -8,11 +8,11 @@ public class Views {
 
 	}
 
-	public static class Full extends Standard {
+	public static class Detailed extends Standard {
 
 	}
 
-	public static class Rotation extends Limited {
+	public static class Rotation extends Standard {
 
 	}
 }
