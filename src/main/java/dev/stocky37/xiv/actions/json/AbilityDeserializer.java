@@ -101,7 +101,7 @@ public class AbilityDeserializer extends JsonNodeDeserializer<Ability> {
 
 	public Ability.DamageType damageType(int damageType) {
 		return switch(damageType) {
-			case -1, 1 -> Ability.DamageType.PHYSICAL;
+			case -1, 1, 2, 3 -> Ability.DamageType.PHYSICAL;
 			case 0 -> null;
 			case 5 -> Ability.DamageType.MAGICAL;
 			default -> throw new RuntimeException("Unknown damage type: " + damageType);
