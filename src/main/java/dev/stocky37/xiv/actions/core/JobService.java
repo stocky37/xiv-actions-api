@@ -19,9 +19,14 @@ public class JobService {
 		this.enricher = enricher;
 	}
 
-	@CacheResult(cacheName = "jobs")
 	public List<Job> getAll() {
-		return xivapi.getJobs();
+		return getAll(Optional.empty());
+	}
+
+	@CacheResult(cacheName = "jobs")
+	public List<Job> getAll(Optional<Job.Type> type) {
+		final var jobs = xivapi.getJobs();
+		return type.isPresent() ? jobs.stream().filter(j -> j.type() == type.get()).toList() : jobs;
 	}
 
 	@CacheResult(cacheName = "jobs")

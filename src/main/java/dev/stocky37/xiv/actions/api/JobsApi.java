@@ -5,11 +5,13 @@ import dev.stocky37.xiv.actions.core.JobService;
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.data.Views;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
@@ -21,8 +23,8 @@ public class JobsApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@JsonView(Views.Standard.class)
-	public Collection<Job> list() {
-		return jobs.getAll();
+	public Collection<Job> list(@QueryParam("type") Optional<Job.Type> type) {
+		return jobs.getAll(type);
 	}
 
 	@GET
