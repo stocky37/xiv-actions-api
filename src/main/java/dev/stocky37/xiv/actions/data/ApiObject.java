@@ -1,6 +1,7 @@
 package dev.stocky37.xiv.actions.data;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import dev.stocky37.xiv.actions.util.Util;
 import java.net.URI;
 
 public interface ApiObject {
@@ -12,9 +13,8 @@ public interface ApiObject {
 	@JsonView(Views.Limited.class)
 	URI icon();
 
-	@JsonView(Views.Standard.class)
-	URI hdIcon();
-
-	@JsonView(Views.Standard.class)
-	String description();
+	@JsonView(Views.Limited.class)
+	default String slug() {
+		return Util.slugify(name());
+	}
 }

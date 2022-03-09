@@ -16,8 +16,6 @@ public record Ability(
 	String id,
 	String name,
 	URI icon,
-	URI hdIcon,
-	String description,
 
 	// Action
 	boolean onGCD,
@@ -25,6 +23,8 @@ public record Ability(
 	Duration recast,
 
 	// Ability
+	@JsonView(Views.Standard.class) URI hdIcon,
+	@JsonView(Views.Standard.class) String description,
 	@JsonView(Views.Standard.class) int level,
 	@JsonView(Views.Standard.class) AbilityType abilityType,
 	@JsonView(Views.Standard.class) boolean isRoleAction,
@@ -110,11 +110,11 @@ public record Ability(
 				id,
 				name,
 				icon,
-				hdIcon,
-				description,
 				onGCD,
 				cast,
 				recast,
+				hdIcon,
+				description,
 				level,
 				abilityType,
 				isRoleAction,

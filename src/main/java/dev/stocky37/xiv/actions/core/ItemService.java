@@ -2,7 +2,7 @@ package dev.stocky37.xiv.actions.core;
 
 import static dev.stocky37.xiv.actions.json.ItemDeserializer.BONUSES;
 import static dev.stocky37.xiv.actions.json.ItemDeserializer.BONUS_MAX;
-import static org.elasticsearch.common.Strings.capitalize;
+import static org.apache.commons.text.WordUtils.capitalize;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;

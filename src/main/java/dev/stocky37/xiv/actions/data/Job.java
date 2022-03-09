@@ -2,11 +2,15 @@ package dev.stocky37.xiv.actions.data;
 
 import static dev.stocky37.xiv.actions.util.Util.slugify;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
+import dev.stocky37.xiv.actions.util.Util;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.text.WordUtils;
 
 public record Job(
 	String id,
@@ -21,7 +25,12 @@ public record Job(
 	@JsonView(Views.Detailed.class) Optional<Attribute> primaryStat,
 	@JsonView(Views.Detailed.class) List<Ability> abilities,
 	@JsonView(Views.Detailed.class) List<Consumable> potions
-) {
+) implements ApiObject {
+
+	@Override
+	public String name() {
+		return WordUtils.capitalize(name);
+	}
 
 	public static Builder builder() {
 		return new Builder();
