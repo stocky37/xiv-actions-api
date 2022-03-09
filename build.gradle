@@ -20,6 +20,7 @@ dependencies {
 	implementation 'com.google.guava:guava'
 	implementation 'io.quarkus:quarkus-elasticsearch-rest-high-level-client'
 	implementation 'com.github.slugify:slugify:2.5'
+	implementation 'org.apache.commons:commons-text:1.9'
 
 	testImplementation 'io.quarkus:quarkus-junit5'
 	testImplementation 'io.rest-assured:rest-assured'

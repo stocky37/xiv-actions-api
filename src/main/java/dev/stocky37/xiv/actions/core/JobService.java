@@ -1,5 +1,7 @@
 package dev.stocky37.xiv.actions.core;
 
+import static dev.stocky37.xiv.actions.util.Util.slugify;
+
 import dev.stocky37.xiv.actions.data.Job;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
@@ -45,7 +47,7 @@ public class JobService {
 
 	public Optional<Job> findByName(String name) {
 		return getAll().stream()
-			.filter(j -> j.name().equalsIgnoreCase(name))
+			.filter(j -> j.slug().equals(slugify(name)))
 			.findFirst();
 	}
 
