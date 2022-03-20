@@ -21,6 +21,7 @@ public record Ability(
 	boolean onGCD,
 	Duration cast,
 	Duration recast,
+	Set<String> cooldownGroups,
 
 	// Ability
 	@JsonView(Views.Standard.class) URI hdIcon,
@@ -29,8 +30,7 @@ public record Ability(
 	@JsonView(Views.Standard.class) AbilityType abilityType,
 	@JsonView(Views.Standard.class) boolean isRoleAction,
 	@JsonView(Views.Standard.class) Optional<DamageType> damageType,
-	@JsonView(Views.Standard.class) Optional<String> comboFrom,
-	@JsonView(Views.Standard.class) Set<String> cooldownGroups
+	@JsonView(Views.Standard.class) Optional<String> comboFrom
 ) implements Action, ApiObject {
 
 	public enum DamageType {
@@ -113,14 +113,14 @@ public record Ability(
 				onGCD,
 				cast,
 				recast,
+				cooldownGroups,
 				hdIcon,
 				description,
 				level,
 				abilityType,
 				isRoleAction,
 				damageType,
-				comboFrom,
-				cooldownGroups
+				comboFrom
 			);
 		}
 

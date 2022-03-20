@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 public interface Action {
 	@JsonProperty
@@ -44,6 +45,12 @@ public interface Action {
 	@JsonView(Views.Rotation.class)
 	default Optional<Duration> animationLock() {
 		return Optional.empty();
+	}
+
+	@JsonProperty
+	@JsonView(Views.Standard.class)
+	default Set<String> cooldownGroups() {
+		return Collections.emptySet();
 	}
 
 	enum Type {
