@@ -2,6 +2,7 @@ package dev.stocky37.xiv.actions.data;
 
 import static dev.stocky37.xiv.actions.util.Util.slugify;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public interface Action {
@@ -50,6 +52,11 @@ public interface Action {
 		@Override
 		public String toString() {
 			return slugify(name());
+		}
+
+		@JsonCreator
+		public static Type fromString(String value) {
+			return Type.valueOf(value.toUpperCase());
 		}
 	}
 }

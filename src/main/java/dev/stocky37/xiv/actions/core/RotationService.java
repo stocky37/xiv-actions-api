@@ -5,7 +5,7 @@ import dev.stocky37.xiv.actions.data.Action;
 import dev.stocky37.xiv.actions.data.Delay;
 import dev.stocky37.xiv.actions.data.Item;
 import dev.stocky37.xiv.actions.data.Rotation;
-import dev.stocky37.xiv.actions.data.RotationInput;
+import dev.stocky37.xiv.actions.api.json.RotationInput;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
@@ -29,30 +29,37 @@ public class RotationService {
 
 	public Rotation buildRotation(RotationInput input) {
 		final var builder = new RotationBuilder(config);
-		input.actions().forEach(str -> builder.append(parseAction(str)));
+		input.actions().forEach(str -> builder.append(handleAction(str)));
 		return builder.build();
 	}
 
-	private Action parseAction(String str) {
-		// standard delay for nulls for now
-		if(str == null) {
-			return new Delay(config.animationLock());
-		}
+	private Action handleAction(RotationInput.Action input) {
+		return switch(input.type()) {
+			case ABILITY -> handleAbility(input);
+			case ITEM -> handleItem(input);
+			case DELAY -> handleDelay(input);
+		};
+	}
 
-		// starts with i, then it's an item
-		if(str.startsWith("i")) {
-			final var id = str.substring(1);
-			final var item = itemService.findById(id)
-				.orElseThrow(() -> new BadRequestException("No item found with id: " + id));
-			if(item.kind() != Item.Kind.CONSUMABLE) {
-				throw new BadRequestException("Unsupported item kind: " + item.kind().toString());
-			}
-			return (Action) item;
-		}
+	private Action handleAbility(RotationInput.Action input) {
+		return abilityService.findById(input.id()
+				.orElseThrow(() -> new BadRequestException("No id present for ability action")))
+			.orElseThrow(() -> new BadRequestException("No ability found with id: " + input.id()));
+	}
 
-		// otherwise, it's an ability
-		return abilityService.findById(str)
-			.orElseThrow(() -> new BadRequestException("No ability found with id: " + str));
+	private Action handleItem(RotationInput.Action input) {
+		final var item = itemService
+			.findById(input.id()
+				.orElseThrow(() -> new BadRequestException("No id present for item action")))
+			.orElseThrow(() -> new BadRequestException("No item found with id: " + input.id()));
+		if(item.kind() != Item.Kind.CONSUMABLE) {
+			throw new BadRequestException("Unsupported item kind: " + item.kind().toString());
+		}
+		return (Action) item;
+	}
+
+	private Action handleDelay(RotationInput.Action input) {
+		return new Delay(input.length().orElse(config.animationLock()));
 	}
 }
 
