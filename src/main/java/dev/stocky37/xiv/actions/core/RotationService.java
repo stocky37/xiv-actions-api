@@ -29,7 +29,7 @@ public class RotationService {
 
 	public Rotation buildRotation(RotationInput input) {
 		final var builder = new RotationBuilder(config);
-		input.actions().forEach(str -> builder.append(handleAction(str)));
+		input.rotation().forEach(str -> builder.append(handleAction(str)));
 		return builder.build();
 	}
 

@@ -28,7 +28,7 @@ public class Data {
 				new TypeReference<>() {}
 			);
 		} catch (IllegalArgumentException | IOException e) {
-			Log.info("Failed to load actions data", e);
+			Log.info("Failed to load rotation data", e);
 			return new HashMap<>();
 		}
 	}
