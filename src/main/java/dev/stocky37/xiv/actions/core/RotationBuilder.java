@@ -69,8 +69,9 @@ public class RotationBuilder {
 	private Duration calcGcdCooldown(Action action) {
 		// assuming only 2500 gcd skills are affected by skill/spell speed
 		// there may be a better way of checking, but this appears to work for now
-		return action.recast().equals(BASE_GCD) ? gcd : action.recast();
-
+		// also need to check if there is a separate cooldown group - if there is,
+		// assume standard gcd length
+		return action.recast().equals(BASE_GCD) || !action.cooldownGroups().isEmpty() ? gcd : action.recast();
 	}
 
 	private RotationAction handleOGcd(Action action) {
