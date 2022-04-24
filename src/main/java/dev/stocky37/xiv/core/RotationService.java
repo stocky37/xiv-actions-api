@@ -35,9 +35,9 @@ public class RotationService {
 
 	private Action handleAction(RotationInput.Action input) {
 		return switch(input.type()) {
-			case Action.Type.ABILITY -> handleAbility(input);
-			case Action.Type.ITEM -> handleItem(input);
-			case Action.Type.DELAY -> handleDelay(input);
+			case ABILITY -> handleAbility(input);
+			case ITEM -> handleItem(input);
+			case DELAY -> handleDelay(input);
 		};
 	}
 
@@ -49,7 +49,7 @@ public class RotationService {
 
 	private Action handleItem(RotationInput.Action input) {
 		final var item = itemService
-			.findById(input.id()
+			.findConsumableById(input.id()
 				.orElseThrow(() -> new BadRequestException("No id present for item action")))
 			.orElseThrow(() -> new BadRequestException("No item found with id: " + input.id()));
 		if(item.kind() != Item.Kind.CONSUMABLE) {

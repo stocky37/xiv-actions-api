@@ -4,7 +4,6 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.io.Resources;
@@ -15,23 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.ws.rs.Produces;
 
 public class DataLoader {
 
-	private final static ObjectMapper yaml = initMapper();
+	private final static YAMLMapper yaml = YAMLMapper.builder()
+		.disable(FAIL_ON_UNKNOWN_PROPERTIES)
+		.disable(READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
+		.addModule(new JavaTimeModule())
+		.build();
 
-	private static ObjectMapper initMapper() {
-		return YAMLMapper.builder()
-			.disable(FAIL_ON_UNKNOWN_PROPERTIES)
-			.disable(READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
-			.addModule(new JavaTimeModule())
-			.build();
-	}
-
-	@Produces
-	@Named("data.actions")
 	@Singleton
+	@Named("data.actions")
 	@SuppressWarnings("UnstableApiUsage")
 	public Map<String, Ability> loadActionData() {
 		try {

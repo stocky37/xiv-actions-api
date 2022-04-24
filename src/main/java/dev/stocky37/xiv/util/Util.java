@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 import java.net.URI;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
@@ -14,6 +15,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class Util {
 
 	private static final Slugify slugifier = new Slugify().withCustomReplacement("_", "-");
+	public static final List<String> ALL_COLUMNS = List.of("*");
 
 	private final ObjectMapper mapper;
 	private final UriBuilder prefixBuilder;

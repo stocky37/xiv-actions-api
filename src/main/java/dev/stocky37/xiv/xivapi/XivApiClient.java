@@ -1,18 +1,14 @@
 package dev.stocky37.xiv.xivapi;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.RateLimiter;
-import dev.stocky37.xiv.json.ItemDeserializer;
-import dev.stocky37.xiv.json.JobDeserializer;
-import dev.stocky37.xiv.model.Item;
-import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.model.Query;
 import dev.stocky37.xiv.util.Util;
 import dev.stocky37.xiv.xivapi.json.SearchBody;
 import dev.stocky37.xiv.xivapi.json.XivAbility;
+import dev.stocky37.xiv.xivapi.json.XivClassJob;
+import dev.stocky37.xiv.xivapi.json.XivConsumable;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -40,21 +36,31 @@ public class XivApiClient {
 		this.util = util;
 	}
 
-	public <T> List<T> search(Query query, Function<JsonNode, T> deserializer) {
-		final SearchBody body = new SearchBody(
-			String.join(",", query.indexes()),
-			String.join(",", query.columns()),
-			util.toJsonNode(query.query())
-		);
-
-		return wrapApi(() -> xivapi.search(body))
-			.Results()
-			.parallelStream()
-			.map(deserializer)
-			.toList();
+	public List<XivAbility> searchAbilities(Query query) {
+		return search(query, XivAbility.class);
 	}
 
-	public <T> List<T> search2(Query query, Class<T> clazz) {
+	public List<XivConsumable> searchConsumables(Query query) {
+		return search(query, XivConsumable.class);
+	}
+
+	public List<XivClassJob> getJobs() {
+		return wrapApi(() -> xivapi.getClassJobs(XivClassJob.COLUMNS)).Results();
+	}
+
+	public Optional<XivAbility> getAction(String id) {
+		try {
+			return Optional.of(wrapApi(() -> xivapi.getAction(id)));
+		} catch (NotFoundException e) {
+			return Optional.empty();
+		}
+	}
+
+	public Optional<XivConsumable> getConsumable(String id) {
+		return getItem(id, XivConsumable.class);
+	}
+
+	private <T> List<T> search(Query query, Class<T> clazz) {
 		final SearchBody body = new SearchBody(
 			String.join(",", query.indexes()),
 			String.join(",", query.columns()),
@@ -68,25 +74,10 @@ public class XivApiClient {
 			.toList();
 	}
 
-	public List<XivAbility> searchAbilities(Query query) {
-		return search2(query, XivAbility.class);
-	}
 
-	public List<Job> getJobs() {
-		return wrapApi(() -> xivapi.getClassJobs(JobDeserializer.ALL_FIELDS)).Results();
-	}
-
-	public Optional<XivAbility> getAction(String id) {
+	private <T> Optional<T> getItem(String id, Class<T> clazz) {
 		try {
-			return Optional.of(wrapApi(() -> xivapi.getAction(id)));
-		} catch (NotFoundException e) {
-			return Optional.empty();
-		}
-	}
-
-	public Optional<Item> getItem(String id) {
-		try {
-			return Optional.of(wrapApi(() -> xivapi.getItem(id, ItemDeserializer.ALL_FIELDS)));
+			return Optional.of(wrapApi(() -> util.fromJsonNode(xivapi.getItem(id), clazz)));
 		} catch (NotFoundException e) {
 			return Optional.empty();
 		}

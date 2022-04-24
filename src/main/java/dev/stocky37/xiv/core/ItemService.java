@@ -1,7 +1,5 @@
 package dev.stocky37.xiv.core;
 
-import static dev.stocky37.xiv.json.ItemDeserializer.BONUSES;
-import static dev.stocky37.xiv.json.ItemDeserializer.BONUS_MAX;
 import static org.apache.commons.text.WordUtils.capitalize;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
@@ -9,12 +7,12 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 import com.google.common.base.Joiner;
-import dev.stocky37.xiv.json.ItemDeserializer;
 import dev.stocky37.xiv.model.Attribute;
 import dev.stocky37.xiv.model.Consumable;
-import dev.stocky37.xiv.model.Item;
 import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.model.Query;
+import dev.stocky37.xiv.model.transform.ConsumableConverter;
+import dev.stocky37.xiv.util.Util;
 import dev.stocky37.xiv.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
 import java.util.Collections;
@@ -30,11 +28,11 @@ public class ItemService {
 	private static final Joiner joiner = Joiner.on('.');
 
 	private final XivApiClient xivapi;
-	private final ItemDeserializer deserializer;
+	private final ConsumableConverter converter;
 
-	public ItemService(XivApiClient xivapi, ItemDeserializer deserializer) {
+	public ItemService(XivApiClient xivapi, ConsumableConverter converter) {
 		this.xivapi = xivapi;
-		this.deserializer = deserializer;
+		this.converter = converter;
 	}
 
 	@CacheResult(cacheName = "items")
@@ -46,25 +44,25 @@ public class ItemService {
 
 		final Query query = new Query(
 			INDEXES,
-			ItemDeserializer.ALL_FIELDS,
+			Util.ALL_COLUMNS,
 			buildJobPotionsQuery(job.primaryStat().get())
 		);
 
-		return xivapi.search(query, (json) -> (Consumable) deserializer.apply(json));
+		return xivapi.searchConsumables(query).stream().map(converter).toList();
 	}
 
 	@CacheResult(cacheName = "items")
-	public Optional<? extends Item> findById(String id) {
-		return xivapi.getItem(id);
+	public Optional<Consumable> findConsumableById(String id) {
+		return xivapi.getConsumable(id).map(converter);
 	}
 
 	private SearchSourceBuilder buildJobPotionsQuery(Attribute attribute) {
 		final var isPotion = termQuery("ItemSortCategory.ID", 6);
-		final var hasStat = existsQuery(joiner.join(BONUSES, capitalize(attribute.toString())));
+		final var hasStat = existsQuery(joiner.join("Bonuses", capitalize(attribute.toString())));
 
 		return new SearchSourceBuilder().size(100)
 			.sort(
-				Joiner.on('.').join(BONUSES, capitalize(attribute.toString()), BONUS_MAX),
+				Joiner.on('.').join("Bonuses", capitalize(attribute.toString()), "MaxHQ"),
 				DESC
 			)
 			.query(boolQuery()

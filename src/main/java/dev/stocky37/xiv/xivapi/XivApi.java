@@ -6,6 +6,7 @@ import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.xivapi.json.PaginatedList;
 import dev.stocky37.xiv.xivapi.json.SearchBody;
 import dev.stocky37.xiv.xivapi.json.XivAbility;
+import dev.stocky37.xiv.xivapi.json.XivClassJob;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -28,7 +29,7 @@ public interface XivApi {
 
 	@GET
 	@Path("classjob")
-	PaginatedList<Job> getClassJobs(@QueryParam("columns") List<String> columns);
+	PaginatedList<XivClassJob> getClassJobs(@QueryParam("columns") List<String> columns);
 
 	@GET
 	@Path("action/{id}")
@@ -36,5 +37,5 @@ public interface XivApi {
 
 	@GET
 	@Path("item/{id}")
-	Item getItem(@PathParam("id") String id, @QueryParam("columns") List<String> columns);
+	JsonNode getItem(@PathParam("id") String id);
 }

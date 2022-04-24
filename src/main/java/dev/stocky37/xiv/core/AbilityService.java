@@ -4,18 +4,16 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import dev.stocky37.xiv.core.enrich.AbilityEnricher;
-import dev.stocky37.xiv.json.AbilityDeserializer;
 import dev.stocky37.xiv.model.Ability;
 import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.model.Query;
 import dev.stocky37.xiv.model.transform.AbilityConverter;
+import dev.stocky37.xiv.util.Util;
 import dev.stocky37.xiv.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import javax.enterprise.context.ApplicationScoped;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -27,36 +25,33 @@ public class AbilityService {
 	private static final List<String> INDEXES = List.of("action");
 
 	private final XivApiClient xivapi;
-	private final Function<JsonNode, Ability> converter;
+	private final AbilityConverter converter;
 	private final UnaryOperator<Ability> enricher;
 
-	private final AbilityConverter abilityConverter;
-
 	public AbilityService(
-		XivApiClient xivapi, AbilityDeserializer converter,
-		AbilityEnricher enricher,
-		AbilityConverter abilityConverter
+		XivApiClient xivapi,
+		AbilityConverter converter,
+		AbilityEnricher enricher
 	) {
 		this.xivapi = xivapi;
 		this.converter = converter;
 		this.enricher = enricher;
-		this.abilityConverter = abilityConverter;
 	}
 
 	@CacheResult(cacheName = "actions")
 	public List<Ability> findForJob(Job job) {
 		final Query query = new Query(
 			INDEXES,
-			AbilityDeserializer.ALL_FIELDS,
+			Util.ALL_COLUMNS,
 			buildJobActionsQuery(job.abbreviation())
 		);
 
-		return xivapi.searchAbilities(query).stream().map(abilityConverter).map(enricher).toList();
+		return xivapi.searchAbilities(query).stream().map(converter).map(enricher).toList();
 	}
 
 	@CacheResult(cacheName = "actions")
 	public Optional<Ability> findById(String id) {
-		return xivapi.getAction(id).map(abilityConverter).map(enricher);
+		return xivapi.getAction(id).map(converter).map(enricher);
 	}
 
 	private SearchSourceBuilder buildJobActionsQuery(String jobAbbrev) {
