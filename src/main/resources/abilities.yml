@@ -1,0 +1,74 @@
+####### Reaper #######
+# Slice
+24373:
+  potency: 300
+
+# Waxing Slice
+24374:
+  potency: 380
+
+# Shadow of Death
+24378:
+  potency: 300
+
+# Harpe
+24386:
+  potency: 300
+
+# Infernal Slice
+24375:
+  potency: 400
+
+# Blood Stalk
+24389:
+  potency: 340
+
+# Soul Slice
+24380:
+  potency: 460
+
+# Gibbet (enhanced)
+24382:
+  potency: 520
+
+# Gallows (enhanced)
+24383:
+  potency: 520
+
+# Unveiled Gibbet
+24390:
+  potency: 400
+
+# Unveiled Gallows
+24391:
+  potency: 400
+
+# Gluttony
+24393:
+  potency: 500
+
+# Void Reaping
+24395:
+  potency: 520
+  recast: 1500
+
+# Cross Reaping
+24396:
+  potency: 520
+  recast: 1500
+
+# Harvest Moon
+24388:
+  potency: 600
+
+# Lemure's Slice
+24399:
+  potency: 200
+
+# Plentiful Harvest
+24385:
+  potency: 520
+
+# Communio
+24398:
+  potency: 1000
