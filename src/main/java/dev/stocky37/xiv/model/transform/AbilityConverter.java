@@ -50,11 +50,11 @@ public class AbilityConverter implements Function<XivAbility, Ability> {
 			.build();
 	}
 
-	public Duration duration100ms(long duration) {
+	private Duration duration100ms(long duration) {
 		return Duration.ofMillis(duration * 100);
 	}
 
-	public Ability.DamageType damageType(int damageType) {
+	private Ability.DamageType damageType(int damageType) {
 		return switch(damageType) {
 			case -1, 1, 2, 3 -> Ability.DamageType.PHYSICAL;
 			case 0 -> null;

@@ -1,6 +1,6 @@
 package dev.stocky37.xiv.config;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import dev.stocky37.xiv.model.Ability;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.Map;
 import javax.inject.Inject;
@@ -9,10 +9,10 @@ import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-class DataTest implements WithAssertions {
+class DataLoaderTest implements WithAssertions {
 	@Inject
 	@Named("data.actions")
-	Map<String, JsonNode> data;
+	Map<String, Ability> data;
 
 	@Test
 	public void loadedActionData() {
