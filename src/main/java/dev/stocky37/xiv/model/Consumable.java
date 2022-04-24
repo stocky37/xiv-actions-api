@@ -34,7 +34,7 @@ public record Consumable(
 	}
 
 	@JsonProperty
-	public boolean onGCD() {
+	public Boolean onGCD() {
 		return false;
 	}
 
@@ -46,6 +46,11 @@ public record Consumable(
 	@Override
 	public Type actionType() {
 		return Type.ITEM;
+	}
+
+	@Override
+	public Integer potency() {
+		return 0;
 	}
 
 	// temporarily adding medicated status effect manually

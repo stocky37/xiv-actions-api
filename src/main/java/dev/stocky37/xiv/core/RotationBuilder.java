@@ -35,7 +35,7 @@ public class RotationBuilder {
 		return this;
 	}
 
-	public RotationBuilder withActions(List<Action> actions) {
+	public RotationBuilder appendActions(List<Action> actions) {
 		this.actions.addAll(actions);
 		return this;
 	}

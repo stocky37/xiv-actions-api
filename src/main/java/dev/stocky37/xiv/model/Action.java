@@ -19,7 +19,7 @@ public interface Action {
 	Type actionType();
 
 	@JsonView(Views.Standard.class)
-	boolean onGCD();
+	Boolean onGCD();
 
 	@JsonFormat(pattern = "MILLIS")
 	@JsonView(Views.Standard.class)
@@ -50,6 +50,10 @@ public interface Action {
 	default Set<String> cooldownGroups() {
 		return Collections.emptySet();
 	}
+
+	@JsonProperty
+	@JsonView(Views.Standard.class)
+	Integer potency();
 
 	enum Type {
 		ABILITY, ITEM, DELAY;
