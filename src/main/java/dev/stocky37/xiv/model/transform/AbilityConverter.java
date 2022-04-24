@@ -5,6 +5,7 @@ import dev.stocky37.xiv.util.Util;
 import dev.stocky37.xiv.xivapi.json.XivAbility;
 import java.time.Duration;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
@@ -34,18 +35,18 @@ public class AbilityConverter implements Function<XivAbility, Ability> {
 		return Ability.builder()
 			.withId(ability.ID().toString())
 			.withName(ability.Name())
+			.withOnGCD(onGcd)
 			.withAbilityType(abilityType(ability.ActionCategory().ID()))
+			.withCast(duration100ms(ability.Cast100ms()))
+			.withRecast(duration100ms(ability.Recast100ms()))
+			.withComboFrom(comboAction(ability.ActionComboTargetID()))
+			.withCooldownGroups(cooldownGroups)
+			.withDamageType(damageType(ability.AttackTypeTargetID()))
 			.withDescription(ability.Description())
 			.withIcon(util.prefixXivApi(ability.Icon()))
 			.withIconHD(util.prefixXivApi(ability.IconHD()))
-			.withComboFrom(comboAction(ability.ActionComboTargetID()))
-			.withCooldownGroups(cooldownGroups)
-			.withRecast(duration100ms(ability.Recast100ms()))
-			.withCast(duration100ms(ability.Cast100ms()))
-			.withRoleAction(ability.IsRoleAction())
 			.withLevel(ability.ClassJobLevel())
-			.withOnGCD(onGcd)
-			.withDamageType(damageType(ability.AttackTypeTargetID()))
+			.withRoleAction(ability.IsRoleAction())
 			.build();
 	}
 
