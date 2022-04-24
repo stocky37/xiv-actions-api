@@ -1,8 +1,8 @@
 package dev.stocky37.xiv.api;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import dev.stocky37.xiv.api.json.Views;
 import dev.stocky37.xiv.core.JobService;
-import dev.stocky37.xiv.json.Views;
 import dev.stocky37.xiv.model.Job;
 import java.util.Collection;
 import java.util.Optional;

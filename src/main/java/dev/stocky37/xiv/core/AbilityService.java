@@ -5,6 +5,7 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.stocky37.xiv.core.enrich.AbilityEnricher;
 import dev.stocky37.xiv.json.AbilityDeserializer;
 import dev.stocky37.xiv.model.Ability;
 import dev.stocky37.xiv.model.Job;

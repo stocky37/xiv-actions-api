@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import dev.stocky37.xiv.json.Views;
+import dev.stocky37.xiv.api.json.Views;
 import dev.stocky37.xiv.util.Util;
 import java.time.Duration;
 import java.util.Collections;

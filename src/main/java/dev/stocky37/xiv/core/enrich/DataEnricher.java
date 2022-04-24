@@ -1,4 +1,4 @@
-package dev.stocky37.xiv.core;
+package dev.stocky37.xiv.core.enrich;
 
 import dev.stocky37.xiv.model.ApiObject;
 import java.util.Map;

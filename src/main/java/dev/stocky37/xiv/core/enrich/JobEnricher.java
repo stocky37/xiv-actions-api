@@ -1,5 +1,7 @@
-package dev.stocky37.xiv.core;
+package dev.stocky37.xiv.core.enrich;
 
+import dev.stocky37.xiv.core.AbilityService;
+import dev.stocky37.xiv.core.ItemService;
 import dev.stocky37.xiv.model.Ability;
 import dev.stocky37.xiv.model.Consumable;
 import dev.stocky37.xiv.model.Job;

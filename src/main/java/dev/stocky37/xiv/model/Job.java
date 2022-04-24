@@ -1,7 +1,7 @@
 package dev.stocky37.xiv.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import dev.stocky37.xiv.json.Views;
+import dev.stocky37.xiv.api.json.Views;
 import dev.stocky37.xiv.util.Util;
 import java.net.URI;
 import java.util.ArrayList;

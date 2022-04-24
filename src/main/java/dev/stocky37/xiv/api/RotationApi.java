@@ -4,8 +4,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import dev.stocky37.xiv.api.json.RotationInput;
+import dev.stocky37.xiv.api.json.Views;
 import dev.stocky37.xiv.core.RotationService;
-import dev.stocky37.xiv.json.Views;
 import dev.stocky37.xiv.model.Rotation;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
