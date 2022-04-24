@@ -12,6 +12,9 @@ public class AbilityMerger implements BinaryOperator<Ability> {
 		if(update.recast() != null) {
 			builder.withRecast(update.recast());
 		}
+		if(update.potency() != null) {
+			builder.withPotency(update.potency());
+		}
 		return builder.build();
 	}
 }

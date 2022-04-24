@@ -6,8 +6,13 @@ import java.util.Optional;
 
 public record Delay(@JsonIgnore Duration duration) implements Action {
 	@Override
-	public boolean onGCD() {
+	public Boolean onGCD() {
 		return false;
+	}
+
+	@Override
+	public Integer potency() {
+		return 0;
 	}
 
 	@Override

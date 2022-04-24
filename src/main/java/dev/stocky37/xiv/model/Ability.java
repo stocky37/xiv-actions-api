@@ -19,17 +19,18 @@ public record Ability(
 	URI icon,
 
 	// Action
-	boolean onGCD,
+	Boolean onGCD,
 	Duration cast,
 	Duration recast,
 	Set<String> cooldownGroups,
+	Integer potency,
 
 	// Ability
 	@JsonView(Views.Standard.class) URI hdIcon,
 	@JsonView(Views.Standard.class) String description,
-	@JsonView(Views.Standard.class) int level,
+	@JsonView(Views.Standard.class) Integer level,
 	@JsonView(Views.Standard.class) AbilityType abilityType,
-	@JsonView(Views.Standard.class) boolean isRoleAction,
+	@JsonView(Views.Standard.class) Boolean isRoleAction,
 	@JsonView(Views.Standard.class) Optional<DamageType> damageType,
 	@JsonView(Views.Standard.class) Optional<String> comboFrom
 ) implements Action, ApiObject {
@@ -87,6 +88,8 @@ public record Ability(
 		private Optional<String> comboFrom = Optional.empty();
 		private Set<String> cooldownGroups = new HashSet<>();
 
+		private int potency = 0;
+
 		private Builder() {}
 
 		public Builder(Ability action) {
@@ -104,6 +107,7 @@ public record Ability(
 			this.damageType = action.damageType;
 			this.comboFrom = action.comboFrom;
 			this.cooldownGroups = action.cooldownGroups;
+			this.potency = action.potency;
 		}
 
 		public Ability build() {
@@ -115,6 +119,7 @@ public record Ability(
 				cast,
 				recast,
 				cooldownGroups,
+				potency,
 				hdIcon,
 				description,
 				level,
@@ -194,7 +199,11 @@ public record Ability(
 			this.damageType = Optional.ofNullable(damageType);
 			return this;
 		}
-	}
 
+		public Builder withPotency(int potency) {
+			this.potency = potency;
+			return this;
+		}
+	}
 }
 
