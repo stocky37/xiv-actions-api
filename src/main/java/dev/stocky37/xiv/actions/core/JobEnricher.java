@@ -1,8 +1,8 @@
 package dev.stocky37.xiv.actions.core;
 
-import dev.stocky37.xiv.actions.data.Ability;
-import dev.stocky37.xiv.actions.data.Consumable;
-import dev.stocky37.xiv.actions.data.Job;
+import dev.stocky37.xiv.actions.model.Ability;
+import dev.stocky37.xiv.actions.model.Consumable;
+import dev.stocky37.xiv.actions.model.Job;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.UnaryOperator;

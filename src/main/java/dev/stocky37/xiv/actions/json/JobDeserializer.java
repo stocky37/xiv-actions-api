@@ -1,7 +1,7 @@
 package dev.stocky37.xiv.actions.json;
 
-import dev.stocky37.xiv.actions.data.Attribute;
-import dev.stocky37.xiv.actions.data.Job;
+import dev.stocky37.xiv.actions.model.Attribute;
+import dev.stocky37.xiv.actions.model.Job;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;

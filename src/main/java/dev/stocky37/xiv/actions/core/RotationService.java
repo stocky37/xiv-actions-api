@@ -1,10 +1,10 @@
 package dev.stocky37.xiv.actions.core;
 
 import dev.stocky37.xiv.actions.config.XivConfig;
-import dev.stocky37.xiv.actions.data.Action;
-import dev.stocky37.xiv.actions.data.Delay;
-import dev.stocky37.xiv.actions.data.Item;
-import dev.stocky37.xiv.actions.data.Rotation;
+import dev.stocky37.xiv.actions.model.Action;
+import dev.stocky37.xiv.actions.model.Delay;
+import dev.stocky37.xiv.actions.model.Item;
+import dev.stocky37.xiv.actions.model.Rotation;
 import dev.stocky37.xiv.actions.api.json.RotationInput;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

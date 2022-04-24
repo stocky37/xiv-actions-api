@@ -1,4 +1,4 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.Duration;

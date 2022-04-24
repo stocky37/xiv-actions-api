@@ -1,9 +1,10 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.collect.Lists;
+import dev.stocky37.xiv.actions.json.Views;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;

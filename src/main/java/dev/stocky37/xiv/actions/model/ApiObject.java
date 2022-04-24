@@ -1,6 +1,7 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import dev.stocky37.xiv.actions.json.Views;
 import dev.stocky37.xiv.actions.util.Util;
 import java.net.URI;
 

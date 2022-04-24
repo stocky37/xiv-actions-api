@@ -5,11 +5,13 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.stocky37.xiv.actions.data.Ability;
-import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.data.Query;
+import dev.stocky37.xiv.actions.model.Ability;
+import dev.stocky37.xiv.actions.model.Job;
+import dev.stocky37.xiv.actions.model.Query;
 import dev.stocky37.xiv.actions.json.AbilityDeserializer;
+import dev.stocky37.xiv.actions.model.converters.AbilityConverter;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
+import dev.stocky37.xiv.actions.xivapi.json.XivAbility;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
 import java.util.Optional;
@@ -28,13 +30,17 @@ public class AbilityService {
 	private final Function<JsonNode, Ability> converter;
 	private final UnaryOperator<Ability> enricher;
 
+	private final AbilityConverter abilityConverter;
+
 	public AbilityService(
 		XivApiClient xivapi, AbilityDeserializer converter,
-		AbilityEnricher enricher
+		NewAbilityEnricher enricher,
+		AbilityConverter abilityConverter
 	) {
 		this.xivapi = xivapi;
 		this.converter = converter;
 		this.enricher = enricher;
+		this.abilityConverter = abilityConverter;
 	}
 
 	@CacheResult(cacheName = "actions")
@@ -45,12 +51,12 @@ public class AbilityService {
 			buildJobActionsQuery(job.abbreviation())
 		);
 
-		return xivapi.search(query, converter).stream().map(enricher).toList();
+		return xivapi.searchAbilities(query).stream().map(abilityConverter).map(enricher).toList();
 	}
 
 	@CacheResult(cacheName = "actions")
 	public Optional<Ability> findById(String id) {
-		return xivapi.getAction(id).map(enricher);
+		return xivapi.getAction(id).map(abilityConverter).map(enricher);
 	}
 
 	private SearchSourceBuilder buildJobActionsQuery(String jobAbbrev) {

@@ -1,17 +1,16 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.model;
 
 import static dev.stocky37.xiv.actions.util.Util.slugify;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import dev.stocky37.xiv.actions.json.Views;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 

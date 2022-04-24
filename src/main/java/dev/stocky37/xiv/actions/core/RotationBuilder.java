@@ -2,10 +2,10 @@ package dev.stocky37.xiv.actions.core;
 
 import com.google.common.collect.Lists;
 import dev.stocky37.xiv.actions.config.XivConfig;
-import dev.stocky37.xiv.actions.data.Action;
-import dev.stocky37.xiv.actions.data.RotationEffect;
-import dev.stocky37.xiv.actions.data.Rotation;
-import dev.stocky37.xiv.actions.data.RotationAction;
+import dev.stocky37.xiv.actions.model.Action;
+import dev.stocky37.xiv.actions.model.RotationEffect;
+import dev.stocky37.xiv.actions.model.Rotation;
+import dev.stocky37.xiv.actions.model.RotationAction;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;

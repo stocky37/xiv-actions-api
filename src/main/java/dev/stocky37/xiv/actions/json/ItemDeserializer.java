@@ -1,9 +1,9 @@
 package dev.stocky37.xiv.actions.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.stocky37.xiv.actions.data.Attribute;
-import dev.stocky37.xiv.actions.data.Consumable;
-import dev.stocky37.xiv.actions.data.Item;
+import dev.stocky37.xiv.actions.model.Attribute;
+import dev.stocky37.xiv.actions.model.Consumable;
+import dev.stocky37.xiv.actions.model.Item;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;

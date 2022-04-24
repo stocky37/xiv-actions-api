@@ -1,4 +1,4 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.model;
 
 import java.util.List;
 import org.elasticsearch.search.builder.SearchSourceBuilder;

@@ -1,4 +1,4 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.json;
 
 public class Views {
 	public static class Limited {

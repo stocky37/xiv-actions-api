@@ -1,4 +1,4 @@
-# Reaper
+####### Reaper #######
 # Slice
 24373:
   potency: 300
@@ -50,12 +50,12 @@
 # Void Reaping
 24395:
   potency: 520
-  Recast100ms: 15
+  recast: 1500
 
 # Cross Reaping
 24396:
   potency: 520
-  Recast100ms: 15
+  recast: 1500
 
 # Harvest Moon
 24388:

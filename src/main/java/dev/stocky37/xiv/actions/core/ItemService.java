@@ -9,11 +9,11 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
 
 import com.google.common.base.Joiner;
-import dev.stocky37.xiv.actions.data.Attribute;
-import dev.stocky37.xiv.actions.data.Consumable;
-import dev.stocky37.xiv.actions.data.Item;
-import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.data.Query;
+import dev.stocky37.xiv.actions.model.Attribute;
+import dev.stocky37.xiv.actions.model.Consumable;
+import dev.stocky37.xiv.actions.model.Item;
+import dev.stocky37.xiv.actions.model.Job;
+import dev.stocky37.xiv.actions.model.Query;
 import dev.stocky37.xiv.actions.json.ItemDeserializer;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;

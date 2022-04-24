@@ -1,8 +1,9 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.model;
 
 import static dev.stocky37.xiv.actions.util.Util.slugify;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import dev.stocky37.xiv.actions.json.Views;
 import java.net.URI;
 
 public interface Item extends ApiObject {

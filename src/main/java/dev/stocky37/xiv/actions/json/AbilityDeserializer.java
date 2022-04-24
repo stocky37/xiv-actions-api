@@ -1,11 +1,10 @@
 package dev.stocky37.xiv.actions.json;
 
-import dev.stocky37.xiv.actions.data.Ability;
+import dev.stocky37.xiv.actions.model.Ability;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

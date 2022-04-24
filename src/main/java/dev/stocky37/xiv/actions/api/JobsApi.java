@@ -2,10 +2,9 @@ package dev.stocky37.xiv.actions.api;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import dev.stocky37.xiv.actions.core.JobService;
-import dev.stocky37.xiv.actions.data.Job;
-import dev.stocky37.xiv.actions.data.Views;
+import dev.stocky37.xiv.actions.model.Job;
+import dev.stocky37.xiv.actions.json.Views;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.ws.rs.GET;

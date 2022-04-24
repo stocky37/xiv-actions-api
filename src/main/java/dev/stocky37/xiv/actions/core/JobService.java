@@ -2,7 +2,7 @@ package dev.stocky37.xiv.actions.core;
 
 import static dev.stocky37.xiv.actions.util.Util.slugify;
 
-import dev.stocky37.xiv.actions.data.Job;
+import dev.stocky37.xiv.actions.model.Job;
 import dev.stocky37.xiv.actions.xivapi.XivApiClient;
 import io.quarkus.cache.CacheResult;
 import java.util.List;

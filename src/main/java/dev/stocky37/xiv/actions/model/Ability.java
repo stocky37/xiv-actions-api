@@ -1,8 +1,9 @@
-package dev.stocky37.xiv.actions.data;
+package dev.stocky37.xiv.actions.model;
 
 import static dev.stocky37.xiv.actions.util.Util.slugify;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import dev.stocky37.xiv.actions.json.Views;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 public record Ability(
 	// ApiObject
@@ -154,7 +156,7 @@ public record Ability(
 			return this;
 		}
 
-		public Builder withComboFrom(String comboFrom) {
+		public Builder withComboFrom(@Nullable String comboFrom) {
 			this.comboFrom = Optional.ofNullable(comboFrom);
 			return this;
 		}

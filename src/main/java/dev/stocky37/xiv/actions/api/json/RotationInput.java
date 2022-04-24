@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public record RotationInput(String job, List<Action> rotation) {
 	public record Action(
-		dev.stocky37.xiv.actions.data.Action.Type type,
+		dev.stocky37.xiv.actions.model.Action.Type type,
 		Optional<Duration> length,
 		Optional<String> id
 	) {}
