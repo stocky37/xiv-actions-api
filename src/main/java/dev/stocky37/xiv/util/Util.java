@@ -16,6 +16,16 @@ public class Util {
 
 	private static final Slugify slugifier = new Slugify().withCustomReplacement("_", "-");
 	public static final List<String> ALL_COLUMNS = List.of("*");
+	// todo: modifiers can be found in the following fields from XIVAPI ClassJob endpoint
+	//  - ModifierDexterity
+	//  - ModifierHitPoints
+	//  - ModifierIntelligence
+	//  - ModifierManaPoints
+	//  - ModifierMind
+	//  - ModifierPiety
+	//  - ModifierStrength
+	//  - ModifierVitality
+	public static final int JOB_MODIFIER = 115;
 
 	private final ObjectMapper mapper;
 	private final UriBuilder prefixBuilder;

@@ -1,5 +1,7 @@
 package dev.stocky37.xiv.model;
 
+import static dev.stocky37.xiv.util.Util.JOB_MODIFIER;
+import static dev.stocky37.xiv.util.Util.floor;
 import static dev.stocky37.xiv.util.Util.floorLong;
 import static dev.stocky37.xiv.util.Util.scale;
 
@@ -60,12 +62,27 @@ public record DerivedStats(Stats stats, Attribute primaryStat, LevelMod mod) {
 	}
 
 	public Duration gcd(Duration baseGcd) {
-		return Duration.ofMillis(floorLong(baseGcd.toMillis() * gcdModifier() / 10) * 10);
+		return Duration.ofMillis(floorLong(baseGcd.toMillis() * (gcdModifier()) / 10) * 10);
+	}
+
+	public int fspeed() {
+		return 130 * (attackSpeed() - mod.sub()) / mod.div() + 1000;
+	}
+
+	public int fatk() {
+		return floor(mod.fatk() * (attackPower() - mod.main()) / (double) mod.main() + 100);
+	}
+
+	public int fwd() {
+		return floor(mod.main() * JOB_MODIFIER / 1000d + weaponDamage());
+	}
+
+	public double fdet() {
+		return scale(140 * (stats.determination() - mod.main()) / (double) mod.div() + 1000);
 	}
 
 	private double gcdModifier() {
-		final double gcdMod = Math.ceil(130 * (mod.sub() - attackSpeed()) / (double) mod.div()) + 1000;
-		return gcdMod / 1000;
+		return 2 - scale(fspeed());
 	}
 
 	public record LevelMod(int main, int sub, int div, int fatk) {}
