@@ -1,9 +1,5 @@
 package dev.stocky37.xiv.model;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Duration;
-
 public record Stats(
 	// primary stats
 	int strength,

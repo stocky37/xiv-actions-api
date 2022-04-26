@@ -1,10 +1,11 @@
 package dev.stocky37.xiv.core;
 
+import static dev.stocky37.xiv.util.Util.floor;
+import static dev.stocky37.xiv.util.Util.scale;
+
 import dev.stocky37.xiv.model.DerivedStats;
 import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.model.RotationAction;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.function.Function;
 
 public record DamageCalculator(Job job, DerivedStats stats) implements
@@ -21,13 +22,17 @@ public record DamageCalculator(Job job, DerivedStats stats) implements
 	//  - ModifierVitality
 	private static final int JOB_MODIFIER = 115;
 
-	public double calcDamage(int potency) {
-		final int d1 = floor(potency * fatk() / 100d * stats.determinationMultiplier().doubleValue());
+	@Override
+	public Integer apply(RotationAction rotationAction) {
+		return (int) Math.floor(expectedDamage(rotationAction.action().potency()));
+	}
+
+	public double expectedDamage(int potency) {
+		if(potency == 0) {
+			return 0;
+		}
+		final int d1 = floor(potency * fatk() / 100d * fdet());
 		final int d2 = floor(d1 * fwd() / 100d);
-
-		System.out.println("d1: " + d1);
-		System.out.println("d2: " + d2);
-
 		return d2 * averageCritMultiplier() * averageDirectHitMultiplier();
 	}
 
@@ -43,9 +48,18 @@ public record DamageCalculator(Job job, DerivedStats stats) implements
 		return floor(stats.mod().main() * JOB_MODIFIER / 1000d + stats.weaponDamage());
 	}
 
-	@Override
-	public Integer apply(RotationAction rotationAction) {
-		return (int) Math.floor(calcDamage(rotationAction.action().potency()));
+	public double fdet() {
+		return scale(140
+			* (stats.stats().determination() - stats.mod().main()) / (double) stats.mod().div()
+			+ 1000
+		);
+	}
+
+	public double faa() {
+		return scale(130
+			* (stats.attackSpeed() - stats.mod().sub()) / (double) stats.mod().div()
+			+ 1000
+		);
 	}
 
 	private double averageCritMultiplier() {
@@ -56,11 +70,7 @@ public record DamageCalculator(Job job, DerivedStats stats) implements
 		return averageExpectedMultiplier(stats.directHitChance(), stats.directHitDamage());
 	}
 
-	private double averageExpectedMultiplier(BigDecimal rate, BigDecimal multiplier) {
-		return rate.doubleValue() * (multiplier.doubleValue() - 1) + 1;
-	}
-
-	private int floor(double val) {
-		return BigDecimal.valueOf(val).setScale(0, RoundingMode.FLOOR).intValue();
+	private double averageExpectedMultiplier(double rate, double multiplier) {
+		return rate * (multiplier - 1) + 1;
 	}
 }

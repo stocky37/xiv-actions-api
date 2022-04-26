@@ -52,4 +52,16 @@ public class Util {
 	public URI prefixXivApi(String relativePath) {
 		return prefixBuilder.clone().path(relativePath).build();
 	}
+
+	public static int floor(double num) {
+		return (int) num;
+	}
+
+	public static long floorLong(double num) {
+		return (int) num;
+	}
+
+	public static double scale(double num) {
+		return floor(num) / 1000d;
+	}
 }

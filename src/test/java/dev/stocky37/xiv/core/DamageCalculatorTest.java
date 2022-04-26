@@ -29,6 +29,7 @@ public class DamageCalculatorTest implements WithAssertions {
 		.directHit(1167)
 		.build();
 
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	private static final DamageCalculator CALC =
 		new DamageCalculator(RPR, new DerivedStats(stats, RPR.primaryStat().get()));
 
@@ -43,7 +44,7 @@ public class DamageCalculatorTest implements WithAssertions {
 	}
 
 	@Test
-	void damage() {
-		assertThat(CALC.calcDamage(300)).isCloseTo(6497, Offset.offset(0.5));
+	void expectedDamage() {
+		assertThat((int) CALC.expectedDamage(300)).isEqualTo(6497);
 	}
 }

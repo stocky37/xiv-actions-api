@@ -1,7 +1,8 @@
 package dev.stocky37.xiv.model;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import static dev.stocky37.xiv.util.Util.floorLong;
+import static dev.stocky37.xiv.util.Util.scale;
+
 import java.time.Duration;
 
 public record DerivedStats(Stats stats, Attribute primaryStat, LevelMod mod) {
@@ -9,29 +10,26 @@ public record DerivedStats(Stats stats, Attribute primaryStat, LevelMod mod) {
 	// level 90 level modifiers
 	// source: https://www.akhmorning.com/allagan-studies/modifiers/levelmods/
 	public static final LevelMod LVL90 = new LevelMod(390, 400, 1900, 195);
-	public static final BigDecimal DH_MULTIPLIER = BigDecimal.valueOf(1.25);
+	public static final double DH_MULTIPLIER = 1.25;
 
 
 	public DerivedStats(Stats stats, Attribute primaryStat) {
 		this(stats, primaryStat, LVL90);
 	}
 
-	public BigDecimal critChance() {
-		final double cr = 200 * (stats.crit() - mod.sub()) / mod.div() + 50;
-		return scale(BigDecimal.valueOf(cr));
+	public double critChance() {
+		return scale(200 * (stats.crit() - mod.sub()) / (double) mod.div() + 50);
 	}
 
-	public BigDecimal critDamage() {
-		final double cd = 200 * (stats.crit() - mod.sub()) / mod.div() + 1400;
-		return scale(BigDecimal.valueOf(cd));
+	public double critDamage() {
+		return scale(200 * (stats.crit() - mod.sub()) / (double) mod.div() + 1400);
 	}
 
-	public BigDecimal directHitChance() {
-		final double dh = 550 * (stats.directHit() - mod.sub()) / mod.div();
-		return scale(BigDecimal.valueOf(dh));
+	public double directHitChance() {
+		return scale(550 * (stats.directHit() - mod.sub()) / (double) mod.div());
 	}
 
-	public BigDecimal directHitDamage() {
+	public double directHitDamage() {
 		return DH_MULTIPLIER;
 	}
 
@@ -61,33 +59,9 @@ public record DerivedStats(Stats stats, Attribute primaryStat, LevelMod mod) {
 		};
 	}
 
-
-	public BigDecimal determinationMultiplier() {
-		final double det = 140 * (stats.determination() - mod.main()) / (double) mod.div() + 1000;
-		return scale(BigDecimal.valueOf(det));
-	}
-
-	public BigDecimal autoAttackMultiplier() {
-		final double aa = 130 * (attackSpeed() - mod.sub()) / (double) mod.div() + 1000;
-		return scale(BigDecimal.valueOf(aa));
-	}
-
-	private BigDecimal scale(BigDecimal num) {
-		return num.movePointLeft(3).setScale(3, RoundingMode.FLOOR);
-	}
-
 	public Duration gcd(Duration baseGcd) {
-		return Duration.ofMillis(
-			BigDecimal.valueOf(baseGcd.toMillis() * gcdModifier())
-				.setScale(-1, RoundingMode.FLOOR)
-				.longValue()
-		);
+		return Duration.ofMillis(floorLong(baseGcd.toMillis() * gcdModifier() / 10) * 10);
 	}
-
-//	public BigDecimal tenacityMultiplier() {
-//		final double ten = 100 * (stats.tenacity() - mod.sub()) / mod.div() + 1000;
-//		return scale(BigDecimal.valueOf(ten));
-//	}
 
 	private double gcdModifier() {
 		final double gcdMod = Math.ceil(130 * (mod.sub() - attackSpeed()) / (double) mod.div()) + 1000;
