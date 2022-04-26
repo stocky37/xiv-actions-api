@@ -29,11 +29,11 @@ public record Stats(
 	int delay
 ) {
 
-	static Builder builder() {
+	public static Builder builder() {
 		return new Builder();
 	}
 
-	static class Builder {
+	public static class Builder {
 		int strength;
 		int dexterity;
 		int vitality;
