@@ -3,13 +3,13 @@ package dev.stocky37.xiv.core;
 import static dev.stocky37.xiv.util.Util.floor;
 import static dev.stocky37.xiv.util.Util.scale;
 
+import dev.stocky37.xiv.model.Action;
 import dev.stocky37.xiv.model.DerivedStats;
 import dev.stocky37.xiv.model.Job;
-import dev.stocky37.xiv.model.RotationAction;
 import java.util.function.Function;
 
 public record DamageCalculator(Job job, DerivedStats stats) implements
-	Function<RotationAction, Integer> {
+	Function<Action, Double> {
 
 	// todo: modifiers can be found in the following fields from XIVAPI ClassJob endpoint
 	//  - ModifierDexterity
@@ -23,8 +23,8 @@ public record DamageCalculator(Job job, DerivedStats stats) implements
 	private static final int JOB_MODIFIER = 115;
 
 	@Override
-	public Integer apply(RotationAction rotationAction) {
-		return (int) Math.floor(expectedDamage(rotationAction.action().potency()));
+	public Double apply(Action action) {
+		return expectedDamage(action.potency());
 	}
 
 	public double expectedDamage(int potency) {

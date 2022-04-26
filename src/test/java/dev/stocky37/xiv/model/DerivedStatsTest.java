@@ -49,6 +49,7 @@ class DerivedStatsTest implements WithAssertions {
 
 	@Test
 	void baseGcdSkillSpeed() {
+		assertThat(withSkillSpeed(436).gcd(BASE_GCD)).isEqualTo(Duration.ofMillis(2490));
 		assertThat(withSkillSpeed(1000).gcd(BASE_GCD)).isEqualTo(Duration.ofMillis(2390));
 		assertThat(withSkillSpeed(1057).gcd(BASE_GCD)).isEqualTo(Duration.ofMillis(2390));
 		assertThat(withSkillSpeed(1058).gcd(BASE_GCD)).isEqualTo(Duration.ofMillis(2380));

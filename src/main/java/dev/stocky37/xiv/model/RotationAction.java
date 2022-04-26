@@ -9,6 +9,7 @@ public record RotationAction(
 	Action action,
 	@JsonFormat(pattern = "MILLIS") Duration timestamp,
 	Optional<Integer> gcdNumber,
-	List<RotationEffect> effects
+	List<RotationEffect> effects,
+	double damage
 ) {
 }
