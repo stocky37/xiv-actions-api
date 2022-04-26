@@ -22,7 +22,8 @@ public record Stats(
 	// weapon stats
 	int physicalDamage,
 	int magicalDamage,
-	int delay
+	double delay,
+	int autoAttack
 ) {
 
 	public static Builder builder() {
@@ -44,7 +45,8 @@ public record Stats(
 		int piety;
 		int physicalDamage;
 		int magicalDamage;
-		int delay;
+		double delay;
+		int autoAttack;
 
 		public Builder strength(int strength) {
 			this.strength = strength;
@@ -116,8 +118,13 @@ public record Stats(
 			return this;
 		}
 
-		public Builder delay(int delay) {
+		public Builder delay(double delay) {
 			this.delay = delay;
+			return this;
+		}
+
+		public Builder autoAttack(int autoAttack) {
+			this.autoAttack = autoAttack;
 			return this;
 		}
 
@@ -137,7 +144,8 @@ public record Stats(
 				piety,
 				physicalDamage,
 				magicalDamage,
-				delay
+				delay,
+				autoAttack
 			);
 		}
 	}

@@ -5,7 +5,6 @@ import dev.stocky37.xiv.model.DerivedStats;
 import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.model.Stats;
 import org.assertj.core.api.WithAssertions;
-import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 
 public class DamageCalculatorTest implements WithAssertions {
