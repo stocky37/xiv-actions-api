@@ -35,7 +35,7 @@ public interface Action {
 
 	@JsonIgnore
 	@JsonView(Views.Standard.class)
-	default List<StatusEffect> effects() {
+	default List<Status> effects() {
 		return Collections.emptyList();
 	}
 

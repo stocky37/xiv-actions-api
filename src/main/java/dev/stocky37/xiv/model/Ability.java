@@ -62,7 +62,7 @@ public record Ability(
 	}
 
 	@Override
-	public List<StatusEffect> effects() {
+	public List<Status> effects() {
 		return new ArrayList<>();
 	}
 

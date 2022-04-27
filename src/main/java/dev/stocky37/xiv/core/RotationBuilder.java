@@ -140,18 +140,18 @@ public class RotationBuilder {
 	}
 
 	private void addEffects(Action action, Duration start) {
-		action.effects().forEach(e -> rotationEffects.add(new RotationEffect(
-			e,
-			start,
-			start.plus(e.duration())
-		)));
+//		action.effects().forEach(e -> rotationEffects.add(new RotationEffect(
+//			e,
+//			start,
+//			start.plus(e.duration())
+//		)));
 	}
 
 	private void removeEffects(Duration start) {
-		final List<RotationEffect> finishedEffects = new ArrayList<>();
-		rotationEffects.stream()
-			.filter(item -> item.end().compareTo(start) < 0)
-			.forEach(finishedEffects::add);
-		rotationEffects.removeAll(finishedEffects);
+//		final List<RotationEffect> finishedEffects = new ArrayList<>();
+//		rotationEffects.stream()
+//			.filter(item -> item.end().compareTo(start) < 0)
+//			.forEach(finishedEffects::add);
+//		rotationEffects.removeAll(finishedEffects);
 	}
 }

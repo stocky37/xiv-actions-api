@@ -5,9 +5,11 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.READ_DATE_TI
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.io.Resources;
 import dev.stocky37.xiv.model.Ability;
+import dev.stocky37.xiv.model.Status;
 import io.quarkus.logging.Log;
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ public class DataLoader {
 		.disable(FAIL_ON_UNKNOWN_PROPERTIES)
 		.disable(READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
 		.addModule(new JavaTimeModule())
+		.addModule(new Jdk8Module())
 		.build();
 
 	@Singleton
@@ -30,6 +33,21 @@ public class DataLoader {
 		try {
 			return yaml.readValue(
 				Resources.getResource("abilities.yml"),
+				new TypeReference<>() {}
+			);
+		} catch (IllegalArgumentException | IOException e) {
+			Log.info("Failed to load rotation data", e);
+			return new HashMap<>();
+		}
+	}
+
+	@Singleton
+	@Named("data.status")
+	@SuppressWarnings("UnstableApiUsage")
+	public Map<String, Status> loadStatusData() {
+		try {
+			return yaml.readValue(
+				Resources.getResource("statuses.yml"),
 				new TypeReference<>() {}
 			);
 		} catch (IllegalArgumentException | IOException e) {

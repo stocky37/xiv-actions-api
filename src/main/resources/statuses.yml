@@ -1,6 +1,6 @@
 2586:
-  duration: 30s
-  maxDuration: 60s
+  duration: 30000
+  maxDuration: 60000
   effects:
     - type: damage
       multiplier: 1.1
