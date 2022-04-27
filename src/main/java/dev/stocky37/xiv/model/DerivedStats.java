@@ -61,14 +61,6 @@ public record DerivedStats(Stats stats, Attribute primaryStat, LevelMod mod) {
 		};
 	}
 
-	public Duration gcd(Duration baseGcd) {
-		return Duration.ofMillis(floorLong(baseGcd.toMillis() * (gcdModifier()) / 10) * 10);
-	}
-
-	public int fspeed() {
-		return 130 * (attackSpeed() - mod.sub()) / mod.div() + 1000;
-	}
-
 	public int fatk() {
 		return floor(mod.fatk() * (attackPower() - mod.main()) / (double) mod.main() + 100);
 	}
@@ -79,6 +71,18 @@ public record DerivedStats(Stats stats, Attribute primaryStat, LevelMod mod) {
 
 	public double fdet() {
 		return scale(140 * (stats.determination() - mod.main()) / (double) mod.div() + 1000);
+	}
+
+	public int fspeed() {
+		return 130 * (attackSpeed() - mod.sub()) / mod.div() + 1000;
+	}
+
+	public double fauto() {
+		return floor((JOB_MODIFIER * mod.main() / 1000d) + weaponDamage() * stats.delay() / 3);
+	}
+
+	public Duration gcd(Duration baseGcd) {
+		return Duration.ofMillis(floorLong(baseGcd.toMillis() * (gcdModifier()) / 10) * 10);
 	}
 
 	private double gcdModifier() {

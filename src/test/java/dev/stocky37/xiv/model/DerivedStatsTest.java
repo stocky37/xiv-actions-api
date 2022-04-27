@@ -109,5 +109,10 @@ class DerivedStatsTest implements WithAssertions {
 		assertThat(defaultStats().fspeed()).isEqualTo(1002);
 	}
 
+	@Test
+	void fauto() {
+		assertThat(defaultStats().fauto()).isEqualTo(172);
+	}
+
 
 }

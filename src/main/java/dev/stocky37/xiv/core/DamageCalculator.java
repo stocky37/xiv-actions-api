@@ -7,8 +7,7 @@ import dev.stocky37.xiv.model.DerivedStats;
 import dev.stocky37.xiv.model.Job;
 import java.util.function.Function;
 
-public record DamageCalculator(Job job, DerivedStats stats) implements
-	Function<Action, Double> {
+public record DamageCalculator(Job job, DerivedStats stats) implements Function<Action, Double> {
 
 	@Override
 	public Double apply(Action action) {
@@ -21,26 +20,19 @@ public record DamageCalculator(Job job, DerivedStats stats) implements
 		}
 		final int d1 = floor(potency * stats.fatk() / 100d * stats.fdet());
 		final int d2 = floor(d1 * stats.fwd() / 100d);
-		return d2 * averageCritMultiplier() * averageDirectHitMultiplier();
+		return d2 * multipliers();
 	}
 
-
-//	public double faa() {
-//		return scale(130
-//			* (stats.attackSpeed() - stats.mod().sub()) / (double) stats.mod().div()
-//			+ 1000
-//		);
-//	}
-//
-//	public double fauto() {
-//		return floor(
-//			(Util.JOB_MODIFIER * stats.mod().main() / 1000d)
-//				+ stats.weaponDamage() * stats().stats().delay() / 3
-//		);
-//	}
+	public double expectedAutoDamage() {
+		final double d1 = 90 * stats.fatk() * stats.fdet() / 100;
+		final double d2 = floor(d1 * stats.fspeed() / 1000d * stats.fauto() / 100d);
+		return d2 * multipliers();
+	}
 
 	public double averageCritMultiplier() {
-		return averageExpectedMultiplier(stats.critChance(), stats.critDamage());
+		double v = averageExpectedMultiplier(stats.critChance(), stats.critDamage());
+		System.out.println("crit edam: " + v);
+		return v;
 	}
 
 	public double averageDirectHitMultiplier() {
@@ -49,5 +41,9 @@ public record DamageCalculator(Job job, DerivedStats stats) implements
 
 	private double averageExpectedMultiplier(double rate, double multiplier) {
 		return rate * (multiplier - 1) + 1;
+	}
+
+	private double multipliers() {
+		return averageCritMultiplier() * averageDirectHitMultiplier();
 	}
 }
