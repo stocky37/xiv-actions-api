@@ -22,9 +22,13 @@ public class RotationBuilder {
 	private final List<RotationEffect> rotationEffects = new ArrayList<>();
 	private Duration nextGcd = Duration.ZERO;
 	private Duration nextOGcd = Duration.ZERO;
+
+	private Duration nextAuto = Duration.ZERO;
 	private int gcdCount = 0;
 	private final Stats baseStats;
 	private final Job job;
+
+	private final List<Long> autos = new ArrayList<>();
 
 	public RotationBuilder(XivConfig config, Job job, Stats baseStats) {
 		this.config = config;
@@ -46,22 +50,20 @@ public class RotationBuilder {
 	public Rotation build() {
 		final List<RotationAction> timeline = actions.stream().map(this::buildAction).toList();
 		final double totalDamage =
-			timeline.stream().map(RotationAction::damage).reduce(Double::sum).get();
-		final Duration totalTime = timeline.get(timeline.size() - 1).timestamp();
+			timeline.stream().map(RotationAction::damage).reduce(Long::sum).get();
+		final Duration endTime = timeline.get(timeline.size() - 1).timestamp();
 
-		return new Rotation(timeline, totalDamage / totalTime.toSeconds());
+		return new Rotation(timeline, totalDamage / endTime.toSeconds());
 	}
 
 	private RotationAction buildAction(Action action) {
-		final DerivedStats stats = new DerivedStats(baseStats, job.primaryStat().orElseThrow());
-		final DamageCalculator calc =
-			new DamageCalculator(job, stats);
-		final double damage = calc.expectedDamage(action.potency());
-		return action.onGCD() ? handleGcd(action, damage, stats) : handleOGcd(action, damage);
+		return action.onGCD() ? handleGcd(action) : handleOGcd(action);
 	}
 
-	private RotationAction handleGcd(Action action, double damage, DerivedStats stats) {
+	private RotationAction handleGcd(Action action) {
+		handleAutos(nextGcd);
 		removeEffects(nextGcd);
+		final DamageCalculator calc = calculator();
 		addEffects(action, nextGcd);
 
 		final var rotationAction = new RotationAction(
@@ -69,14 +71,39 @@ public class RotationBuilder {
 			nextGcd,
 			Optional.of(++gcdCount),
 			Lists.newArrayList(rotationEffects),
-			damage
+			(long) calc.expectedDamage(action.potency())
 		);
 
 		nextOGcd = nextGcd.plus(animationLock(action));
-		nextGcd = nextGcd.plus(calcGcdCooldown(action, stats.gcd(BASE_GCD)));
+		nextGcd = nextGcd.plus(calcGcdCooldown(action, stats().gcd(BASE_GCD)));
 
 		return rotationAction;
 	}
+
+	private DamageCalculator calculator() {
+		return new DamageCalculator(job, stats());
+	}
+
+	private DerivedStats stats() {
+		return new DerivedStats(currentBaseStats(), job.primaryStat().orElseThrow());
+	}
+
+	//todo: modify with any status effects that need updating
+	private Stats currentBaseStats() {
+		return baseStats;
+	}
+
+	private void handleAutos(Duration timestamp) {
+		final Duration autoDelay = currentBaseStats().delayDuration();
+		if(nextAuto.compareTo(timestamp) < 0) {
+			removeEffects(nextAuto);
+			final DamageCalculator calc = calculator();
+			autos.add((long) calc.expectedAutoDamage());
+			nextAuto = nextAuto.plus(autoDelay);
+		}
+	}
+
+	;
 
 	private Duration calcGcdCooldown(Action action, Duration gcd) {
 		return recastScales(action) ? gcd : action.recast();
@@ -92,8 +119,10 @@ public class RotationBuilder {
 		return action.recast().equals(Duration.ofMillis(2500)) || !action.cooldownGroups().isEmpty();
 	}
 
-	private RotationAction handleOGcd(Action action, double damage) {
+	private RotationAction handleOGcd(Action action) {
+		handleAutos(nextOGcd);
 		removeEffects(nextOGcd);
+		final DamageCalculator calc = calculator();
 		addEffects(action, nextOGcd);
 
 		final var rotationAction = new RotationAction(
@@ -101,9 +130,9 @@ public class RotationBuilder {
 			nextOGcd,
 			Optional.empty(),
 			Lists.newArrayList(rotationEffects),
-			damage
+			(long) calc.expectedDamage(action.potency())
 		);
-
+		
 		nextOGcd = nextOGcd.plus(animationLock(action));
 		if(nextOGcd.compareTo(nextGcd) > 0) {
 			nextGcd = nextOGcd;

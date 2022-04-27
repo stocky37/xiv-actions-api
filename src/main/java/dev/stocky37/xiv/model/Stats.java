@@ -1,30 +1,38 @@
 package dev.stocky37.xiv.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.Duration;
+
 public record Stats(
-	// primary stats
+	// primary baseStats
 	int strength,
 	int dexterity,
 	int vitality,
 	int intelligence,
 	int mind,
 
-	// secondary stats
+	// secondary baseStats
 	int crit,
 	int determination,
 	int directHit,
 	int skillSpeed,
 	int spellSpeed,
 
-	// role specific stats
+	// role specific baseStats
 	int tenacity,
 	int piety,
 
-	// weapon stats
+	// weapon baseStats
 	int physicalDamage,
 	int magicalDamage,
 	double delay,
 	int autoAttack
 ) {
+
+	@JsonIgnore
+	public Duration delayDuration() {
+		return Duration.ofMillis((long) autoAttack * 1000);
+	}
 
 	public static Builder builder() {
 		return new Builder();
