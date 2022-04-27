@@ -41,7 +41,7 @@ public record DerivedStats(Stats baseStats, Attribute primaryStat, LevelMod mod)
 			case DEXTERITY -> baseStats.dexterity();
 			case MIND -> baseStats.mind();
 			case INTELLIGENCE -> baseStats.intelligence();
-			default -> throw new IllegalStateException("Unhandled primary stat: " + primaryStat());
+			default -> throw new IllegalStateException("Unhandled primary attribute: " + primaryStat());
 		};
 	}
 
@@ -49,7 +49,7 @@ public record DerivedStats(Stats baseStats, Attribute primaryStat, LevelMod mod)
 		return switch(primaryStat) {
 			case STRENGTH, DEXTERITY -> baseStats.skillSpeed();
 			case MIND, INTELLIGENCE -> baseStats.spellSpeed();
-			default -> throw new IllegalStateException("Unhandled primary stat: " + primaryStat());
+			default -> throw new IllegalStateException("Unhandled primary attribute: " + primaryStat());
 		};
 	}
 
@@ -57,7 +57,7 @@ public record DerivedStats(Stats baseStats, Attribute primaryStat, LevelMod mod)
 		return switch(primaryStat) {
 			case STRENGTH, DEXTERITY -> baseStats.physicalDamage();
 			case MIND, INTELLIGENCE -> baseStats.magicalDamage();
-			default -> throw new IllegalStateException("Unhandled primary stat: " + primaryStat());
+			default -> throw new IllegalStateException("Unhandled primary attribute: " + primaryStat());
 		};
 	}
 

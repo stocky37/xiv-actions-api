@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import dev.stocky37.xiv.api.json.Views;
 import java.net.URI;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 
 public record Consumable(
@@ -56,7 +57,8 @@ public record Consumable(
 	// temporarily adding medicated status effect manually
 	@Override
 	public List<StatusEffect> effects() {
-		return Lists.newArrayList(new StatusEffect("49", "Medicated", bonusDuration));
+		return Collections.emptyList();
+//		return Lists.newArrayList(new StatusEffect("49", "Medicated", bonusDuration));
 	}
 }
 

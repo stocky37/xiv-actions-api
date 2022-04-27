@@ -1,5 +1,6 @@
 package dev.stocky37.xiv.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import dev.stocky37.xiv.util.Util;
 
 public enum Attribute {
@@ -22,6 +23,7 @@ public enum Attribute {
 	SKILL_SPEED,
 	SPELL_SPEED;
 
+	@JsonCreator
 	public static Attribute fromString(String str) {
 		for(final var attr : Attribute.values()) {
 			if(attr.toString().equalsIgnoreCase(str)) {

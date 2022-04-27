@@ -38,6 +38,10 @@ public record Stats(
 		return new Builder();
 	}
 
+	public static Builder builder(Stats stats) {
+		return new Builder(stats);
+	}
+
 	public static class Builder {
 		int strength;
 		int dexterity;
@@ -55,6 +59,27 @@ public record Stats(
 		int magicalDamage;
 		double delay;
 		int autoAttack;
+
+		public Builder() {}
+
+		public Builder(Stats stats) {
+			this.strength = stats.strength;
+			this.dexterity = stats.dexterity;
+			this.vitality = stats.vitality;
+			this.intelligence = stats.intelligence;
+			this.mind = stats.mind;
+			this.crit = stats.crit;
+			this.determination = stats.determination;
+			this.directHit = stats.directHit;
+			this.skillSpeed = stats.skillSpeed;
+			this.spellSpeed = stats.spellSpeed;
+			this.tenacity = stats.tenacity;
+			this.piety = stats.piety;
+			this.physicalDamage = stats.physicalDamage;
+			this.magicalDamage = stats.magicalDamage;
+			this.delay = stats.delay;
+			this.autoAttack = stats.autoAttack;
+		}
 
 		public Builder strength(int strength) {
 			this.strength = strength;

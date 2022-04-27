@@ -143,7 +143,7 @@ public class RotationBuilder {
 		action.effects().forEach(e -> rotationEffects.add(new RotationEffect(
 			e,
 			start,
-			start.plus(e.length())
+			start.plus(e.duration())
 		)));
 	}
 

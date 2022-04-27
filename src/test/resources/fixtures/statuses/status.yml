@@ -1,0 +1,15 @@
+{
+  "id": "49",
+  "name": "Medicated",
+  "description": "",
+  "icon": "https://example.com",
+  "hdIcon": "https://example.com",
+  "effects": [{
+    "type": "stat",
+    "attribute": "strength",
+    "multiplier": 1.1
+  },{
+    "type": "damage",
+    "multiplier": 1.1
+  }]
+}

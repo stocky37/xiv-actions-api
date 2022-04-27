@@ -7,6 +7,7 @@ import dev.stocky37.xiv.xivapi.json.SearchBody;
 import dev.stocky37.xiv.xivapi.json.XivAbility;
 import dev.stocky37.xiv.xivapi.json.XivClassJob;
 import dev.stocky37.xiv.xivapi.json.XivConsumable;
+import dev.stocky37.xiv.xivapi.json.XivStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -58,6 +59,14 @@ public class XivApiClient {
 
 	public Optional<XivConsumable> getConsumable(String id) {
 		return getItem(id, XivConsumable.class);
+	}
+
+	public Optional<XivStatus> getStatus(String id) {
+		try {
+			return Optional.of(wrapApi(() -> xivapi.getStatus(id)));
+		} catch (NotFoundException e) {
+			return Optional.empty();
+		}
 	}
 
 	private <T> List<T> search(Query query, Class<T> clazz) {

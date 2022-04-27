@@ -5,7 +5,8 @@ import java.time.Duration;
 public record StatusEffect(
 	String id,
 	String name,
-	Duration length
+	Duration duration,
+	Duration maxDuration
 ) {
 
 }

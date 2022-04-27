@@ -1,0 +1,7 @@
+2586:
+  duration: 30s
+  maxDuration: 60s
+  effects:
+    - type: damage
+      multiplier: 1.1
+
