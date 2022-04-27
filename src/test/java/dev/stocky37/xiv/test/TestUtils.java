@@ -22,7 +22,11 @@ public class TestUtils {
 	}
 
 	public static DerivedStats defaultStats() {
-		return new DerivedStats(Stats.builder()
+		return new DerivedStats(defaultBaseStats(), Attribute.STRENGTH);
+	}
+
+	public static Stats defaultBaseStats() {
+		return Stats.builder()
 			.strength(2556)
 			.crit(2217)
 			.determination(1576)
@@ -31,7 +35,7 @@ public class TestUtils {
 			.physicalDamage(120)
 			.autoAttack(128)
 			.delay(3.2)
-			.build(), Attribute.STRENGTH);
+			.build();
 	}
 
 	public static DerivedStats statsWithCrit(int crit) {

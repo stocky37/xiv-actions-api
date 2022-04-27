@@ -1,18 +1,17 @@
 package dev.stocky37.xiv.core;
 
-import com.google.common.collect.Lists;
 import dev.stocky37.xiv.config.XivConfig;
 import dev.stocky37.xiv.model.Action;
 import dev.stocky37.xiv.model.DerivedStats;
+import dev.stocky37.xiv.model.GcdEvent;
 import dev.stocky37.xiv.model.Job;
+import dev.stocky37.xiv.model.OGcdEvent;
 import dev.stocky37.xiv.model.Rotation;
-import dev.stocky37.xiv.model.RotationAction;
 import dev.stocky37.xiv.model.RotationEffect;
 import dev.stocky37.xiv.model.Stats;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class RotationBuilder {
 
@@ -46,38 +45,44 @@ public class RotationBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	public Rotation build() {
-		final List<RotationAction> timeline = actions.stream().map(this::buildAction).toList();
-		final double totalDamage =
-			timeline.stream().map(RotationAction::damage).reduce(Long::sum).get();
-		final Duration endTime = timeline.get(timeline.size() - 1).timestamp();
+		final var timeline = new Timeline();
+		actions.stream().map(this::handleAction).forEach(timeline::addEvent);
 
-		return new Rotation(timeline, totalDamage / endTime.toSeconds());
+		final long totalDamage = timeline.values().stream().map(Timeline.Event::damage).reduce(Long::sum).orElse(0L);
+		final double dps = totalDamage / (double) timeline.lastKey().toMillis() * 1000;
+
+		return new Rotation(timeline.values(), dps);
 	}
 
-	private RotationAction buildAction(Action action) {
+	private Timeline.Event handleAction(Action action) {
 		return action.onGCD() ? handleGcd(action) : handleOGcd(action);
 	}
 
-	private RotationAction handleGcd(Action action) {
-		handleAutos(nextGcd);
+	private Timeline.Event handleGcd(Action action) {
 		removeEffects(nextGcd);
 		final DamageCalculator calc = calculator();
 		addEffects(action, nextGcd);
 
-		final var rotationAction = new RotationAction(
-			action,
-			nextGcd,
-			Optional.of(++gcdCount),
-			Lists.newArrayList(rotationEffects),
-			(long) calc.expectedDamage(action.potency())
-		);
+		final var event = new GcdEvent(nextGcd, action, (long) calc.expectedDamage(action.potency()), ++gcdCount);
 
 		nextOGcd = nextGcd.plus(animationLock(action));
 		nextGcd = nextGcd.plus(calcGcdCooldown(action, stats().gcd(BASE_GCD)));
 
-		return rotationAction;
+		return event;
+	}
+
+	private Timeline.Event handleOGcd(Action action) {
+		removeEffects(nextOGcd);
+		final DamageCalculator calc = calculator();
+		addEffects(action, nextOGcd);
+
+		final var event = new OGcdEvent(nextOGcd, action, (long) calc.expectedDamage(action.potency()));
+		nextOGcd = nextOGcd.plus(animationLock(action));
+		if(nextOGcd.compareTo(nextGcd) > 0) {
+			nextGcd = nextOGcd;
+		}
+		return event;
 	}
 
 	private DamageCalculator calculator() {
@@ -106,7 +111,7 @@ public class RotationBuilder {
 	;
 
 	private Duration calcGcdCooldown(Action action, Duration gcd) {
-		return recastScales(action) ? gcd : action.recast();
+		return shouldGcdScale(action) ? gcd : action.recast();
 	}
 
 	// todo: need a much better way to figure this out
@@ -115,29 +120,8 @@ public class RotationBuilder {
 	// there may be a better way of checking, but this appears to work for now
 	// also need to check if there is a separate cooldown group - if there is,
 	// assume standard gcd length
-	private boolean recastScales(Action action) {
+	private boolean shouldGcdScale(Action action) {
 		return action.recast().equals(Duration.ofMillis(2500)) || !action.cooldownGroups().isEmpty();
-	}
-
-	private RotationAction handleOGcd(Action action) {
-		handleAutos(nextOGcd);
-		removeEffects(nextOGcd);
-		final DamageCalculator calc = calculator();
-		addEffects(action, nextOGcd);
-
-		final var rotationAction = new RotationAction(
-			action,
-			nextOGcd,
-			Optional.empty(),
-			Lists.newArrayList(rotationEffects),
-			(long) calc.expectedDamage(action.potency())
-		);
-		
-		nextOGcd = nextOGcd.plus(animationLock(action));
-		if(nextOGcd.compareTo(nextGcd) > 0) {
-			nextGcd = nextOGcd;
-		}
-		return rotationAction;
 	}
 
 	private Duration animationLock(Action action) {
