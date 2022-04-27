@@ -2,6 +2,7 @@ package dev.stocky37.xiv.core;
 
 import dev.stocky37.xiv.config.XivConfig;
 import dev.stocky37.xiv.model.Action;
+import dev.stocky37.xiv.model.AutoAttackEvent;
 import dev.stocky37.xiv.model.DerivedStats;
 import dev.stocky37.xiv.model.GcdEvent;
 import dev.stocky37.xiv.model.Job;
@@ -11,7 +12,9 @@ import dev.stocky37.xiv.model.RotationEffect;
 import dev.stocky37.xiv.model.Stats;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class RotationBuilder {
 
@@ -46,13 +49,19 @@ public class RotationBuilder {
 	}
 
 	public Rotation build() {
-		final var timeline = new Timeline();
-		actions.stream().map(this::handleAction).forEach(timeline::addEvent);
+		final var actionTimeline = new Timeline();
+		final var autosTimeline = new Timeline();
+		actions.stream().map(this::handleAction).forEach(actionTimeline::addEvent);
+		handleAutos(actionTimeline.lastKey()).forEach(autosTimeline::addEvent);
 
-		final long totalDamage = timeline.values().stream().map(Timeline.Event::damage).reduce(Long::sum).orElse(0L);
-		final double dps = totalDamage / (double) timeline.lastKey().toMillis() * 1000;
 
-		return new Rotation(timeline.values(), dps);
+		final long totalDamage = Stream.concat(actionTimeline.values().stream(), autosTimeline.values().stream())
+			.map(Timeline.Event::damage)
+			.reduce(Long::sum)
+			.orElse(0L);
+		final double dps = totalDamage / (double) actionTimeline.lastKey().toMillis() * 1000;
+
+		return new Rotation(actionTimeline.values(), autosTimeline.values(), dps);
 	}
 
 	private Timeline.Event handleAction(Action action) {
@@ -98,14 +107,16 @@ public class RotationBuilder {
 		return baseStats;
 	}
 
-	private void handleAutos(Duration timestamp) {
-		final Duration autoDelay = currentBaseStats().delayDuration();
-		if(nextAuto.compareTo(timestamp) < 0) {
-			removeEffects(nextAuto);
-			final DamageCalculator calc = calculator();
-			autos.add((long) calc.expectedAutoDamage());
-			nextAuto = nextAuto.plus(autoDelay);
+	private Collection<Timeline.Event> handleAutos(Duration endTime) {
+		final List<Timeline.Event> autos = new ArrayList<>();
+		final DamageCalculator calc = calculator();
+		System.out.println("endtime: " + endTime.toMillis());
+		System.out.println("delay: " + currentBaseStats().delayDuration().toMillis());
+		for(long i = 0; i < endTime.toMillis(); i += currentBaseStats().delayDuration().toMillis()) {
+			System.out.println("i: " + i);
+			autos.add(new AutoAttackEvent(Duration.ofMillis(i), (long) calc.expectedAutoDamage()));
 		}
+		return autos;
 	}
 
 	;

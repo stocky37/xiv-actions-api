@@ -2,6 +2,7 @@ package dev.stocky37.xiv.core;
 
 import static dev.stocky37.xiv.util.Util.slugify;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ForwardingNavigableMap;
 import java.time.Duration;
 import java.util.NavigableMap;
@@ -20,6 +21,7 @@ public class Timeline extends ForwardingNavigableMap<Duration, Timeline.Event> {
 			}
 		}
 
+		@JsonProperty
 		Type type();
 
 		Duration timestamp();
@@ -37,7 +39,16 @@ public class Timeline extends ForwardingNavigableMap<Duration, Timeline.Event> {
 	}
 
 	public Event addEvent(Event event) {
-		return this.put(event.timestamp(), event);
+		return addEvent(event, false);
+	}
+
+	public Event addEvent(Event event, boolean overwrite) {
+		if(overwrite || !this.containsKey(event.timestamp())) {
+			return this.put(event.timestamp(), event);
+		}
+		final var newTimestamp = event.timestamp().minus(Duration.ofMillis(1));
+		System.out.println("new time:" + newTimestamp);
+		return this.put(newTimestamp, event);
 	}
 
 //	public Entry<Duration, Event> lastGCDEntry() {

@@ -31,7 +31,7 @@ public record Stats(
 
 	@JsonIgnore
 	public Duration delayDuration() {
-		return Duration.ofMillis((long) autoAttack * 1000);
+		return Duration.ofMillis((long) (delay * 1000));
 	}
 
 	public static Builder builder() {

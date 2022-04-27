@@ -4,7 +4,6 @@ import dev.stocky37.xiv.model.Attribute;
 import dev.stocky37.xiv.model.DerivedStats;
 import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.model.Stats;
-import io.quarkus.vertx.http.runtime.filters.accesslog.DefaultAccessLogReceiver;
 
 public class TestUtils {
 

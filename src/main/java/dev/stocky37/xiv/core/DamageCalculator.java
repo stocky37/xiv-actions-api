@@ -30,9 +30,7 @@ public record DamageCalculator(Job job, DerivedStats stats) implements Function<
 	}
 
 	public double averageCritMultiplier() {
-		double v = averageExpectedMultiplier(stats.critChance(), stats.critDamage());
-		System.out.println("crit edam: " + v);
-		return v;
+		return averageExpectedMultiplier(stats.critChance(), stats.critDamage());
 	}
 
 	public double averageDirectHitMultiplier() {
