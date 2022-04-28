@@ -32,7 +32,6 @@ public interface Action {
 		return Duration.ZERO;
 	}
 
-	@JsonIgnore
 	@JsonView(Views.Standard.class)
 	default List<Status> statuses() {
 		return Collections.emptyList();

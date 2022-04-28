@@ -2,6 +2,7 @@ package dev.stocky37.xiv.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.io.Resources;
 import io.quarkus.logging.Log;
@@ -36,8 +37,8 @@ public class DataLoader {
 			//noinspection UnstableApiUsage
 			return yaml.readTree(Resources.getResource(resource));
 		} catch (IllegalArgumentException | IOException e) {
-			Log.info("Failed to load status data", e);
-			return MissingNode.getInstance();
+			Log.warn("Failed to load data", e);
+			return NullNode.getInstance();
 		}
 	}
 }

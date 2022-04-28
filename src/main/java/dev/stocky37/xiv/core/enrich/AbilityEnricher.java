@@ -26,6 +26,10 @@ public class AbilityEnricher extends MergingEnricher<Ability> {
 
 	@Override
 	protected Ability enrich(Ability ability, JsonNode update) {
+		if(update == null) {
+			return ability;
+		}
+		System.out.println("ability: " + ability);
 		final var builder = Ability.builder(ability);
 		if(update.has("statusIds")) {
 			builder.withStatuses(
@@ -36,7 +40,9 @@ public class AbilityEnricher extends MergingEnricher<Ability> {
 					.toList()
 			);
 		}
-		return builder.build();
+		Ability build = builder.build();
+		System.out.println("updated: " + build);
+		return build;
 	}
 
 }

@@ -48,13 +48,13 @@ public class Util {
 		return json.valueToTree(obj);
 	}
 
-//	public JsonNode toJsonNode(String obj) {
-//		try {
-//			return json.readTree(obj);
-//		} catch (JsonProcessingException e) {
-//			throw new RuntimeException(e);
-//		}
-//	}
+	public JsonNode toJsonNode(String obj) {
+		try {
+			return json.readTree(obj);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	public <T> T fromJsonNode(JsonNode node, Class<T> clazz) {
 		try {
