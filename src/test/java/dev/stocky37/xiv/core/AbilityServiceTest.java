@@ -2,6 +2,7 @@ package dev.stocky37.xiv.core;
 
 import dev.stocky37.xiv.model.Ability;
 import dev.stocky37.xiv.model.Action;
+import dev.stocky37.xiv.test.TestUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import java.net.URI;
 import java.time.Duration;
@@ -22,6 +23,7 @@ class AbilityServiceTest implements WithAssertions {
 
 	@Test
 	void findForJob() {
+		assertThat(abilities.findForJob("rpr")).hasSize(39);
 	}
 
 	@Test
@@ -29,3 +31,4 @@ class AbilityServiceTest implements WithAssertions {
 		assertThat(abilities.findById("24378").orElseThrow()).isEqualTo(shadowOfDeath);
 	}
 }
+

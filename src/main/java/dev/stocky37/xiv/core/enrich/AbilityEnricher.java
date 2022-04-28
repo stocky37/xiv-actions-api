@@ -32,7 +32,7 @@ public class AbilityEnricher extends MergingEnricher<Ability> {
 		System.out.println("ability: " + ability);
 		final var builder = Ability.builder(ability);
 		if(update.has("statusIds")) {
-			builder.withStatuses(
+			builder.withStatusEffects(
 				StreamSupport.stream(update.get("statusIds").spliterator(), false)
 					.map((n) -> statusService.findById(n.asText()))
 					.filter(Optional::isPresent)

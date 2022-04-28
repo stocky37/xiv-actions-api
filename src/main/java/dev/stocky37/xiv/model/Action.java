@@ -1,7 +1,6 @@
 package dev.stocky37.xiv.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import dev.stocky37.xiv.api.json.Views;
@@ -33,7 +32,7 @@ public interface Action {
 	}
 
 	@JsonView(Views.Standard.class)
-	default List<Status> statuses() {
+	default List<Status> statusEffects() {
 		return Collections.emptyList();
 	}
 

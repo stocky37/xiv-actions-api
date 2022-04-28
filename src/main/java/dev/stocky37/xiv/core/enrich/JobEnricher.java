@@ -40,10 +40,12 @@ public class JobEnricher extends MergingEnricher<Job> {
 	}
 
 	private List<Ability> actions(Job job) {
-		return abilities.findForJob(job);
+		return abilities.findForJob(job.abbreviation());
 	}
 
 	private List<Consumable> potions(Job job) {
-		return items.findPotionsForJob(job);
+		return job.primaryStat()
+			.map(items::findPotionsForAttribute)
+			.orElse(Collections.emptyList());
 	}
 }

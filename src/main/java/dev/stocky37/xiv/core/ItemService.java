@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Singleton;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.w3c.dom.Attr;
 
 @Singleton
 public class ItemService {
@@ -35,16 +36,11 @@ public class ItemService {
 	}
 
 	@CacheResult(cacheName = "items")
-	public List<Consumable> findPotionsForJob(Job job) {
-		// skip for jobs without a primary state (dohl etc.)
-		if(job.primaryStat().isEmpty()) {
-			return Collections.emptyList();
-		}
-
+	public List<Consumable> findPotionsForAttribute(Attribute stat) {
 		final Query query = new Query(
 			INDEXES,
 			Util.ALL_COLUMNS,
-			buildJobPotionsQuery(job.primaryStat().get())
+			buildJobPotionsQuery(stat)
 		);
 
 		return xivapi.searchConsumables(query).stream().map(converter).toList();

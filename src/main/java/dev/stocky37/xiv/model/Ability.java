@@ -6,7 +6,6 @@ import dev.stocky37.xiv.util.Util;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,7 @@ public record Ability(
 	Duration recast,
 	Set<String> cooldownGroups,
 	Integer potency,
-	List<Status> statuses,
+	List<Status> statusEffects,
 
 	// Ability
 	@JsonView(Views.Standard.class) URI hdIcon,
@@ -83,7 +82,7 @@ public record Ability(
 		private Optional<String> comboFrom = Optional.empty();
 		private Set<String> cooldownGroups = new HashSet<>();
 		private int potency = 0;
-		private List<Status> statuses = new ArrayList<>();
+		private List<Status> statusEffects = new ArrayList<>();
 
 		private Builder() {}
 
@@ -102,7 +101,7 @@ public record Ability(
 			this.comboFrom = action.comboFrom;
 			this.cooldownGroups = action.cooldownGroups;
 			this.potency = action.potency;
-			this.statuses = action.statuses;
+			this.statusEffects = action.statusEffects;
 		}
 
 		public Ability build() {
@@ -115,7 +114,7 @@ public record Ability(
 				recast,
 				cooldownGroups,
 				potency,
-				statuses,
+				statusEffects,
 				hdIcon,
 				level,
 				abilityType,
@@ -195,8 +194,8 @@ public record Ability(
 			return this;
 		}
 
-		public Builder withStatuses(List<Status> statuses) {
-			this.statuses = statuses;
+		public Builder withStatusEffects(List<Status> statusEffects) {
+			this.statusEffects = statusEffects;
 			return this;
 		}
 	}

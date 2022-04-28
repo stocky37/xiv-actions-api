@@ -38,11 +38,11 @@ public class AbilityService {
 	}
 
 	@CacheResult(cacheName = "actions")
-	public List<Ability> findForJob(Job job) {
+	public List<Ability> findForJob(String jobAbbrev) {
 		final Query query = new Query(
 			INDEXES,
 			Util.ALL_COLUMNS,
-			buildJobActionsQuery(job.abbreviation())
+			buildJobActionsQuery(jobAbbrev)
 		);
 
 		return xivapi.searchAbilities(query).stream().map(converter).map(enricher).toList();

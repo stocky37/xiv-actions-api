@@ -1,9 +1,6 @@
 package dev.stocky37.xiv.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import dev.stocky37.xiv.api.json.Views;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
@@ -17,7 +14,7 @@ public record Consumable(
 
 	// Action
 	Duration recast,
-	List<Status> effects
+	List<Status> statusEffects
 
 	// Ability
 ) implements Action, Item {

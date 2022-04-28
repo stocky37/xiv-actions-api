@@ -23,3 +23,4 @@ public class StatusEnricher extends MergingEnricher<Status> {
 		return ability;
 	}
 }
+

@@ -48,7 +48,7 @@ public class ConsumableConverter implements Function<XivConsumable, Consumable> 
 	}
 
 	private StatModifier statmod(Attribute attribute, int value, int max) {
-		return new StatModifier(attribute, value / 100d, Optional.of(max));
+		return new StatModifier(attribute, value / 100d + 1, Optional.of(max));
 	}
 
 

@@ -12,7 +12,7 @@ abilityType: weaponskill
 isRoleAction: false
 damageType: physical
 actionType: ability
-statuses:
+statusEffects:
   - id: 2586
     name: Death's Design
     icon: https://xivapi.com/i/012000/012926.png
