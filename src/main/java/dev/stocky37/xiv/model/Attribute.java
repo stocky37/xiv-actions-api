@@ -23,7 +23,6 @@ public enum Attribute {
 	SKILL_SPEED,
 	SPELL_SPEED;
 
-	@JsonCreator
 	public static Attribute fromString(String str) {
 		for(final var attr : Attribute.values()) {
 			if(attr.toString().equalsIgnoreCase(str)) {

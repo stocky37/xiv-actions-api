@@ -18,11 +18,10 @@ import io.quarkus.cache.CacheResult;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-@ApplicationScoped
-@SuppressWarnings("UnstableApiUsage")
+@Singleton
 public class ItemService {
 	private static final List<String> INDEXES = List.of("item");
 	private static final Joiner joiner = Joiner.on('.');

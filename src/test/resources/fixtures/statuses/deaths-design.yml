@@ -1,0 +1,9 @@
+id: 2586
+name: Death's Design
+icon: https://xivapi.com/i/012000/012926.png
+hdIcon: https://xivapi.com/i/012000/012926_hr1.png
+duration: 30000
+maxDuration: 60000
+effects:
+  - type: damage
+    multiplier: 1.1

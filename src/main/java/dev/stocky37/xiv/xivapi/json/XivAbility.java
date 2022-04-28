@@ -4,7 +4,6 @@ public record XivAbility(
 	Long ID,
 	String Name,
 	String Icon,
-	String Description,
 	String IconHD,
 	Long ActionComboTargetID,
 	Integer CooldownGroup,

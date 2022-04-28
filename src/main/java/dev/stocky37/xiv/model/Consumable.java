@@ -14,7 +14,6 @@ public record Consumable(
 	String name,
 	URI icon,
 	URI hdIcon,
-	String description,
 
 	// Action
 	Duration recast,

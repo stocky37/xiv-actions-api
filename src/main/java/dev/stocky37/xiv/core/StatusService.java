@@ -9,11 +9,10 @@ import io.quarkus.cache.CacheResult;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.jboss.resteasy.annotations.cache.Cache;
+import javax.inject.Singleton;
 
-@ApplicationScoped
+@Singleton
 public class StatusService {
 
 	private final XivApiClient xivapi;

@@ -6,12 +6,12 @@ import dev.stocky37.xiv.model.Action;
 import dev.stocky37.xiv.model.Delay;
 import dev.stocky37.xiv.model.Item;
 import dev.stocky37.xiv.model.Rotation;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
-@ApplicationScoped
+@Singleton
 public class RotationService {
 	private final XivConfig config;
 	private final AbilityService abilities;

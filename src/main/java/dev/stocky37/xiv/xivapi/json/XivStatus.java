@@ -4,8 +4,7 @@ public record XivStatus(
 	Long ID,
 	String Name,
 	String Icon,
-	String IconHD,
-	String Description
+	String IconHD
 ) {
 
 }

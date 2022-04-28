@@ -11,8 +11,8 @@ import dev.stocky37.xiv.xivapi.json.XivStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @SuppressWarnings("UnstableApiUsage")
-@ApplicationScoped
+@Singleton
 public class XivApiClient {
 	private final XivApi xivapi;
 	private final RateLimiter rateLimiter;
@@ -73,7 +73,7 @@ public class XivApiClient {
 		final SearchBody body = new SearchBody(
 			String.join(",", query.indexes()),
 			String.join(",", query.columns()),
-			util.toJsonNode(query.query())
+			util.toJsonNode(query.query().toString())
 		);
 
 		return wrapApi(() -> xivapi.search(body))

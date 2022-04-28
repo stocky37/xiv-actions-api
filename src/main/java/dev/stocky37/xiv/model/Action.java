@@ -1,6 +1,5 @@
 package dev.stocky37.xiv.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,7 +34,7 @@ public interface Action {
 
 	@JsonIgnore
 	@JsonView(Views.Standard.class)
-	default List<Status> effects() {
+	default List<Status> statuses() {
 		return Collections.emptyList();
 	}
 
@@ -61,11 +60,6 @@ public interface Action {
 		@Override
 		public String toString() {
 			return Util.slugify(name());
-		}
-
-		@JsonCreator
-		public static Type fromString(String value) {
-			return Type.valueOf(value.toUpperCase());
 		}
 	}
 }

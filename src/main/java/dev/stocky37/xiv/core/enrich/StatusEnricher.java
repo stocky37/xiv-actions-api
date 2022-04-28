@@ -1,29 +1,25 @@
 package dev.stocky37.xiv.core.enrich;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import dev.stocky37.xiv.model.Status;
-import dev.stocky37.xiv.model.transform.StatusMerger;
-import java.util.Map;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
-import javax.enterprise.context.ApplicationScoped;
+import java.util.function.BiFunction;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
-@ApplicationScoped
-public class StatusEnricher implements UnaryOperator<Status> {
-
-	private final Map<String, Status> data;
-	private final BinaryOperator<Status> merger;
+@Singleton
+public class StatusEnricher extends MergingEnricher<Status> {
 
 	@Inject
-	public StatusEnricher(@Named("data.status") Map<String, Status> data, StatusMerger merger) {
-		this.data = data;
-		this.merger = merger;
+	public StatusEnricher(
+		@Named("statuses.data") JsonNode data,
+		@Named("statuses.merge") BiFunction<Status, JsonNode, Status> merger
+	) {
+		super(data, merger);
 	}
 
 	@Override
-	public Status apply(Status source) {
-		final var updated = data.get(source.id());
-		return updated == null ? source : merger.apply(source, updated);
+	protected Status enrich(Status ability, JsonNode update) {
+		return ability;
 	}
 }

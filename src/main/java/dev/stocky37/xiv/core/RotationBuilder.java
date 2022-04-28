@@ -110,16 +110,11 @@ public class RotationBuilder {
 	private Collection<Timeline.Event> handleAutos(Duration endTime) {
 		final List<Timeline.Event> autos = new ArrayList<>();
 		final DamageCalculator calc = calculator();
-		System.out.println("endtime: " + endTime.toMillis());
-		System.out.println("delay: " + currentBaseStats().delayDuration().toMillis());
 		for(long i = 0; i < endTime.toMillis(); i += currentBaseStats().delayDuration().toMillis()) {
-			System.out.println("i: " + i);
 			autos.add(new AutoAttackEvent(Duration.ofMillis(i), (long) calc.expectedAutoDamage()));
 		}
 		return autos;
 	}
-
-	;
 
 	private Duration calcGcdCooldown(Action action, Duration gcd) {
 		return shouldGcdScale(action) ? gcd : action.recast();

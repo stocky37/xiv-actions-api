@@ -20,7 +20,6 @@ public class StatusDeserialisationTest implements WithAssertions {
 	@Test
 	void loadActionData() throws IOException {
 		final var status = json.readValue(file, Status.class);
-		System.out.println(status);
 	}
 
 

@@ -10,7 +10,8 @@
 # Shadow of Death
 24378:
   potency: 300
-  status: 2586
+  statusIds:
+    - 2586
 
 # Harpe
 24386:

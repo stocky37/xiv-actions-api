@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-@ApplicationScoped
+@Singleton
 public class ConsumableConverter implements Function<XivConsumable, Consumable> {
 
 	public static final String MEDICATED_ID = "49";
@@ -38,12 +38,11 @@ public class ConsumableConverter implements Function<XivConsumable, Consumable> 
 			consumable.Name(),
 			util.prefixXivApi(consumable.Icon()),
 			util.prefixXivApi(consumable.IconHD()),
-			consumable.Description(),
 			Duration.ofSeconds(consumable.CooldownS() - HQ_CD_REDUCTION),
 			effects(consumable.Bonuses(), Duration.ofSeconds(consumable.ItemAction().DataHQ2()))
 		);
 	}
-	
+
 	private Status getMedicatedStatus() {
 		return statuses.findById(MEDICATED_ID).orElseThrow();
 	}

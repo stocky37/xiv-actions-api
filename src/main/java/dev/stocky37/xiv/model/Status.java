@@ -14,7 +14,6 @@ public record Status(
 	String name,
 	URI icon,
 	URI hdIcon,
-	String description,
 	Duration duration,
 	Optional<Duration> maxDuration,
 	Collection<Effect<?>> effects
@@ -53,7 +52,6 @@ public record Status(
 		String name;
 		URI icon;
 		URI hdIcon;
-		String description;
 		Duration duration = Duration.ZERO;
 		Optional<Duration> maxDuration = Optional.empty();
 		Collection<Effect<?>> effects = new ArrayDeque<>();
@@ -65,7 +63,6 @@ public record Status(
 			this.name = status.name;
 			this.icon = status.icon;
 			this.hdIcon = status.hdIcon;
-			this.description = status.description;
 			this.duration = status.duration;
 			this.maxDuration = status.maxDuration;
 			this.effects = status.effects;
@@ -91,11 +88,6 @@ public record Status(
 			return this;
 		}
 
-		public Builder description(String description) {
-			this.description = description;
-			return this;
-		}
-
 		public Builder duration(Duration duration) {
 			this.duration = duration;
 			return this;
@@ -112,7 +104,7 @@ public record Status(
 		}
 
 		public Status build() {
-			return new Status(id, name, icon, hdIcon, description, duration, maxDuration, effects);
+			return new Status(id, name, icon, hdIcon, duration, maxDuration, effects);
 		}
 	}
 

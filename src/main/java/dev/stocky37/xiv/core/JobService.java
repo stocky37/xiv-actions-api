@@ -11,10 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 
-@ApplicationScoped
-@SuppressWarnings("UnstableApiUsage")
+@Singleton
 public class JobService {
 	private final XivApiClient xivapi;
 	private final UnaryOperator<Job> enricher;

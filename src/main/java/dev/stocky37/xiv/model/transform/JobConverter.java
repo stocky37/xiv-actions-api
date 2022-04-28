@@ -5,10 +5,10 @@ import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.util.Util;
 import dev.stocky37.xiv.xivapi.json.XivClassJob;
 import java.util.function.Function;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-@ApplicationScoped
+@Singleton
 public class JobConverter implements Function<XivClassJob, Job> {
 
 	private final Util util;

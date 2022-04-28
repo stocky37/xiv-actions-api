@@ -5,14 +5,13 @@ import dev.stocky37.xiv.util.Util;
 import dev.stocky37.xiv.xivapi.json.XivAbility;
 import java.time.Duration;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-@ApplicationScoped
+@Singleton
 public class AbilityConverter implements Function<XivAbility, Ability> {
 
 	private final String gcdGroup;
@@ -42,7 +41,6 @@ public class AbilityConverter implements Function<XivAbility, Ability> {
 			.withComboFrom(comboAction(ability.ActionComboTargetID()))
 			.withCooldownGroups(cooldownGroups)
 			.withDamageType(damageType(ability.AttackTypeTargetID()))
-			.withDescription(ability.Description())
 			.withIcon(util.prefixXivApi(ability.Icon()))
 			.withIconHD(util.prefixXivApi(ability.IconHD()))
 			.withLevel(ability.ClassJobLevel())

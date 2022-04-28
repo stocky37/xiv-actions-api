@@ -7,10 +7,10 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-@ApplicationScoped
+@Singleton
 public class StatusConverter implements Function<XivStatus, Status> {
 	private final Util util;
 
@@ -26,7 +26,6 @@ public class StatusConverter implements Function<XivStatus, Status> {
 			status.Name(),
 			util.prefixXivApi(status.Icon()),
 			util.prefixXivApi(status.IconHD()),
-			status.Description(),
 			Duration.ZERO,
 			Optional.empty(),
 			Collections.emptyList()

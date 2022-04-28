@@ -7,12 +7,11 @@ public record XivConsumable(
 	String Name,
 	String Icon,
 	String IconHD,
-	String Description,
 	Integer CooldownS,
 	Kind ItemKind,
 	Action ItemAction,
 	Map<String, Bonus> Bonuses
-	) {
+) {
 
 	public record Bonus(Integer MaxHQ, Integer ValueHQ) {}
 
