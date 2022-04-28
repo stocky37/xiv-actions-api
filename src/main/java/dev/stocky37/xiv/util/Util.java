@@ -15,7 +15,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Singleton
 public class Util {
 
-	private static final Slugify slugifier = new Slugify().withCustomReplacement("_", "-");
+	private static final Slugify slugifier = new Slugify()
+		.withCustomReplacement("_", "-")
+		.withCustomReplacement("'", "");
 	public static final List<String> ALL_COLUMNS = List.of("*");
 	// todo: modifiers can be found in the following fields from XIVAPI ClassJob endpoint
 	//  - ModifierDexterity
