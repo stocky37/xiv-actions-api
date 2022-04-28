@@ -18,7 +18,6 @@ import javax.inject.Singleton;
 public class JobService {
 	private final XivApiClient xivapi;
 	private final UnaryOperator<Job> enricher;
-
 	private final Function<XivClassJob, Job> converter;
 
 	public JobService(XivApiClient xivapi, JobEnricher enricher, JobConverter converter) {

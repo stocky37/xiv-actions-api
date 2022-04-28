@@ -4,7 +4,11 @@ import static dev.stocky37.xiv.util.Util.slugify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ForwardingNavigableMap;
+import dev.stocky37.xiv.model.ActiveStatus;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -28,6 +32,10 @@ public class Timeline extends ForwardingNavigableMap<Duration, Timeline.Event> {
 		boolean isGCD();
 
 		long damage();
+
+		default Collection<ActiveStatus> statusEffects() {
+			return Collections.emptyList();
+		}
 	}
 
 	private final TreeMap<Duration, Event> delegate = new TreeMap<>();

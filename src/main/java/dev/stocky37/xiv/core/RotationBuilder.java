@@ -1,31 +1,35 @@
 package dev.stocky37.xiv.core;
 
+import com.google.common.collect.Lists;
 import dev.stocky37.xiv.config.XivConfig;
 import dev.stocky37.xiv.model.Action;
+import dev.stocky37.xiv.model.ActiveStatus;
 import dev.stocky37.xiv.model.AutoAttackEvent;
 import dev.stocky37.xiv.model.DerivedStats;
 import dev.stocky37.xiv.model.GcdEvent;
 import dev.stocky37.xiv.model.Job;
 import dev.stocky37.xiv.model.OGcdEvent;
 import dev.stocky37.xiv.model.Rotation;
-import dev.stocky37.xiv.model.RotationEffect;
 import dev.stocky37.xiv.model.Stats;
+import dev.stocky37.xiv.model.Status;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.ObjectUtils;
 
 public class RotationBuilder {
 
 	private final Duration BASE_GCD = Duration.ofMillis(2500);
 	private final XivConfig config;
 	private final List<Action> actions = new ArrayList<>();
-	private final List<RotationEffect> rotationEffects = new ArrayList<>();
+	private final Map<String, ActiveStatus> statusEffects = new LinkedHashMap<>();
 	private Duration nextGcd = Duration.ZERO;
 	private Duration nextOGcd = Duration.ZERO;
-
-	private Duration nextAuto = Duration.ZERO;
 	private int gcdCount = 0;
 	private final Stats baseStats;
 	private final Job job;
@@ -69,11 +73,17 @@ public class RotationBuilder {
 	}
 
 	private Timeline.Event handleGcd(Action action) {
-		removeEffects(nextGcd);
+//		removeEffects(nextGcd);
 		final DamageCalculator calc = calculator();
-		addEffects(action, nextGcd);
+		addStatusEffects(action, nextGcd);
 
-		final var event = new GcdEvent(nextGcd, action, (long) calc.expectedDamage(action.potency()), ++gcdCount);
+		final var event = new GcdEvent(
+			nextGcd,
+			action,
+			(long) calc.expectedDamage(action.potency()),
+			++gcdCount,
+			Lists.newArrayList(statusEffects.values())
+		);
 
 		nextOGcd = nextGcd.plus(animationLock(action));
 		nextGcd = nextGcd.plus(calcGcdCooldown(action, stats().gcd(BASE_GCD)));
@@ -82,9 +92,9 @@ public class RotationBuilder {
 	}
 
 	private Timeline.Event handleOGcd(Action action) {
-		removeEffects(nextOGcd);
+//		removeEffects(nextOGcd);
 		final DamageCalculator calc = calculator();
-		addEffects(action, nextOGcd);
+//		addStatusEffects(action, nextOGcd);
 
 		final var event = new OGcdEvent(nextOGcd, action, (long) calc.expectedDamage(action.potency()));
 		nextOGcd = nextOGcd.plus(animationLock(action));
@@ -134,12 +144,45 @@ public class RotationBuilder {
 		return action.animationLock().orElse(config.animationLock()).plus(config.ping());
 	}
 
-	private void addEffects(Action action, Duration start) {
-//		action.effects().forEach(e -> rotationEffects.add(new RotationEffect(
-//			e,
-//			start,
-//			start.plus(e.duration())
-//		)));
+	private void addStatusEffects(Action action, Duration now) {
+		action.statusEffects()
+			.forEach(status -> statusEffects.put(
+				status.id(),
+				newStatus(status, now)
+			));
+	}
+
+	private ActiveStatus newStatus(Status status, Duration now) {
+		// if status has a maxduration it can be refreshed up to the max duration
+		if(status.maxDuration().isPresent() && statusEffects.containsKey(status.id())) {
+			final ActiveStatus existing = statusEffects.get(status.id());
+			// now:       0
+			// start:  -> 0
+			// (left): -> 30 (end - now)
+			// (max):  -> 60 (start + 60)
+			// end:    -> 30
+
+			// now:          1
+			// start:   0 -> 1
+			// (left):    -> 29 (end[30] - now[1])
+			// (max):     -> 61 (start + 60)
+			// end:    30 -> 60 (min(end + end, start + maxDuration))
+
+			// now:          2
+			// start:   1 -> 2
+			// (left):    -> 58 (end[60] - now[2])
+			// (max):     -> 62 (start[2] + 60)
+			// end:       -> 62 min(end + end[92], max[62])
+
+			final Duration maxEnd = now.plus(status.maxDuration().get());
+			final Duration proposedEnd = existing.end().plus(status.duration());
+			final Duration newEnd = ObjectUtils.min(maxEnd, proposedEnd);
+			return new ActiveStatus(status, now, newEnd);
+		} else {
+			// otherwise it should be fine just to replace with a new instance
+			return new ActiveStatus(status, now, now.plus(status.duration()));
+		}
+
 	}
 
 	private void removeEffects(Duration start) {
