@@ -2,19 +2,34 @@ package dev.stocky37.xiv.core;
 
 import static dev.stocky37.xiv.util.Util.slugify;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ForwardingNavigableMap;
+import dev.stocky37.xiv.model.Action;
 import dev.stocky37.xiv.model.ActiveStatus;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Optional;
 import java.util.TreeMap;
 
 public class Timeline extends ForwardingNavigableMap<Duration, Timeline.Event> {
 
-	public interface Event {
+	public static Event autoAttackEvent(Duration timestamp, long damage, Collection<ActiveStatus> status) {
+		return new Event(Event.Type.AUTO_ATTACK, timestamp, damage, Optional.empty(), status);
+	}
+
+	public static Event actionEvent(Duration timestamp, long damage, Collection<ActiveStatus> status, Action action) {
+		return new Event(Event.Type.ACTION, timestamp, damage, Optional.of(action), status);
+	}
+
+	public record Event(
+		Type type,
+		Duration timestamp,
+		long damage,
+		Optional<Action> action,
+		Collection<ActiveStatus> statusEffects
+	) {
+
 		enum Type {
 			ACTION, AUTO_ATTACK;
 
@@ -24,17 +39,8 @@ public class Timeline extends ForwardingNavigableMap<Duration, Timeline.Event> {
 			}
 		}
 
-		@JsonProperty
-		Type type();
-
-		Duration timestamp();
-
-		boolean isGCD();
-
-		long damage();
-
-		default Collection<ActiveStatus> statusEffects() {
-			return Collections.emptyList();
+		boolean isGCD() {
+			return action().map(Action::onGCD).orElse(false);
 		}
 	}
 
@@ -53,5 +59,25 @@ public class Timeline extends ForwardingNavigableMap<Duration, Timeline.Event> {
 		return overwrite || !this.containsKey(event.timestamp())
 			? this.put(event.timestamp(), event)
 			: this.put(event.timestamp().minus(Duration.ofMillis(1)), event);
+	}
+
+	public Map.Entry<Duration, Event> lastAction() {
+		return this.lastEntry();
+	}
+
+	public Map.Entry<Duration, Event> lastGcd() {
+		var entry = this.lastAction();
+		while(entry != null && !entry.getValue().isGCD()) {
+			entry = this.lowerEntry(entry.getKey());
+		}
+		return entry;
+	}
+
+	public Map.Entry<Duration, Event> lastOgcd() {
+		var entry = this.lastAction();
+		while(entry != null && entry.getValue().isGCD()) {
+			entry = this.lowerEntry(entry.getKey());
+		}
+		return entry;
 	}
 }

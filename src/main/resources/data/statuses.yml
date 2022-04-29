@@ -6,3 +6,9 @@
     - type: damage
       multiplier: 1.1
 
+# Arcane Circle
+2599:
+  duration: 20000
+  effects:
+    - type: damage
+      multiplier: 1.03

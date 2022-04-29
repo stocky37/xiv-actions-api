@@ -10,8 +10,7 @@
 # Shadow of Death
 24378:
   potency: 300
-  statusIds:
-    - 2586
+  statusIds: [2586]
 
 # Harpe
 24386:
@@ -74,3 +73,7 @@
 # Communio
 24398:
   potency: 1000
+
+# Arcane Circle
+24405:
+  statusIds: [2599]
