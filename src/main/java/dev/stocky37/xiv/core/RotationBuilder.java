@@ -15,7 +15,6 @@ import dev.stocky37.xiv.model.Status;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +35,13 @@ public class RotationBuilder {
 
 	private final List<Long> autos = new ArrayList<>();
 
+	private final DamageCalculator calc;
+
 	public RotationBuilder(XivConfig config, Job job, Stats baseStats) {
 		this.config = config;
 		this.baseStats = baseStats;
 		this.job = job;
+		this.calc = new DamageCalculator(job, new DerivedStats(baseStats, job.primaryStat().orElseThrow()));
 	}
 
 	public RotationBuilder append(Action action) {
@@ -73,16 +75,16 @@ public class RotationBuilder {
 	}
 
 	private Timeline.Event handleGcd(Action action) {
-//		removeEffects(nextGcd);
-		final DamageCalculator calc = calculator();
+		removeStatusEffects(nextGcd);
+		final var statusEffects = Lists.newArrayList(this.statusEffects.values());
 		addStatusEffects(action, nextGcd);
 
 		final var event = new GcdEvent(
 			nextGcd,
 			action,
-			(long) calc.expectedDamage(action.potency()),
+			(long) calc.expectedDamage(action.potency(), statusEffects.stream().map(ActiveStatus::status).toList()),
 			++gcdCount,
-			Lists.newArrayList(statusEffects.values())
+			statusEffects
 		);
 
 		nextOGcd = nextGcd.plus(animationLock(action));
@@ -92,20 +94,15 @@ public class RotationBuilder {
 	}
 
 	private Timeline.Event handleOGcd(Action action) {
-//		removeEffects(nextOGcd);
-		final DamageCalculator calc = calculator();
-//		addStatusEffects(action, nextOGcd);
-
+		removeStatusEffects(nextGcd);
 		final var event = new OGcdEvent(nextOGcd, action, (long) calc.expectedDamage(action.potency()));
+		addStatusEffects(action, nextGcd);
+
 		nextOGcd = nextOGcd.plus(animationLock(action));
 		if(nextOGcd.compareTo(nextGcd) > 0) {
 			nextGcd = nextOGcd;
 		}
 		return event;
-	}
-
-	private DamageCalculator calculator() {
-		return new DamageCalculator(job, stats());
 	}
 
 	private DerivedStats stats() {
@@ -119,9 +116,9 @@ public class RotationBuilder {
 
 	private Collection<Timeline.Event> handleAutos(Duration endTime) {
 		final List<Timeline.Event> autos = new ArrayList<>();
-		final DamageCalculator calc = calculator();
 		for(long i = 0; i < endTime.toMillis(); i += currentBaseStats().delayDuration().toMillis()) {
-			autos.add(new AutoAttackEvent(Duration.ofMillis(i), (long) calc.expectedAutoDamage()));
+			final var timestamp = Duration.ofMillis(i);
+			autos.add(new AutoAttackEvent(timestamp, (long) calc.expectedAutoDamage()));
 		}
 		return autos;
 	}
@@ -150,6 +147,10 @@ public class RotationBuilder {
 				status.id(),
 				newStatus(status, now)
 			));
+	}
+
+	private void removeStatusEffects(Duration now) {
+		statusEffects.entrySet().removeIf(e -> e.getValue().end().compareTo(now) <= 0);
 	}
 
 	private ActiveStatus newStatus(Status status, Duration now) {
@@ -185,11 +186,5 @@ public class RotationBuilder {
 
 	}
 
-	private void removeEffects(Duration start) {
-//		final List<RotationEffect> finishedEffects = new ArrayList<>();
-//		rotationEffects.stream()
-//			.filter(item -> item.end().compareTo(start) < 0)
-//			.forEach(finishedEffects::add);
-//		rotationEffects.removeAll(finishedEffects);
-	}
+
 }

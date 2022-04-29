@@ -13,14 +13,14 @@ import java.util.Set;
 
 public interface Action {
 	@JsonProperty
-	@JsonView(Views.Standard.class)
+	@JsonView(Views.Limited.class)
 	Type actionType();
 
 	@JsonView(Views.Standard.class)
 	Boolean onGCD();
 
 	@JsonFormat(pattern = "MILLIS")
-	@JsonView(Views.Standard.class)
+	@JsonView({Views.Standard.class, Views.Rotation.class})
 	default Duration cast() {
 		return Duration.ZERO;
 	}

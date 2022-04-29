@@ -12,7 +12,7 @@ public class Views {
 
 	}
 
-	public static class Rotation extends Standard {
+	public static class Rotation extends Limited {
 
 	}
 }

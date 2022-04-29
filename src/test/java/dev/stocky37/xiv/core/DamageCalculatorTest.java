@@ -16,20 +16,6 @@ public class DamageCalculatorTest implements WithAssertions {
 	);
 
 	@Test
-	void critMultiplier() {
-		assertThat(withStats(statsWithCrit(2006)).averageCritMultiplier()).isEqualTo(1.124611);
-		assertThat(withStats(statsWithCrit(2014)).averageCritMultiplier()).isEqualTo(1.124611);
-		assertThat(withStats(statsWithCrit(2015)).averageCritMultiplier()).isEqualTo(1.125400);
-	}
-
-	@Test
-	void directHitMultiplier() {
-		assertThat(withStats(statsWithDirectHit(2000)).averageDirectHitMultiplier()).isEqualTo(1.11575);
-		assertThat(withStats(statsWithDirectHit(2002)).averageDirectHitMultiplier()).isEqualTo(1.11575);
-		assertThat(withStats(statsWithDirectHit(2003)).averageDirectHitMultiplier()).isEqualTo(1.11600);
-	}
-
-	@Test
 	void expectedDamage() {
 		assertThat((int) CALC.expectedDamage(300)).isEqualTo(7735);
 	}

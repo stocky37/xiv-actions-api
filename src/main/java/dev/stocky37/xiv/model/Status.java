@@ -2,6 +2,8 @@ package dev.stocky37.xiv.model;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonView;
+import dev.stocky37.xiv.api.json.Views;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayDeque;
@@ -10,22 +12,25 @@ import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 public record Status(
+	// ApiObject
 	String id,
 	String name,
 	URI icon,
-	URI hdIcon,
-	Duration duration,
-	Optional<Duration> maxDuration,
-	Collection<Effect<?>> effects
+
+	// Status
+	@JsonView(Views.Standard.class) URI hdIcon,
+	@JsonView(Views.Standard.class) Duration duration,
+	@JsonView(Views.Standard.class) Optional<Duration> maxDuration,
+	@JsonView(Views.Standard.class) Collection<Effect<?>> effects
 ) implements ApiObject {
 
-	enum Type {
+	public enum Type {
 		STAT, DAMAGE
 	}
 
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 	@JsonSubTypes({
-		@JsonSubTypes.Type(value = DamageMultiplier.class),
+		@JsonSubTypes.Type(value = DamageModifier.class),
 		@JsonSubTypes.Type(value = StatModifier.class)
 	})
 	public interface Effect<T> extends UnaryOperator<T> {
@@ -48,13 +53,13 @@ public record Status(
 	}
 
 	public static class Builder {
-		String id;
-		String name;
-		URI icon;
-		URI hdIcon;
-		Duration duration = Duration.ZERO;
-		Optional<Duration> maxDuration = Optional.empty();
-		Collection<Effect<?>> effects = new ArrayDeque<>();
+		private String id;
+		private String name;
+		private URI icon;
+		private URI hdIcon;
+		private Duration duration = Duration.ZERO;
+		private Optional<Duration> maxDuration = Optional.empty();
+		private Collection<Effect<?>> effects = new ArrayDeque<>();
 
 		private Builder() {}
 

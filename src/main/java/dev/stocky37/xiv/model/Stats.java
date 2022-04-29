@@ -43,22 +43,22 @@ public record Stats(
 	}
 
 	public static class Builder {
-		int strength;
-		int dexterity;
-		int vitality;
-		int intelligence;
-		int mind;
-		int crit;
-		int determination;
-		int directHit;
-		int skillSpeed;
-		int spellSpeed;
-		int tenacity;
-		int piety;
-		int physicalDamage;
-		int magicalDamage;
-		double delay;
-		int autoAttack;
+		private int strength;
+		private int dexterity;
+		private int vitality;
+		private int intelligence;
+		private int mind;
+		private int crit;
+		private int determination;
+		private int directHit;
+		private int skillSpeed;
+		private int spellSpeed;
+		private int tenacity;
+		private int piety;
+		private int physicalDamage;
+		private int magicalDamage;
+		private double delay;
+		private int autoAttack;
 
 		public Builder() {}
 

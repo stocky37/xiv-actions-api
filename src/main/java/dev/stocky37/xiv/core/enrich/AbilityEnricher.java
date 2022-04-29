@@ -29,7 +29,6 @@ public class AbilityEnricher extends MergingEnricher<Ability> {
 		if(update == null) {
 			return ability;
 		}
-		System.out.println("ability: " + ability);
 		final var builder = Ability.builder(ability);
 		if(update.has("statusIds")) {
 			builder.withStatusEffects(
@@ -40,9 +39,7 @@ public class AbilityEnricher extends MergingEnricher<Ability> {
 					.toList()
 			);
 		}
-		Ability build = builder.build();
-		System.out.println("updated: " + build);
-		return build;
+		return builder.build();
 	}
 
 }
