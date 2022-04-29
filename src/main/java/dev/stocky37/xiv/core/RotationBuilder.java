@@ -15,6 +15,7 @@ import dev.stocky37.xiv.model.Status;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class RotationBuilder {
 		final var actionTimeline = new Timeline();
 		final var autosTimeline = new Timeline();
 		actions.stream().map(this::handleAction).forEach(actionTimeline::addEvent);
-		handleAutos(actionTimeline.lastKey()).forEach(autosTimeline::addEvent);
+		handleAutos(actionTimeline).forEach(autosTimeline::addEvent);
 
 
 		final long totalDamage = Stream.concat(actionTimeline.values().stream(), autosTimeline.values().stream())
@@ -76,8 +77,8 @@ public class RotationBuilder {
 
 	private Timeline.Event handleGcd(Action action) {
 		removeStatusEffects(nextGcd);
-		final var statusEffects = Lists.newArrayList(this.statusEffects.values());
 		addStatusEffects(action, nextGcd);
+		final var statusEffects = Lists.newArrayList(this.statusEffects.values());
 
 		final var event = new GcdEvent(
 			nextGcd,
@@ -95,8 +96,14 @@ public class RotationBuilder {
 
 	private Timeline.Event handleOGcd(Action action) {
 		removeStatusEffects(nextGcd);
-		final var event = new OGcdEvent(nextOGcd, action, (long) calc.expectedDamage(action.potency()));
 		addStatusEffects(action, nextGcd);
+		final var statusEffects = Lists.newArrayList(this.statusEffects.values());
+		final var event = new OGcdEvent(
+			nextOGcd,
+			action,
+			(long) calc.expectedDamage(action.potency()),
+			statusEffects
+		);
 
 		nextOGcd = nextOGcd.plus(animationLock(action));
 		if(nextOGcd.compareTo(nextGcd) > 0) {
@@ -114,11 +121,29 @@ public class RotationBuilder {
 		return baseStats;
 	}
 
-	private Collection<Timeline.Event> handleAutos(Duration endTime) {
+	private Collection<Timeline.Event> handleAutos(Timeline actionTimeline) {
+		final var endTime = actionTimeline.lastKey();
 		final List<Timeline.Event> autos = new ArrayList<>();
 		for(long i = 0; i < endTime.toMillis(); i += currentBaseStats().delayDuration().toMillis()) {
 			final var timestamp = Duration.ofMillis(i);
-			autos.add(new AutoAttackEvent(timestamp, (long) calc.expectedAutoDamage()));
+
+			// note: since lowerEntry gets keys strrictly BEFORE the current timestamp, this has the
+			//       effect of assuming autos occur before actions at the same timestamp
+			final var entry = actionTimeline.lowerEntry(timestamp);
+
+			// check the status effects in effect after the last action
+			// remove any that have fallen off by now
+			if(entry != null) {
+				final var statusEffects = Lists.newArrayList(entry.getValue().statusEffects());
+				remvoeStatusEffects(timestamp, statusEffects);
+				autos.add(new AutoAttackEvent(
+					timestamp,
+					(long) calc.expectedAutoDamage(statusEffects.stream().map(ActiveStatus::status).toList()),
+					statusEffects
+				));
+			} else {
+				autos.add(new AutoAttackEvent(timestamp, (long) calc.expectedAutoDamage(), Collections.emptyList()));
+			}
 		}
 		return autos;
 	}
@@ -151,6 +176,10 @@ public class RotationBuilder {
 
 	private void removeStatusEffects(Duration now) {
 		statusEffects.entrySet().removeIf(e -> e.getValue().end().compareTo(now) <= 0);
+	}
+
+	private static void remvoeStatusEffects(Duration now, Collection<ActiveStatus> statusEffects) {
+		statusEffects.removeIf(e -> e.end().compareTo(now) <= 0);
 	}
 
 	private ActiveStatus newStatus(Status status, Duration now) {
