@@ -1,6 +1,7 @@
 package dev.stocky37.xiv.core;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import dev.stocky37.xiv.config.XivConfig;
 import dev.stocky37.xiv.model.Action;
 import dev.stocky37.xiv.model.ActiveStatus;
@@ -17,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -27,20 +29,14 @@ public class RotationBuilder {
 	private final Map<String, ActiveStatus> statusEffects = new LinkedHashMap<>();
 	private Duration nextGcd = Duration.ZERO;
 	private Duration nextOGcd = Duration.ZERO;
-	private int gcdCount = 0;
 	private final Stats baseStats;
-	private final Job job;
-
 	private final DamageCalculator calc;
+	private final Timeline timeline = new Timeline();
 
-	private final Action prev = null;
-	private final Duration prevGcd = Duration.ZERO;
-	private final Duration prevAction = Duration.ZERO;
 
 	public RotationBuilder(XivConfig config, Job job, Stats baseStats) {
 		this.config = config;
 		this.baseStats = baseStats;
-		this.job = job;
 		this.calc = new DamageCalculator(job, new DerivedStats(baseStats, job.primaryStat().orElseThrow()));
 	}
 
@@ -55,22 +51,16 @@ public class RotationBuilder {
 	}
 
 	public Rotation build() {
-		final var actionTimeline = new Timeline();
+
 		final var autosTimeline = new Timeline();
 		actions.stream()
-			.map(a -> handleAction(a, actionTimeline))
+			.map(a -> handleAction(a, timeline))
 			.filter(Objects::nonNull)
-			.forEach(actionTimeline::addEvent);
-		handleAutos(actionTimeline).forEach(autosTimeline::addEvent);
+			.forEach(timeline::addEvent);
 
+		handleAutos(timeline).forEach(timeline::addEvent);
 
-		final long totalDamage = Stream.concat(actionTimeline.values().stream(), autosTimeline.values().stream())
-			.map(Timeline.Event::damage)
-			.reduce(Long::sum)
-			.orElse(0L);
-		final double dps = totalDamage / (double) actionTimeline.lastKey().toMillis() * 1000;
-
-		return new Rotation(actionTimeline.values(), autosTimeline.values(), dps);
+		return new Rotation(timeline.values(), timeline.dps());
 	}
 
 	private Timeline.Event handleAction(Action action, Timeline timeline) {
@@ -98,13 +88,11 @@ public class RotationBuilder {
 		final var event = Timeline.actionEvent(
 			timestamp,
 			damage,
-
 			// need to copy the list to not propagate changes to the original collection
 			// need to get a separate copy fron above in order to get the effects added by this action
 			Lists.newArrayList(this.statusEffects.values()),
 			action
 		);
-
 
 		nextOGcd = timestamp.plus(animationLock(action));
 		nextGcd = action.onGCD() ? nextGcd.plus(gcd(action, activeStatusEffects)) : ObjectUtils.max(nextGcd, nextOGcd);
@@ -119,10 +107,6 @@ public class RotationBuilder {
 		// assuming only 2500ms gcds scale - will need to revisit if assumption if false
 		// if false, may need to extrapolate some other way, or manually enrich data
 		return baseGcd.equals(BASE_GCD) ? calc.modifiedStats(statusEffects).gcd(baseGcd) : baseGcd;
-	}
-
-	private DerivedStats stats() {
-		return new DerivedStats(currentBaseStats(), job.primaryStat().orElseThrow());
 	}
 
 	//todo: modify with any statusEffects effects that need updating
@@ -185,34 +169,12 @@ public class RotationBuilder {
 		// if statusEffects has a maxduration it can be refreshed up to the max duration
 		if(status.maxDuration().isPresent() && statusEffects.containsKey(status.id())) {
 			final ActiveStatus existing = statusEffects.get(status.id());
-			// now:       0
-			// start:  -> 0
-			// (left): -> 30 (end - now)
-			// (max):  -> 60 (start + 60)
-			// end:    -> 30
-
-			// now:          1
-			// start:   0 -> 1
-			// (left):    -> 29 (end[30] - now[1])
-			// (max):     -> 61 (start + 60)
-			// end:    30 -> 60 (min(end + end, start + maxDuration))
-
-			// now:          2
-			// start:   1 -> 2
-			// (left):    -> 58 (end[60] - now[2])
-			// (max):     -> 62 (start[2] + 60)
-			// end:       -> 62 min(end + end[92], max[62])
-
 			final Duration maxEnd = now.plus(status.maxDuration().get());
-			final Duration proposedEnd = existing.end().plus(status.duration());
-			final Duration newEnd = ObjectUtils.min(maxEnd, proposedEnd);
-			return new ActiveStatus(status, now, newEnd);
+			final Duration newEnd = existing.end().plus(status.duration());
+			return new ActiveStatus(status, now, ObjectUtils.min(maxEnd, newEnd));
 		} else {
 			// otherwise it should be fine just to replace with a new instance
 			return new ActiveStatus(status, now, now.plus(status.duration()));
 		}
-
 	}
-
-
 }

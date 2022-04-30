@@ -65,6 +65,21 @@ public class Timeline extends ForwardingNavigableMap<Duration, Timeline.Event> {
 		return this.lastEntry();
 	}
 
+	public long totalDamage() {
+		return values().stream()
+			.map(Timeline.Event::damage)
+			.reduce(Long::sum)
+			.orElse(0L);
+	}
+
+	public Duration totalTime() {
+		return lastEntry().getKey();
+	}
+
+	public double dps() {
+		return totalDamage() / (double) totalTime().toMillis() * 1000;
+	}
+
 	public Map.Entry<Duration, Event> lastGcd() {
 		var entry = this.lastAction();
 		while(entry != null && !entry.getValue().isGCD()) {
