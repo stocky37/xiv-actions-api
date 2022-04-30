@@ -24,10 +24,10 @@ public record Ability(
 	Duration recast,
 	Set<String> cooldownGroups,
 	Integer potency,
+	List<Status> statusEffects,
 
 	// Ability
 	@JsonView(Views.Standard.class) URI hdIcon,
-	@JsonView(Views.Standard.class) String description,
 	@JsonView(Views.Standard.class) Integer level,
 	@JsonView(Views.Standard.class) AbilityType abilityType,
 	@JsonView(Views.Standard.class) Boolean isRoleAction,
@@ -62,11 +62,6 @@ public record Ability(
 	}
 
 	@Override
-	public List<StatusEffect> effects() {
-		return new ArrayList<>();
-	}
-
-	@Override
 	public Type actionType() {
 		return Type.ABILITY;
 	}
@@ -77,7 +72,6 @@ public record Ability(
 		private String name;
 		private URI icon;
 		private URI hdIcon;
-		private String description;
 		private boolean onGCD;
 		private Duration cast;
 		private Duration recast;
@@ -87,8 +81,8 @@ public record Ability(
 		private Optional<DamageType> damageType = Optional.empty();
 		private Optional<String> comboFrom = Optional.empty();
 		private Set<String> cooldownGroups = new HashSet<>();
-
 		private int potency = 0;
+		private List<Status> statusEffects = new ArrayList<>();
 
 		private Builder() {}
 
@@ -97,7 +91,6 @@ public record Ability(
 			this.name = action.name;
 			this.icon = action.icon;
 			this.hdIcon = action.hdIcon;
-			this.description = action.description;
 			this.onGCD = action.onGCD;
 			this.cast = action.cast;
 			this.recast = action.recast;
@@ -108,6 +101,7 @@ public record Ability(
 			this.comboFrom = action.comboFrom;
 			this.cooldownGroups = action.cooldownGroups;
 			this.potency = action.potency;
+			this.statusEffects = action.statusEffects;
 		}
 
 		public Ability build() {
@@ -120,8 +114,8 @@ public record Ability(
 				recast,
 				cooldownGroups,
 				potency,
+				statusEffects,
 				hdIcon,
-				description,
 				level,
 				abilityType,
 				isRoleAction,
@@ -142,11 +136,6 @@ public record Ability(
 
 		public Builder withAbilityType(AbilityType abilityType) {
 			this.abilityType = abilityType;
-			return this;
-		}
-
-		public Builder withDescription(String description) {
-			this.description = description;
 			return this;
 		}
 
@@ -202,6 +191,11 @@ public record Ability(
 
 		public Builder withPotency(int potency) {
 			this.potency = potency;
+			return this;
+		}
+
+		public Builder withStatusEffects(List<Status> statusEffects) {
+			this.statusEffects = statusEffects;
 			return this;
 		}
 	}

@@ -1,10 +1,6 @@
 package dev.stocky37.xiv.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.google.common.collect.Lists;
-import dev.stocky37.xiv.api.json.Views;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
@@ -15,14 +11,12 @@ public record Consumable(
 	String name,
 	URI icon,
 	URI hdIcon,
-	String description,
 
 	// Action
 	Duration recast,
+	List<Status> statusEffects
 
 	// Ability
-	@JsonView(Views.Standard.class) @JsonFormat(pattern = "MILLIS") Duration bonusDuration,
-	@JsonView(Views.Standard.class) List<Bonus> bonuses
 ) implements Action, Item {
 
 	public record Bonus(Attribute attribute, int value, int max) {
@@ -52,11 +46,4 @@ public record Consumable(
 	public Integer potency() {
 		return 0;
 	}
-
-	// temporarily adding medicated status effect manually
-	@Override
-	public List<StatusEffect> effects() {
-		return Lists.newArrayList(new StatusEffect("49", "Medicated", bonusDuration));
-	}
 }
-

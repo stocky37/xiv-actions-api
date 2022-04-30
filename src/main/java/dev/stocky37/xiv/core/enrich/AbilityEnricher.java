@@ -1,29 +1,45 @@
 package dev.stocky37.xiv.core.enrich;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import dev.stocky37.xiv.core.StatusService;
 import dev.stocky37.xiv.model.Ability;
-import dev.stocky37.xiv.model.transform.AbilityMerger;
-import java.util.Map;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
-import javax.enterprise.context.ApplicationScoped;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
-@ApplicationScoped
-public class AbilityEnricher implements UnaryOperator<Ability> {
-
-	private final Map<String, Ability> data;
-	private final BinaryOperator<Ability> merger;
+@Singleton
+public class AbilityEnricher extends MergingEnricher<Ability> {
+	private final StatusService statusService;
 
 	@Inject
-	public AbilityEnricher(@Named("data.actions") Map<String, Ability> data, AbilityMerger merger) {
-		this.data = data;
-		this.merger = merger;
+	public AbilityEnricher(
+		@Named("abilities.data") JsonNode data,
+		@Named("abilities.merge") BiFunction<Ability, JsonNode, Ability> merger,
+		StatusService statusService
+	) {
+		super(data, merger);
+		this.statusService = statusService;
 	}
 
 	@Override
-	public Ability apply(Ability source) {
-		final var updated = data.get(source.id());
-		return updated == null ? source : merger.apply(source, updated);
+	protected Ability enrich(Ability ability, JsonNode update) {
+		if(update == null) {
+			return ability;
+		}
+		final var builder = Ability.builder(ability);
+		if(update.has("statusIds")) {
+			builder.withStatusEffects(
+				StreamSupport.stream(update.get("statusIds").spliterator(), false)
+					.map((n) -> statusService.findById(n.asText()))
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.toList()
+			);
+		}
+		return builder.build();
 	}
+
 }

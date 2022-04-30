@@ -6,19 +6,18 @@ import dev.stocky37.xiv.model.transform.JobConverter;
 import dev.stocky37.xiv.util.Util;
 import dev.stocky37.xiv.xivapi.XivApiClient;
 import dev.stocky37.xiv.xivapi.json.XivClassJob;
+import io.quarkus.cache.Cache;
 import io.quarkus.cache.CacheResult;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 
-@ApplicationScoped
-@SuppressWarnings("UnstableApiUsage")
+@Singleton
 public class JobService {
 	private final XivApiClient xivapi;
 	private final UnaryOperator<Job> enricher;
-
 	private final Function<XivClassJob, Job> converter;
 
 	public JobService(XivApiClient xivapi, JobEnricher enricher, JobConverter converter) {
@@ -48,19 +47,19 @@ public class JobService {
 			.map(enricher);
 	}
 
-	public Optional<Job> findById(String id) {
+	private Optional<Job> findById(String id) {
 		return getAll().stream()
 			.filter(j -> j.id().equals(id))
 			.findFirst();
 	}
 
-	public Optional<Job> findByName(String name) {
+	private Optional<Job> findByName(String name) {
 		return getAll().stream()
 			.filter(j -> j.slug().equals(Util.slugify(name)))
 			.findFirst();
 	}
 
-	public Optional<Job> findByAbbreviation(String abbreviation) {
+	private Optional<Job> findByAbbreviation(String abbreviation) {
 		return getAll().stream()
 			.filter(j -> j.abbreviation().equalsIgnoreCase(abbreviation))
 			.findFirst();

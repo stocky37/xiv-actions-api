@@ -1,0 +1,23 @@
+id: '36109'
+name: Grade 6 Tincture of Strength
+icon: https://xivapi.com/i/020000/020710.png
+hdIcon: https://xivapi.com/i/020000/020710_hr1.png
+recast: 270000
+statusEffects:
+  - id: '49'
+    name: Medicated
+    icon: https://xivapi.com/i/016000/016203.png
+    hdIcon: https://xivapi.com/i/016000/016203_hr1.png
+    duration: 30000
+    effects:
+      - type: stat
+        attribute: strength
+        multiplier: 1.1
+        max: 189
+    slug: medicated
+cast: 0
+kind: consumable
+actionType: item
+onGCD: false
+potency: 0
+cooldownGroups: []

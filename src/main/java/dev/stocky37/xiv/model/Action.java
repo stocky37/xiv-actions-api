@@ -1,8 +1,6 @@
 package dev.stocky37.xiv.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import dev.stocky37.xiv.api.json.Views;
@@ -15,14 +13,14 @@ import java.util.Set;
 
 public interface Action {
 	@JsonProperty
-	@JsonView(Views.Standard.class)
+	@JsonView(Views.Limited.class)
 	Type actionType();
 
 	@JsonView(Views.Standard.class)
 	Boolean onGCD();
 
 	@JsonFormat(pattern = "MILLIS")
-	@JsonView(Views.Standard.class)
+	@JsonView({Views.Standard.class, Views.Rotation.class})
 	default Duration cast() {
 		return Duration.ZERO;
 	}
@@ -33,9 +31,8 @@ public interface Action {
 		return Duration.ZERO;
 	}
 
-	@JsonIgnore
 	@JsonView(Views.Standard.class)
-	default List<StatusEffect> effects() {
+	default List<Status> statusEffects() {
 		return Collections.emptyList();
 	}
 
@@ -61,11 +58,6 @@ public interface Action {
 		@Override
 		public String toString() {
 			return Util.slugify(name());
-		}
-
-		@JsonCreator
-		public static Type fromString(String value) {
-			return Type.valueOf(value.toUpperCase());
 		}
 	}
 }

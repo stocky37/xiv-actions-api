@@ -12,9 +12,6 @@ public interface Item extends ApiObject {
 	@JsonView(Views.Standard.class)
 	URI hdIcon();
 
-	@JsonView(Views.Standard.class)
-	String description();
-
 	enum Kind {
 		ARM, TOOL, ARMOR, ACCESSORY, CONSUMABLE, MATERIAL, OTHER;
 

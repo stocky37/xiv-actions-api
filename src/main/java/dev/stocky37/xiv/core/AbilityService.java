@@ -15,12 +15,11 @@ import io.quarkus.cache.CacheResult;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
-@SuppressWarnings("UnstableApiUsage")
-@ApplicationScoped
+@Singleton
 public class AbilityService {
 	private static final List<String> INDEXES = List.of("action");
 
@@ -39,11 +38,11 @@ public class AbilityService {
 	}
 
 	@CacheResult(cacheName = "actions")
-	public List<Ability> findForJob(Job job) {
+	public List<Ability> findForJob(String jobAbbrev) {
 		final Query query = new Query(
 			INDEXES,
 			Util.ALL_COLUMNS,
-			buildJobActionsQuery(job.abbreviation())
+			buildJobActionsQuery(jobAbbrev)
 		);
 
 		return xivapi.searchAbilities(query).stream().map(converter).map(enricher).toList();

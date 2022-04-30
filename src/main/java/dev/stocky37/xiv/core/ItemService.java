@@ -18,11 +18,11 @@ import io.quarkus.cache.CacheResult;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.w3c.dom.Attr;
 
-@ApplicationScoped
-@SuppressWarnings("UnstableApiUsage")
+@Singleton
 public class ItemService {
 	private static final List<String> INDEXES = List.of("item");
 	private static final Joiner joiner = Joiner.on('.');
@@ -36,16 +36,11 @@ public class ItemService {
 	}
 
 	@CacheResult(cacheName = "items")
-	public List<Consumable> findPotionsForJob(Job job) {
-		// skip for jobs without a primary state (dohl etc.)
-		if(job.primaryStat().isEmpty()) {
-			return Collections.emptyList();
-		}
-
+	public List<Consumable> findPotionsForAttribute(Attribute stat) {
 		final Query query = new Query(
 			INDEXES,
 			Util.ALL_COLUMNS,
-			buildJobPotionsQuery(job.primaryStat().get())
+			buildJobPotionsQuery(stat)
 		);
 
 		return xivapi.searchConsumables(query).stream().map(converter).toList();

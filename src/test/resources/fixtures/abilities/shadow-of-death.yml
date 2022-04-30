@@ -1,0 +1,24 @@
+id: '24378'
+name: Shadow of Death
+icon: https://xivapi.com/i/003000/003606.png
+onGCD: true
+cast: 0
+recast: 2500
+cooldownGroups: []
+potency: 300
+hdIcon: https://xivapi.com/i/003000/003606_hr1.png
+level: 10
+abilityType: weaponskill
+isRoleAction: false
+damageType: physical
+actionType: ability
+statusEffects:
+  - id: 2586
+    name: Death's Design
+    icon: https://xivapi.com/i/012000/012926.png
+    hdIcon: https://xivapi.com/i/012000/012926_hr1.png
+    duration: 30000
+    maxDuration: 60000
+    effects:
+      - type: damage
+        multiplier: 1.1
